@@ -1,0 +1,83 @@
+package com.stockservice.controllers;
+
+import static com.stockservice.constants.Endpoints.*;
+
+import com.stockservice.dto.request.*;
+import com.stockservice.dto.response.ResponseDTO;
+import com.stockservice.entities.Order;
+import com.stockservice.entities.WareHouse;
+import com.stockservice.services.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(ROOT + ORDER)
+@RequiredArgsConstructor
+public class OrderController
+{
+    private final OrderService orderService;
+
+    @PostMapping(SAVE)
+    @Operation(summary = "Creates new Order")
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody OrderSaveRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(orderService.save(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @DeleteMapping(DELETE)
+    @Operation(summary = "Soft deletes Order")
+    public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(orderService.delete(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PutMapping(UPDATE)
+    @Operation(summary = "Updates Order")
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody OrderUpdateRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(orderService.update(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_ALL)
+    @Operation(summary = "Finds all orders with respect to pagination")
+    public ResponseEntity<ResponseDTO<List<Order>>> findAll(@RequestBody PageRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<List<Order>>builder()
+                .data(orderService.findAll(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_BY_ID)
+    @Operation(summary = "Finds Order by Id")
+    public ResponseEntity<ResponseDTO<Order>> findById(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Order>builder()
+                .data(orderService.findById(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+}

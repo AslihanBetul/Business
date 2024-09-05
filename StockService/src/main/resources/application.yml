@@ -1,0 +1,16 @@
+server:
+  port: 9099
+
+spring:
+  security:
+    user:
+      name: admin
+      password: 1234
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/StockDB
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
