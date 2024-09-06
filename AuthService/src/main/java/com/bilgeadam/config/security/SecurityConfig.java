@@ -20,10 +20,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("dev/v1/auth/**").permitAll()
-
+                        //local host
                         .anyRequest().authenticated())
-//
-                .csrf(csrf -> csrf.disable());
+                        .csrf(csrf -> csrf.disable());
 
 		return httpSecurity.build();
 
