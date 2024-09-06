@@ -18,6 +18,7 @@ import static com.stockservice.constants.Endpoints.*;
 @RestController
 @RequestMapping(ROOT + SUPPLIER)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class SupplierController
 {
     private final SupplierService supplierService;
