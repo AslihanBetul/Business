@@ -26,7 +26,8 @@ public enum ErrorType {
     TOKEN_CREATION_FAILED(1013, "Token creation failed. Please try again.", HttpStatus.INTERNAL_SERVER_ERROR),
     EMAIL_UNVERIFIED(1014, "Email is not verified. Please verify it and try again.", HttpStatus.BAD_REQUEST),
     INVALID_LOGIN_PARAMETER(1015, "Incorrect username or password. Please correct them and try again.", HttpStatus.BAD_REQUEST),
-    USER_IS_ACTIVE( 1016, "User is active." ,   HttpStatus.BAD_REQUEST);
+    USER_IS_ACTIVE( 1016, "User is active." ,   HttpStatus.BAD_REQUEST),
+    USER_ALREADY_DELETED( 1017, "User already deleted.", HttpStatus.BAD_REQUEST);
 
 
 

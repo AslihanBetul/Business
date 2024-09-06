@@ -7,14 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
-public class LoginRequestDTO {
-    @Email(message = "Email must be a valid email address.")
-    @NotNull
-    String email;
-    @NotNull
-    String password;
-}
+public record LoginRequestDTO(
+        @Email(message = "Email must be a valid email address.")
+        @NotNull String email,
+
+        @NotNull String password
+) {}

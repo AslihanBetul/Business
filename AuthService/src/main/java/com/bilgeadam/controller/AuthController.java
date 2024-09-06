@@ -60,5 +60,17 @@ public class AuthController {
                .build());
    }
 
+    @DeleteMapping(DELETE)
+    @Operation(
+           summary = "Delete an auth",
+           description = "Delete an auth from the system. The auth ID must be passed as a query parameter.")
+    public ResponseEntity<ResponseDTO<Boolean>> deleteAuth(@RequestParam Long authId) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+                .data(authService.deleteAuth(authId))
+                .code(200)
+                .message("Succesfully deleted")
+                .build());
+    }
+
 
 }

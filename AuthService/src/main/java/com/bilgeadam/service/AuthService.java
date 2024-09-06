@@ -33,15 +33,13 @@ public class AuthService {
         // Encrypt password
         // Save user to database
         // Return true if registration is successful, false otherwise
-        checkEmailExist(dto.getEmail());
-        checkPasswordMatch(dto.getPassword(), dto.getRePassword());
-        String encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(dto.getPassword());
+        checkEmailExist(dto.email());
+        checkPasswordMatch(dto.password(), dto.rePassword());
+        String encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(dto.password());
 
         Auth auth = Auth.builder()
-                .email(dto.getEmail())
+                .email(dto.email())
                 .password(encodedPassword)
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
                 .build();
         authRepository.save(auth);
         return true;
@@ -67,6 +65,7 @@ public class AuthService {
         }
     }
 
+
     public String login(LoginRequestDTO dto) {
         // TODO: Implement login logic here
         // Find user by email
@@ -74,15 +73,8 @@ public class AuthService {
         // Create JWT token
         // Return token if login is successful, throw exception otherwise
 
-        Optional<Auth> optionalAuth = authRepository.findOptionalByEmail(dto.getEmail());
-
-
-
-        if (optionalAuth.isEmpty()) {
-            throw new AuthServiceException(USER_NOT_FOUND);
-        }
-
-        Auth auth = optionalAuth.get();
+        Auth auth = authRepository.findOptionalByEmail(dto.email())
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
 
         if (auth.getStatus().equals(EStatus.PENDING))  {
 
@@ -90,7 +82,7 @@ public class AuthService {
 
 
         }
-        if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.getPassword(), auth.getPassword())) {
+        if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
             throw new AuthServiceException(INVALID_LOGIN_PARAMETER);
         }
 
@@ -100,25 +92,25 @@ public class AuthService {
 
     }
 
+
+
+    /**
+     Verifies a user's account by updating the status to ACTIVE.
+     * If the user is not found or the account is already active, an exception is thrown.
+     *
+     * @param email The email of the user whose account is being verified.
+     * @return Returns true if the account verification is successful.
+     * @throws AuthServiceException if the user is not found or the account is already active.
+     */
     public Boolean verifyAccount(String email) {
         // TODO: Implement email verification logic here
         // Find user by email
-        // Update emailVerify status to EEmailVerify.VERIFIED
-        // Return true if email verification is successful, false otherwise
+        // Return true if email verification is successful, false otherwi
 
-        Optional<Auth> optionalAuth = authRepository.findOptionalByEmail(email);
-
-        if (optionalAuth.isEmpty()) {
-            throw new AuthServiceException(USER_NOT_FOUND);
-        }
-
-
-        Auth auth = optionalAuth.get();
+        Auth auth = authRepository.findOptionalByEmail(email).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
         if (auth.getStatus().equals(EStatus.ACTIVE)) {
 
             throw new AuthServiceException(USER_IS_ACTIVE);
-
-
         }
         auth.setStatus(EStatus.ACTIVE);
         authRepository.save(auth);
@@ -138,6 +130,51 @@ public class AuthService {
 
         return optionalAuth.get();
     }
+
+    /**
+     * Deletes (soft delete) an authentication entity by setting its status to DELETED.
+     * If the user is not found or already deleted, an exception is thrown.
+     *
+     * @param authId The ID of the authentication entity to be deleted.
+     * @return Returns true if the deletion (status update) is successful.
+     * @throws AuthServiceException if the user is not found or already deleted.
+     */
+    public Boolean deleteAuth(Long authId) {
+
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        if (auth.getStatus().equals(EStatus.DELETED)) {
+            throw new AuthServiceException(USER_ALREADY_DELETED);
+        }
+        auth.setStatus(EStatus.DELETED);
+        authRepository.save(auth);
+        return true;
+
+    }
+
+
+//    // TODO: kuyruk ve model gelecek
+
+/**
+ * Listens to the email update message from the RabbitMQ queue and performs the update operation.
+ * @param updateEmailRequest DTO containing email update information from the User Service.
+ */
+
+//    @RabbitListener(queues = "{update-email-queue}")
+//    public void updateEmail() {
+//
+//
+//        Auth auth = authRepository.findById(updateEmailRequest.getUserId())
+//                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+//
+//        // Yeni email adresinin eşsiz olup olmadığını kontrol et
+//        if (authRepository.existsByEmail(updateEmailRequest.getNewEmail())) {
+//            throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
+//        }
+//
+//        // Email'i güncelle
+//        auth.setEmail(updateEmailRequest.getNewEmail());
+//        authRepository.save(auth);
+//    }
 
 
 }
