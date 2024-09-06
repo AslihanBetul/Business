@@ -8,16 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
-public class RoleUpdateRequestDTO {
-    @NotBlank(message = ErrorMessages.ROLE_ID_CANT_BE_BLANK)
-    private Long roleId;
-    @Size(max = 60)
-    @NotBlank(message = ErrorMessages.ROLE_CANT_BE_BLANK)
-    private String roleName;
-    @Size(max = 500)
-    private String roleDescription;
+
+public record RoleUpdateRequestDTO(
+        @NotBlank(message = ErrorMessages.ROLE_ID_CANT_BE_BLANK)
+        Long roleId,
+        @Size(max = 60)
+        @NotBlank(message = ErrorMessages.ROLE_CANT_BE_BLANK)
+        String roleName,
+        @Size(max = 500)
+        String roleDescription
+) {
+
 }

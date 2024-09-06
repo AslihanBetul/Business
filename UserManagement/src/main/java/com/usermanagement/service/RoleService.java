@@ -36,9 +36,9 @@ public class RoleService {
     }
 
     public void updateUserRole(RoleUpdateRequestDTO roleUpdateRequestDTO) {
-        Role role = roleRepository.findById(roleUpdateRequestDTO.getRoleId()).orElseThrow(() -> new UserException(ErrorType.ROLE_NOT_FOUND));
-        role.setRoleName(roleUpdateRequestDTO.getRoleName());
-        role.setRoleDescription(roleUpdateRequestDTO.getRoleDescription());
+        Role role = roleRepository.findById(roleUpdateRequestDTO.roleId()).orElseThrow(() -> new UserException(ErrorType.ROLE_NOT_FOUND));
+        role.setRoleName(roleUpdateRequestDTO.roleName());
+        role.setRoleDescription(roleUpdateRequestDTO.roleDescription());
         roleRepository.save(role);
     }
 

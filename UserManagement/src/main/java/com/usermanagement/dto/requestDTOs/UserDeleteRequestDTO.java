@@ -8,11 +8,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
-public class UserDeleteRequestDTO {
-    @NotBlank(message = ErrorMessages.USER_ID_CANT_BE_BLANK)
-    private Long userId;
+
+public record UserDeleteRequestDTO(
+        @NotBlank(message = ErrorMessages.USER_ID_CANT_BE_BLANK)
+        Long userId
+) {
+
 }

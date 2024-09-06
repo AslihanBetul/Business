@@ -23,21 +23,22 @@ public class UserService {
 
     public void saveUser(UserSaveRequestDTO userSaveRequestDTO) {
         User user = UserMapper.INSTANCE.userSaveRequestDTOToUser(userSaveRequestDTO);
-        List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.getRoleIds());
+        List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
         user.setRole(usersRoles);
+        user.setStatus(EStatus.ACTIVE);
         userRepository.save(user);
     }
 
     public void deleteUser(UserDeleteRequestDTO userDeleteRequestDTO) {
-        User user = userRepository.findById(userDeleteRequestDTO.getUserId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        User user = userRepository.findById(userDeleteRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
         user.setStatus(EStatus.DELETED);
         userRepository.save(user);
     }
 
     public void updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
-        User user = userRepository.findByAuthId(userUpdateRequestDTO.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
-        user.setFirstName(userUpdateRequestDTO.getFirstName());
-        user.setLastName(userUpdateRequestDTO.getLastName());
+        User user = userRepository.findByAuthId(userUpdateRequestDTO.authId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setFirstName(userUpdateRequestDTO.firstName());
+        user.setLastName(userUpdateRequestDTO.lastName());
         //TODO mail adresi burada auth'a göderilecek.
         userRepository.save(user);
     }
