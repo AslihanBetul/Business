@@ -1,3 +1,4 @@
 rootProject.name = 'business'
 include 'CRM'
+include 'NotificationService'
 
