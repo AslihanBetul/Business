@@ -11,6 +11,7 @@ import com.stockservice.exception.ErrorType;
 import com.stockservice.exception.StockServiceException;
 import com.stockservice.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
