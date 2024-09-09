@@ -20,7 +20,7 @@ public class DemoData {
     private final RoleRepository roleRepository;
 
 
-    //@PostConstruct
+    @PostConstruct
     public void saveDate(){
         saveBaseRoles();
         saveSuperAdmin();
@@ -44,7 +44,13 @@ public class DemoData {
                 .roleName("SUPER_ADMIN")
                 .roleDescription("God of The App")
                 .build();
+        Role unassignedRole = Role.builder()
+                .roleName("UNASSIGNED")
+                .roleDescription("Role that user who pending role from super admin or admin. They can update their user profile only!!").build();
+        Role customer = Role.builder().roleName("CUSTOMER").build();
         roleRepository.save(superAdminRole);
+        roleRepository.save(unassignedRole);
+        roleRepository.save(customer);
     }
 
 
