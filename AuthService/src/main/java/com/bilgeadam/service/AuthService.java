@@ -2,6 +2,8 @@ package com.bilgeadam.service;
 
 
 
+import com.bilgeadam.config.rabbitmq.model.EmailVerificationModel;
+import com.bilgeadam.config.rabbitmq.model.UserSaveFromAuthModel;
 import com.bilgeadam.dto.request.LoginRequestDTO;
 import com.bilgeadam.dto.request.RegisterRequestDTO;
 import com.bilgeadam.entity.Auth;
@@ -13,8 +15,12 @@ import static com.bilgeadam.exception.ErrorType.*;
 import com.bilgeadam.repository.AuthRepository;
 import com.bilgeadam.utilty.JwtTokenManager;
 import com.bilgeadam.utilty.PasswordEncoder;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -24,9 +30,11 @@ public class AuthService {
     private final AuthRepository authRepository;
     private final JwtTokenManager jwtTokenManager;
     private final PasswordEncoder passwordEncoder;
+    private final RabbitTemplate RabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
 
-
+    @Transactional
     public Boolean register(RegisterRequestDTO dto) {
         // TODO: Implement register logic here
         // Check if email already exists
@@ -42,7 +50,15 @@ public class AuthService {
                 .password(encodedPassword)
                 .build();
         authRepository.save(auth);
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySaveUserFromAuth", UserSaveFromAuthModel.builder()
+                .authId(auth.getId()).firstName(dto.firstName()).lastName(dto.lastName()).build());
+
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySendVerificationEmail", EmailVerificationModel.builder()
+                .email(dto.email()).firstName(dto.firstName()).lastName(dto.lastName()).build());
         return true;
+
+
+
 
 
 
@@ -98,16 +114,15 @@ public class AuthService {
      Verifies a user's account by updating the status to ACTIVE.
      * If the user is not found or the account is already active, an exception is thrown.
      *
-     * @param email The email of the user whose account is being verified.
      * @return Returns true if the account verification is successful.
      * @throws AuthServiceException if the user is not found or the account is already active.
      */
-    public Boolean verifyAccount(String email) {
-        // TODO: Implement email verification logic here
-        // Find user by email
-        // Return true if email verification is successful, false otherwi
+    public Boolean verifyAccount(String token) {
 
-        Auth auth = authRepository.findOptionalByEmail(email).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+
+        Long authId = jwtTokenManager.getIdFromToken(token).orElseThrow(() -> new AuthServiceException(INVALID_TOKEN));
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+
         if (auth.getStatus().equals(EStatus.ACTIVE)) {
 
             throw new AuthServiceException(USER_IS_ACTIVE);
@@ -138,6 +153,7 @@ public class AuthService {
      * @param authId The ID of the authentication entity to be deleted.
      * @return Returns true if the deletion (status update) is successful.
      * @throws AuthServiceException if the user is not found or already deleted.
+     * buraya status gelecek
      */
     public Boolean deleteAuth(Long authId) {
 
@@ -152,27 +168,24 @@ public class AuthService {
     }
 
 
-//    // TODO: kuyruk ve model gelecek
 
-/**
- * Listens to the email update message from the RabbitMQ queue and performs the update operation.
- * @param updateEmailRequest DTO containing email update information from the User Service.
- */
 
-//    @RabbitListener(queues = "{update-email-queue}")
-//    public void updateEmail() {
-//
-//
-//        Auth auth = authRepository.findById(updateEmailRequest.getUserId())
+    /**
+     * Listens to the email update messages from the RabbitMQ queue and performs the email update operation.
+     *
+     * @param authId The ID of the authentication record to update.
+     * @param email The new email address to set.
+     * @throws AuthServiceException If the user is not found or the new email is already taken.
+     */
+
+//  @RabbitListener(queues = "queueAuthMailUpdateFromUser")
+//    public void updateEmail(Long authId,String email) {
+//      Auth auth = authRepository.findById(authId)
 //                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
-//
-//        // Yeni email adresinin eşsiz olup olmadığını kontrol et
-//        if (authRepository.existsByEmail(updateEmailRequest.getNewEmail())) {
+//      if (authRepository.existsByEmail(email)) {
 //            throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
 //        }
-//
-//        // Email'i güncelle
-//        auth.setEmail(updateEmailRequest.getNewEmail());
+//      auth.setEmail(email);
 //        authRepository.save(auth);
 //    }
 
