@@ -16,6 +16,7 @@ import static com.stockservice.constants.Endpoints.*;
 @RestController
 @RequestMapping(ROOT + PRODUCT)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProductController
 {
     private final ProductService productService;

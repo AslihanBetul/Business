@@ -19,6 +19,7 @@ import static com.stockservice.constants.Endpoints.*;
 @RestController
 @RequestMapping(ROOT + STOCKMOVEMENT)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class StockMovementController
 {
     private final StockMovementService stockMovementService;

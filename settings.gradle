@@ -1,4 +1,6 @@
 rootProject.name = 'business'
 include 'CRM'
-include 'NotificationService'
+include 'AuthService'
+include 'StockService'
+include 'FinanceService'
 

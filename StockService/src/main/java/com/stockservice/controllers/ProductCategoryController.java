@@ -18,6 +18,7 @@ import static com.stockservice.constants.Endpoints.*;
 @RestController
 @RequestMapping(ROOT + PRODUCTCATEGORY)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ProductCategoryController
 {
     private final ProductCategoryService productCategoryService;
@@ -71,7 +72,7 @@ public class ProductCategoryController
     }
 
     @PostMapping(FIND_BY_ID)
-    @Operation(summary = "Finds Supplier by Id")
+    @Operation(summary = "Finds Product Category by Id")
     public ResponseEntity<ResponseDTO<ProductCategory>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
