@@ -16,13 +16,13 @@ import java.util.Optional;
 public class JwtTokenManager {
     private final String SECRETKEY ="secretkey";
     private final String ISSUER ="workforce";
-    private final Long EXDATE = 1000L * 60 * 60 ; // 5 minutes
+    private final Long EXDATE = 1000L * 60 * 60 ;
 
     public Optional<String> createToken (Long authId){
         String token;
         try{
             token = JWT.create().withAudience()
-                    .withClaim("id", authId)
+                    .withClaim("authId", authId)
                     .withIssuer(ISSUER)
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE))
@@ -40,7 +40,7 @@ public class JwtTokenManager {
             DecodedJWT decodedJWT = verifier.verify(token);
             if(decodedJWT == null)
                 return Optional.empty();
-            Long authId = decodedJWT.getClaim("id").asLong();
+            Long authId = decodedJWT.getClaim("authId").asLong();
             return Optional.of(authId);
         }catch (Exception e){
             return Optional.empty();

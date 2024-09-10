@@ -6,10 +6,13 @@ import com.usermanagement.dto.requestDTOs.RoleCreateDTO;
 import com.usermanagement.dto.requestDTOs.RoleUpdateRequestDTO;
 import com.usermanagement.dto.responseDTOs.ResponseDTO;
 import com.usermanagement.dto.responseDTOs.RoleResponseDTO;
+import com.usermanagement.entity.User;
 import com.usermanagement.service.RoleService;
+import com.usermanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +22,12 @@ import java.util.List;
 @RequestMapping(EndPoints.ROLE)
 public class RoleController {
     private final RoleService roleService;
+    private final UserService userService;
 
 
 
     @PostMapping(EndPoints.CREATE_USER_ROLE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından kullanıcı rolü eklenmesi")
     public ResponseEntity<ResponseDTO<Boolean>> createUserRole(@RequestBody RoleCreateDTO roleCreateDTO){
         roleService.createUserRole(roleCreateDTO);
@@ -30,6 +35,7 @@ public class RoleController {
     }
 
     @PutMapping(EndPoints.UPDATE_USER_ROLE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "admin tarafından var olan bir rolun düzenlenmesi")
     public ResponseEntity<ResponseDTO<Boolean>> updateUserRole(@RequestBody RoleUpdateRequestDTO roleUpdateRequestDTO){
         roleService.updateUserRole(roleUpdateRequestDTO);
@@ -37,6 +43,7 @@ public class RoleController {
     }
 
     @PutMapping(EndPoints.DELETE_USER_ROLE+"/{roleId}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "admin tarafından roleId'si verilen bir rolün soft delete yapılması")
     public ResponseEntity<ResponseDTO<Boolean>> deleteUserRole(@PathVariable Long roleId){
         roleService.deleteUserRole(roleId);
@@ -45,11 +52,21 @@ public class RoleController {
 
 
     @GetMapping(EndPoints.GET_ALL_USER_ROLES)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından bir kullanıcıya rol atanırken rollerin getirilmesi için gerekli get isteği")
     public ResponseEntity<ResponseDTO<List<RoleResponseDTO>>> getAllUserRoles(){
 
         return ResponseEntity.ok(ResponseDTO.<List<RoleResponseDTO>>builder().code(200).data(roleService.getAllUserRoles()).message(SuccesMessages.All_ROLES_SENT).build());
     }
+
+    @GetMapping("/assignable-roles/{userId}")
+    @Operation(summary = "Admin tarafından kullanıcılara atanabilir roller")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<List<RoleResponseDTO>>> getAllAssignableRoles(@PathVariable Long userId){
+        User user = userService.findUserById(userId);
+        return ResponseEntity.ok(ResponseDTO.<List<RoleResponseDTO>>builder().code(200).message("Kullanıcıya atanabilir roller gönderildi").data(roleService.getAllAssignableRoles(user)).build());
+    }
+
 
 
 }

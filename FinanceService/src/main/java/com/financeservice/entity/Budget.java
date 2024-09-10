@@ -20,7 +20,7 @@ public class Budget extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    Long departmentId;
+    String department;
     Integer year;
     BigDecimal amount;
     String description;

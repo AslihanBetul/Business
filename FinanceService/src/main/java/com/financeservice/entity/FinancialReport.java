@@ -23,6 +23,7 @@ public class FinancialReport extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Enumerated(EnumType.STRING)
     EFinancialReportType financialReportType;
     LocalDateTime startDate;
     LocalDateTime endDate;
