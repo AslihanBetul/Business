@@ -3,4 +3,6 @@ include 'CRM'
 include 'AuthService'
 include 'StockService'
 include 'FinanceService'
+include 'MailService'
+include 'UserManagement'
 
