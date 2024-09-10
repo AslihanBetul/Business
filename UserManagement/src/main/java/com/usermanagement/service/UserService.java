@@ -37,6 +37,9 @@ public class UserService {
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(()->new UserException(ErrorType.USER_NOT_FOUND));
     }
+    public User findByAuthId(Long authId) {
+        return userRepository.findByAuthId(authId).orElseThrow(()->new UserException(ErrorType.USER_NOT_FOUND));
+    }
 
     public void saveUser(UserSaveRequestDTO userSaveRequestDTO) {
         User user = UserMapper.INSTANCE.userSaveRequestDTOToUser(userSaveRequestDTO);
@@ -49,6 +52,8 @@ public class UserService {
     public void deleteUser(UserDeleteRequestDTO userDeleteRequestDTO) {
         User user = userRepository.findById(userDeleteRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
         user.setStatus(EStatus.DELETED);
+
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyDeleteAuth", user.getAuthId());
         userRepository.save(user);
     }
 
@@ -126,14 +131,11 @@ public class UserService {
     }
 
     @RabbitListener(queues = "queueRolesByAuthId")
-    private UserRoleListModel sendAuthRoles(Long authId) {
+    private UserRoleListModel sendAuthRoles(Long authId) { //private kurallarına bak
         return getRolesForSecurity(authId);
     }
 
-    public List<String> getRolesRabbit(Long authId){
-        UserRoleListModel userRoleListModel = (UserRoleListModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyRolesByAuthId", authId);
-        return userRoleListModel.getUserRoles();
-    }
+
 
     public UserRoleListModel getRolesForSecurity(Long authId){
         List<Role> userRoles = userRepository.getUserRoles(authId);

@@ -1,91 +1,80 @@
 package com.usermanagement.util;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-
-import com.usermanagement.exception.ErrorType;
 import com.usermanagement.exception.UserException;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 
 import java.util.Date;
 import java.util.Optional;
 
-@Service
+import static com.usermanagement.exception.ErrorType.*;
+
+@Component
 public class JwtTokenManager {
-    private final String SECRETKEY ="secretkey";
-    private final String ISSUER ="workforce";
-    private final Long EXDATE = 1000L * 60 * 60 ; // 5 minutes
+    @Value("${usermanagement.secret.secret-key}")
+    String secretKey;
+    @Value("${usermanagement.secret.issuer}")
+    String issuer;
+    Long expireTime = 1000L * 60 * 120; // 120 dakika
 
-    public Optional<String> createToken (Long authId){
-        String token;
-        try{
-            token = JWT.create().withAudience()
-                    .withClaim("id", authId)
-                    .withIssuer(ISSUER)
-                    .withIssuedAt(new Date())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE))
-                    .sign(Algorithm.HMAC512(SECRETKEY));
-            return Optional.of(token);
-        }catch (Exception e){
-            return Optional.empty();
-        }
-    }
 
-    public Optional<Long> validateToken(String token){
-        try{
-            Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
-            DecodedJWT decodedJWT = verifier.verify(token);
-            if(decodedJWT == null)
-                return Optional.empty();
-            Long authId = decodedJWT.getClaim("id").asLong();
-            return Optional.of(authId);
-        }catch (Exception e){
-            return Optional.empty();
-        }
-    }
+    public Optional<String> createToken(Long authId){
+        String token="";
 
-    public Optional<Long> getIdFromToken(String token){
+        //claim içersindeki değerler herkes tarafından görülebilir.
+
         try {
-            Algorithm algorithm=Algorithm.HMAC512(SECRETKEY);
-            JWTVerifier verifier=JWT.require(algorithm).withIssuer(ISSUER).build();
-            DecodedJWT decodedJWT= verifier.verify(token);
+            token = JWT.create()
+                    .withAudience()
+                    .withClaim("authId",authId)
+                    .withIssuer(issuer)
+                    .withIssuedAt(new Date())
+                    .sign(Algorithm.HMAC512(secretKey));
+            return Optional.of(token);
+        } catch (IllegalArgumentException e) {
+            throw new UserException(TOKEN_CREATION_FAILED);
+        } catch (JWTCreationException e) {
+            throw new UserException(TOKEN_CREATION_FAILED);
+        }
+    }
 
-            if (decodedJWT==null){
-                throw new UserException(ErrorType.INVALID_TOKEN);
+    public Optional<Long> getUserIdFromToken(String token){
+        DecodedJWT decodedJWT = null;
+        try {
+            Algorithm algorithm = Algorithm.HMAC512(secretKey);
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+            decodedJWT = verifier.verify(token);
+
+            if(decodedJWT==null){
+                return Optional.empty();
+            } else {
+                return Optional.of(decodedJWT.getClaim("authId").asLong());
             }
 
-            Long id=decodedJWT.getClaim("id").asLong();
-            return Optional.of(id);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            throw new UserException(ErrorType.INVALID_TOKEN);
+        } catch (IllegalArgumentException e) {
+            throw new UserException(TOKEN_FORMAT_NOT_ACCEPTABLE);
+        } catch (JWTVerificationException e) {
+            throw new UserException(TOKEN_VERIFY_FAILED);
         }
     }
 
-//    public ERole getRoleFromToken(String token){
-//        try {
-//            Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-//            JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
-//            DecodedJWT decodedJWT = verifier.verify(token);
-//
-//            if (decodedJWT == null) {
-//                System.out.println("token null mıı?????");
-//                throw new AuthServiceException(ErrorType.INVALID_TOKEN);
-//            }
-//
-//            String role = decodedJWT.getClaim("role").asString();
-//            return ERole.valueOf(role.toUpperCase());
-//        }catch (Exception e){
-//            System.out.println(e.getMessage());
-//            System.out.println("yoksa bura mıı????");
-//            throw new AuthServiceException(ErrorType.INVALID_TOKEN);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
 
 
 }

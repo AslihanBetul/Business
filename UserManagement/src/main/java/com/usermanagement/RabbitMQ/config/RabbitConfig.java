@@ -34,6 +34,17 @@ public class RabbitConfig {
     private final String queueRolesByAuthId = "queueRolesByAuthId";
     private final String keyRolesByAuthId = "keyRolesByAuthId";
 
+
+    //AuthId ile auth servisten email ve password isteme (securit için gerekli)
+    private final String queueEmailAndPasswordFromAuth = "queueEmailAndPasswordFromAuth";
+    private final String keyEmailAndPasswordFromAuth = "keyEmailAndPasswordFromAuth";
+
+    //Admin tarafından deled edilen kullanıcıların auth'da da deleted edilmesi için gerekn kuyrul
+    private final String queueDeleteAuth = "queueDeleteAuth";
+    private final String keyDeleteAuth = "keyDeleteAuth";
+
+
+
     @Bean
     public DirectExchange businessDirectExchange() {
         return new DirectExchange(businessDirectExchange);
@@ -58,8 +69,19 @@ public class RabbitConfig {
         return new Queue(queueSaveCustomerFromUser);
     }
 
-    @Bean Queue queueRolesByAuthId() {
+    @Bean
+    public Queue queueRolesByAuthId() {
         return new Queue(queueRolesByAuthId);
+    }
+
+    @Bean
+    public Queue queueEmailAndPasswordFromAuth() {
+        return new Queue(queueEmailAndPasswordFromAuth);
+    }
+
+    @Bean
+    public Queue queueDeleteAuth() {
+        return new Queue(queueDeleteAuth);
     }
 
 
@@ -82,6 +104,16 @@ public class RabbitConfig {
     @Bean
     public Binding bindingRolesByAuthId (Queue queueRolesByAuthId, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueRolesByAuthId).to(businessDirectExchange).with(keyRolesByAuthId);
+    }
+
+    @Bean
+    public Binding bindingEmailAndPasswordFromAuth (Queue queueEmailAndPasswordFromAuth, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueEmailAndPasswordFromAuth).to(businessDirectExchange).with(keyEmailAndPasswordFromAuth);
+    }
+
+    @Bean
+    public Binding bindingDeleteAuth (Queue queueDeleteAuth, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueDeleteAuth).to(businessDirectExchange).with(keyDeleteAuth);
     }
 
 

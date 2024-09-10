@@ -44,11 +44,20 @@ public class DemoData {
                 .roleName("SUPER_ADMIN")
                 .roleDescription("God of The App")
                 .build();
+
         Role unassignedRole = Role.builder()
                 .roleName("UNASSIGNED")
                 .roleDescription("Role that user who pending role from super admin or admin. They can update their user profile only!!").build();
+
         Role customer = Role.builder().roleName("CUSTOMER").build();
+
+        Role adminRole = Role.builder()
+                .roleName("ADMIN")
+                .roleDescription("VP")
+                .build();
+
         roleRepository.save(superAdminRole);
+        roleRepository.save(adminRole);
         roleRepository.save(unassignedRole);
         roleRepository.save(customer);
     }

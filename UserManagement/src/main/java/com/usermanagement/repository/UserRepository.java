@@ -21,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<Role> getUserRoles(Long authId);
 
 
+
 }
