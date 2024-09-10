@@ -5,4 +5,6 @@ include 'StockService'
 include 'FinanceService'
 include 'MailService'
 include 'UserManagement'
+include 'AnalyticsService'
+include 'ApiGatewayMicroServis'
 
