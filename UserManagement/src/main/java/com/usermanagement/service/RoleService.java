@@ -4,6 +4,7 @@ import com.usermanagement.dto.requestDTOs.RoleCreateDTO;
 import com.usermanagement.dto.requestDTOs.RoleUpdateRequestDTO;
 import com.usermanagement.dto.responseDTOs.RoleResponseDTO;
 import com.usermanagement.entity.Role;
+import com.usermanagement.entity.User;
 import com.usermanagement.entity.enums.EStatus;
 import com.usermanagement.exception.ErrorType;
 import com.usermanagement.exception.UserException;
@@ -11,6 +12,7 @@ import com.usermanagement.mapper.RoleMapper;
 import com.usermanagement.repository.RoleRepository;
 import com.usermanagement.views.GetAllRoleView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public class RoleService {
     }
 
     public List<RoleResponseDTO> getAllUserRoles() {
-        List<GetAllRoleView> allroles = roleRepository.getAllroles(EStatus.ACTIVE);
+        List<GetAllRoleView> allroles = roleRepository.getAllRoles(EStatus.ACTIVE);
 
         List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
 
@@ -60,4 +62,24 @@ public class RoleService {
         return roleResponseDTOs;
 
     }
+
+    public Role getRoleById(Long roleId) {
+        return roleRepository.findById(roleId).orElseThrow(() -> new UserException(ErrorType.ROLE_NOT_FOUND));
+    }
+
+
+    public List<RoleResponseDTO> getAllAssignableRoles(User user) {
+        List<Role> allRoles = roleRepository.findAll();
+        allRoles.removeAll(user.getRole());
+        List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
+        allRoles.forEach(role -> {
+            roleResponseDTOs.add(RoleMapper.INSTANCE.roleToRoleResponseDTO(role));
+        });
+
+        return roleResponseDTOs;
+    }
+
+
+
+
 }
