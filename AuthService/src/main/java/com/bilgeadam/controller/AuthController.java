@@ -35,11 +35,11 @@ public class AuthController {
    @PostMapping(VERIFYACCOUNT)
    @Operation(
            summary = "Verify  account",
-           description = "Verifies the account associated with the provided email address. The email address must be passed as a query parameter. This operation updates the account status to active if the email is found and successfully verified.\" "
+           description = " Verifies an account with the provided token. The token must be provided in the query parameter.\" "
    )
-   public ResponseEntity<ResponseDTO<Boolean>> verifyAccount(@RequestParam String email) {
+   public ResponseEntity<ResponseDTO<Boolean>> verifyAccount(@RequestParam String token) {
        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
-               .data(authService.verifyAccount(email))
+               .data(authService.verifyAccount(token))
                .code(200)
                .message("Succesfully verified")
                .build());

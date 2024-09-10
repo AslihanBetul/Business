@@ -1,4 +1,4 @@
 # RABBITMQ
 ```bash
-docker run -d --hostname my-rabbit --name some-rabbit -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=1234 -p 15672:15672 -p 5672:5672 --memory=128m rabbitmq:3-management
+docker run --hostname java14-rabbit --name java14-rabbit -d -e RABBITMQ_DEFAULT_USER=java14user -e RABBITMQ_DEFAULT_PASS=root -p 15672:15672 -p 5672:5672 --memory=512m rabbitmq:3-management
 ```

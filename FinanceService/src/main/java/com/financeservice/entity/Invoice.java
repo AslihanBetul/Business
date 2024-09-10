@@ -2,10 +2,7 @@ package com.financeservice.entity;
 
 import com.financeservice.entity.enums.EInvoiceStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -18,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "tblinvoice")
-public class Invoice extends BaseEntity{
+public class Invoice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
