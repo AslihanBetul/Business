@@ -22,6 +22,7 @@ public class Tax extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Enumerated(EnumType.STRING)
     ETaxType taxType;
     BigDecimal taxRate;
     String description;

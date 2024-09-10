@@ -21,7 +21,8 @@ public enum ErrorType {
     ORDER_NOT_FOUND(9006,"Order Not Found" ,    HttpStatus.BAD_REQUEST),
     PRODUCT_CATEGORY_NOT_FOUND(9007,    "Product Category Not Found" , HttpStatus.BAD_REQUEST),
     STOCK_MOVEMENT_NOT_FOUND(9008, "Stock Movement Not Found", HttpStatus.BAD_REQUEST),
-    SUPPLIER_NOT_FOUND( 9009,  "Supplier Not Found" ,  HttpStatus.BAD_REQUEST);
+    SUPPLIER_NOT_FOUND( 9009,  "Supplier Not Found" ,  HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(9010,"Invalid Token" ,    HttpStatus.BAD_REQUEST );
 
     private Integer code;
     private String message;

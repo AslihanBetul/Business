@@ -1,0 +1,41 @@
+server:
+  port: 80
+
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: http://localhost:9090/
+          predicates:
+            - Path=/dev/v1/auth/**
+        - id: crm
+          uri: http://localhost:9098/
+          predicates:
+            - Path=/dev/v1/customer/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/order/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/product-category/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/product/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/stock-movement/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/supplier/**
+        - id: stock
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/ware-house/**
