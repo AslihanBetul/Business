@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class EmailVerificationModel {
+    private Long authId;
     private String email;
     private String firstName;
     private String lastName;
