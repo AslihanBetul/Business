@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class EmailVerificationModel {
+public class AuthMailUpdateFromUser {
     private Long authId;
     private String email;
-    private String firstName;
-    private String lastName;
+
 }
