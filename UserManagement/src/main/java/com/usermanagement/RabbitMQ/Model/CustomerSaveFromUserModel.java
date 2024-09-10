@@ -1,5 +1,6 @@
-package com.bilgeadam.config.rabbitmq.model;
+package com.usermanagement.RabbitMQ.Model;
 
+import com.usermanagement.entity.enums.EStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class EmailVerificationModel {
+public class CustomerSaveFromUserModel {
     private Long authId;
-    private String email;
-    private String firstName;
-    private String lastName;
+    private Long userId;
+    private EStatus status;
+
 }

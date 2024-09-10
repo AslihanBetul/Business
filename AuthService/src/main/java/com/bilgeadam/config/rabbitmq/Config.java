@@ -18,6 +18,15 @@ public class Config {
     private final String keySaveUserFromAuth = "keySaveUserFromAuth";
     private final String queueSendVerificationEmail = "queueSendVerificationEmail";
     private final String keySendVerificationEmail = "keySendVerificationEmail";
+    private final String queueEmailAndPasswordFromAuth = "queueEmailAndPasswordFromAuth";
+    private final String keyEmailAndPasswordFromAuth = "keyEmailAndPasswordFromAuth";
+    private final String queueAuthMailUpdateFromUser = "queueAuthMailUpdateFromUser";
+    private final String keyAuthMailUpdateFromUser = "keyAuthMailUpdateFromUser";
+    private final String queueDeleteAuth = "queueDeleteAuth";
+    private final String keyDeleteAuth = "keyDeleteAuth";
+
+    private final String queueEmailFromCustomer = "queueEmailFromCustomer";
+    private final String keyEmailFromCustomer = "keyEmailFromCustomer";
 
 
 
@@ -36,12 +45,47 @@ public class Config {
         return new Queue(queueSendVerificationEmail);
     }
     @Bean
+    public Queue queueDeleteAuth() {
+        return new Queue(queueDeleteAuth);}
+    @Bean
+    public Queue queueAuthMailUpdateFromUser() {
+        return new Queue(queueAuthMailUpdateFromUser);
+    }
+    @Bean
+    public Queue queueEmailFromCustomer() {
+        return new Queue(queueEmailFromCustomer);
+    }
+
+
+    @Bean
+    public Queue queueEmailAndPasswordFromAuth() {
+        return new Queue(queueEmailAndPasswordFromAuth);
+}
+    @Bean
     public Binding bindingSaveUserFromAuth(){
         return BindingBuilder.bind(queueSaveUserFromAuth()).to(directExchange()).with(keySaveUserFromAuth);
     }
     @Bean
+    public Binding bindingDeleteAuth (Queue queueDeleteAuth, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueDeleteAuth).to(businessDirectExchange).with(keyDeleteAuth);
+}
+    @Bean
     public Binding bindingSendVerificationEmail(){
         return BindingBuilder.bind(queueSendVerificationEmail()).to(directExchange()).with(keySendVerificationEmail);
+    }
+    @Bean
+    public Binding bindingAuthMailUpdateFromUser (Queue queueAuthMailUpdateFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueAuthMailUpdateFromUser).to(businessDirectExchange).with(keyAuthMailUpdateFromUser);
+    }
+
+    @Bean
+    public Binding bindingEmailAndPasswordFromAuth (Queue queueEmailAndPasswordFromAuth, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueEmailAndPasswordFromAuth).to(businessDirectExchange).with(keyEmailAndPasswordFromAuth);
+}
+
+    @Bean
+    public Binding bindingEmailFromCustomer (Queue queueEmailFromCustomer, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueEmailFromCustomer).to(businessDirectExchange).with(keyEmailFromCustomer);
     }
 
     @Bean

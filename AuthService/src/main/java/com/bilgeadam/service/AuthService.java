@@ -2,6 +2,7 @@ package com.bilgeadam.service;
 
 
 
+import com.bilgeadam.config.rabbitmq.model.EmailAndPasswordModel;
 import com.bilgeadam.config.rabbitmq.model.EmailVerificationModel;
 import com.bilgeadam.config.rabbitmq.model.UserSaveFromAuthModel;
 import com.bilgeadam.dto.request.LoginRequestDTO;
@@ -54,13 +55,23 @@ public class AuthService {
                 .authId(auth.getId()).firstName(dto.firstName()).lastName(dto.lastName()).build());
 
         rabbitTemplate.convertAndSend("businessDirectExchange","keySendVerificationEmail", EmailVerificationModel.builder()
-                .email(dto.email()).firstName(dto.firstName()).lastName(dto.lastName()).build());
+                .email(dto.email()).firstName(dto.firstName()).lastName(dto.lastName()).authId(auth.getId()).build());
         return true;
 
 
 
 
+    }
 
+
+
+    @RabbitListener(queues = "queueEmailAndPasswordFromAuth")
+    public EmailAndPasswordModel emailAndPasswordFromAuth(Long authId) {
+        Auth auth = authRepository.findById(authId).orElseThrow();
+        return EmailAndPasswordModel.builder()
+                .email(auth.getEmail())
+                .encryptedPassword(auth.getPassword())
+                .build();
 
 
     }
@@ -132,12 +143,12 @@ public class AuthService {
         return true;
     }
 
-    public Auth findById(Long authid) {
+    public Auth findById(Long authId) {
         // TODO: Implement finding user by id logic here
         // Find user by id
         // Return user if found, throw exception otherwise
 
-        Optional<Auth> optionalAuth = authRepository.findById(authid);
+        Optional<Auth> optionalAuth = authRepository.findById(authId);
 
         if (optionalAuth.isEmpty()) {
             throw new AuthServiceException(USER_NOT_FOUND);
@@ -153,8 +164,9 @@ public class AuthService {
      * @param authId The ID of the authentication entity to be deleted.
      * @return Returns true if the deletion (status update) is successful.
      * @throws AuthServiceException if the user is not found or already deleted.
-     * buraya status gelecek
+
      */
+    @RabbitListener(queues = "queueDeleteAuth")
     public Boolean deleteAuth(Long authId) {
 
         Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
@@ -168,8 +180,6 @@ public class AuthService {
     }
 
 
-
-
     /**
      * Listens to the email update messages from the RabbitMQ queue and performs the email update operation.
      *
@@ -178,16 +188,33 @@ public class AuthService {
      * @throws AuthServiceException If the user is not found or the new email is already taken.
      */
 
-//  @RabbitListener(queues = "queueAuthMailUpdateFromUser")
-//    public void updateEmail(Long authId,String email) {
-//      Auth auth = authRepository.findById(authId)
-//                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
-//      if (authRepository.existsByEmail(email)) {
-//            throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
-//        }
-//      auth.setEmail(email);
-//        authRepository.save(auth);
-//    }
+  @RabbitListener(queues = "queueAuthMailUpdateFromUser")
+   public void updateEmail(Long authId,String email) {
+     Auth auth = authRepository.findById(authId)
+               .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+      if (authRepository.existsByEmail(email)) {
+           throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
+       }
+     auth.setEmail(email);
+       authRepository.save(auth);
+  }
+
+    /**
+     * Retrieves the email associated with the given authId and sends it to a RabbitMQ queue.
+     *
+     * @param authId The ID of the authentication entity whose email is to be retrieved.
+     * @return The email address associated with the provided authId.
+     * @throws AuthServiceException if the user with the given authId is not found.
+     */
+    public String getEmailByAuthId(Long authId) {
+
+        Auth auth = authRepository.findById(authId)
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+       String email = auth.getEmail();
+        rabbitTemplate.convertAndSend( " businessDirectExchange","keyEmailFromCustomer",email);
+       return email;
+
+    }
 
 
 }

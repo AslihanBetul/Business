@@ -14,7 +14,10 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     List<Role> findAllByIdIn(List<Long> ids);
 
     @Query("select new com.usermanagement.views.GetAllRoleView(r.id,r.roleName,r.roleDescription) from Role r where r.status=?1")
-    List<GetAllRoleView> getAllroles(EStatus status);
+    List<GetAllRoleView> getAllRoles(EStatus status);
+
+
+
 
 
 }

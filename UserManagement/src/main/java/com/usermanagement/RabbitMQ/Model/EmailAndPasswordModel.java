@@ -1,4 +1,4 @@
-package com.bilgeadam.config.rabbitmq.model;
+package com.usermanagement.RabbitMQ.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class EmailVerificationModel {
-    private Long authId;
+public class EmailAndPasswordModel {
     private String email;
-    private String firstName;
-    private String lastName;
+    private String encryptedPassword;
 }

@@ -1,17 +1,19 @@
-package com.bilgeadam.config.rabbitmq.model;
+package com.usermanagement.dto.responseDTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class EmailVerificationModel {
-    private Long authId;
-    private String email;
+public class GetAllUsersResponseDTO {
+    private Long userId;
     private String firstName;
     private String lastName;
+    private List<RoleResponseDTO> userRoles;
 }
