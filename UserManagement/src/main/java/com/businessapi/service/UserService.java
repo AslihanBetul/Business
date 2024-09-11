@@ -17,6 +17,7 @@ import com.businessapi.exception.UserException;
 import com.businessapi.mapper.RoleMapper;
 import com.businessapi.mapper.UserMapper;
 import com.businessapi.repository.UserRepository;
+import com.businessapi.util.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,6 +35,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final RabbitTemplate rabbitTemplate;
+    private final JwtTokenManager jwtTokenManager;
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(()->new UserException(ErrorType.USER_NOT_FOUND));
@@ -73,7 +77,7 @@ public class UserService {
     @Transactional
     public void saveUserFromAuthService(SaveUserFromAuthModel saveUserFromAuthModel){
         List<Role> usersRoles = new ArrayList<>();
-        usersRoles.add(roleService.getRoleById(2L));
+        usersRoles.add(roleService.getRoleById(3L));
         User user = User.builder()
                 .authId(saveUserFromAuthModel.getAuthId())
                 .firstName(saveUserFromAuthModel.getFirstName())
@@ -162,4 +166,11 @@ public class UserService {
     }
 
 
+    public List<String> getUserRoles(String jwtToken) {
+        Long authId = jwtTokenManager.getUserIdFromToken(jwtToken).orElseThrow(()-> new UserException(ErrorType.INVALID_TOKEN));
+
+        User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        return user.getRole().stream().map(Role::getRoleName).toList();
+    }
 }
