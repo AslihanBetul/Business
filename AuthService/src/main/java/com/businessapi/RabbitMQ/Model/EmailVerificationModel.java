@@ -1,4 +1,4 @@
-package com.businessapi.config.RabbitMQ.Model;
+package com.businessapi.RabbitMQ.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

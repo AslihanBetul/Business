@@ -1,4 +1,4 @@
-package com.businessapi.config.RabbitMQ.Model;
+package com.businessapi.RabbitMQ.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class UserSaveFromAuthModel {
-    private Long authId;
-    private String firstName;
-    private String lastName;
+public class EmailAndPasswordModel {
+    private String email;
+    private String encryptedPassword;
 }

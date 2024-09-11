@@ -1,4 +1,4 @@
-package com.businessapi.config.RabbitMQ;
+package com.businessapi.RabbitMQ;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

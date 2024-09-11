@@ -2,9 +2,9 @@ package com.businessapi.service;
 
 
 
-import com.businessapi.config.RabbitMQ.Model.EmailAndPasswordModel;
-import com.businessapi.config.RabbitMQ.Model.EmailVerificationModel;
-import com.businessapi.config.RabbitMQ.Model.UserSaveFromAuthModel;
+import com.businessapi.RabbitMQ.Model.EmailAndPasswordModel;
+import com.businessapi.RabbitMQ.Model.EmailVerificationModel;
+import com.businessapi.RabbitMQ.Model.UserSaveFromAuthModel;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
 import com.businessapi.entity.Auth;
