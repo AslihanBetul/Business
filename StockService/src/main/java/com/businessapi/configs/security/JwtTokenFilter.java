@@ -1,6 +1,7 @@
 package com.businessapi.configs.security;
 
 
+import com.businessapi.RabbitMQ.Model.EmailAndPasswordModel;
 import com.businessapi.RabbitMQ.Model.UserRoleListModel;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
@@ -40,15 +41,16 @@ public class JwtTokenFilter extends OncePerRequestFilter
 
             Long authId = jwtTokenManager.getIdFromToken(token).orElseThrow(() -> new StockServiceException(ErrorType.INVALID_TOKEN));
 
-            //TODO WILL CHANGE MODAL AND METHOD LATER.
+
             UserRoleListModel modal = (UserRoleListModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyRolesByAuthId", authId);
+            EmailAndPasswordModel modal2 = (EmailAndPasswordModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailAndPasswordFromAuth", authId);
 
             List<GrantedAuthority> authorities = modal.getUserRoles().stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(modal, null, authorities);
+            System.out.println(modal2.getEmail());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(modal2.getEmail(), null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
