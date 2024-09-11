@@ -67,7 +67,7 @@ public class SupplierService
 
     public List<Supplier> findAll(PageRequestDTO dto)
     {
-        return supplierRepository.findAllByNameContaining(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return supplierRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Supplier findById(Long id)

@@ -80,4 +80,16 @@ public class ProductController
                 .code(200)
                 .build());
     }
+
+    @PostMapping(FIND_ALL_BY_MINIMUM_STOCK_LEVEL)
+    @Operation(summary = "Finds Product that have less stock than minimum stock level")
+    public ResponseEntity<ResponseDTO<List<Product>>> findAllByMinimumStockLevel(@RequestBody PageRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<List<Product>>builder()
+                .data(productService.findAllByMinimumStockLevel(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
 }

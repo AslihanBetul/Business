@@ -19,6 +19,7 @@ public class Order extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long customerId;
+    //TODO WILL SEPARATE ORDER TO BY CUSTOMER AND TO SUPPLIER (BUY ORDER && SELL ORDER)
     Long productId;
     Integer quantity;
     BigDecimal unitPrice;

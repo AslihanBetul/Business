@@ -18,10 +18,13 @@ public class Product extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long wareHouseId;
     Long productCategoryId;
     String name;
     String description;
     BigDecimal price;
     Integer stockCount;
     Integer minimumStockLevel;
+    @Builder.Default
+    Boolean isProductAutoOrdered= false;
 }

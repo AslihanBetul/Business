@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.dto.request.OrderSaveRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.ProductSaveRequestDTO;
 import com.businessapi.dto.request.ProductUpdateRequestDTO;
@@ -9,6 +10,8 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,12 @@ public class ProductService
 {
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
+    private OrderService orderService;
+
+    @Autowired
+    public void setServices(@Lazy OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     public Product findById(Long id){
 
@@ -82,6 +91,19 @@ public class ProductService
 
     public List<Product> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContaining(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+    }
+
+    public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
+    {
+        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+
+        productList.forEach(product -> {
+            if (!product.getIsProductAutoOrdered())
+            {
+                //TODO WILL CONSTRUCT NEW SYSTEM TO AUTO ORDER STOCK
+            }
+        });
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 }

@@ -55,8 +55,8 @@ public class DemoDataGenerator
     {
         productService.save(new ProductSaveRequestDTO(1L, "iPhone 13", "Smart Phone", BigDecimal.valueOf(50000), 100, 10));
         productService.save(new ProductSaveRequestDTO(2L, "Samsung Galaxy S21", "Smart Phone", BigDecimal.valueOf(45000), 80, 15));
-        productService.save(new ProductSaveRequestDTO(3L, "Sony Bravia 55", "Television", BigDecimal.valueOf(70000), 50, 5));
-        productService.save(new ProductSaveRequestDTO(4L, "HP Pavilion Laptop", "Laptop", BigDecimal.valueOf(60000), 40, 8));
+        productService.save(new ProductSaveRequestDTO(3L, "Sony Bravia 55", "Television", BigDecimal.valueOf(70000), 50, 100));
+        productService.save(new ProductSaveRequestDTO(4L, "HP Pavilion Laptop", "Laptop", BigDecimal.valueOf(60000), 40, 100));
         productService.save(new ProductSaveRequestDTO(5L, "Canon EOS 250D", "Camera", BigDecimal.valueOf(30000), 30, 12));
         productService.save(new ProductSaveRequestDTO(6L, "PlayStation 5", "Gaming Console", BigDecimal.valueOf(75000), 20, 4));
         productService.save(new ProductSaveRequestDTO(7L, "KitchenAid Mixer", "Home Appliance", BigDecimal.valueOf(20000), 60, 10));
@@ -64,8 +64,8 @@ public class DemoDataGenerator
         productService.save(new ProductSaveRequestDTO(10L, "Levi's 501 Jeans", "Clothing", BigDecimal.valueOf(5000), 200, 30));
         productService.save(new ProductSaveRequestDTO(11L, "The Great Gatsby", "Book", BigDecimal.valueOf(300), 500, 50));
         productService.save(new ProductSaveRequestDTO(12L, "Apple Watch Series 7", "Smart Watch", BigDecimal.valueOf(30000), 75, 7));
-        productService.save(new ProductSaveRequestDTO(2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 3));
-        productService.save(new ProductSaveRequestDTO(3L, "Bose QuietComfort 35", "Headphones", BigDecimal.valueOf(25000), 45, 6));
+        productService.save(new ProductSaveRequestDTO(2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 100));
+        productService.save(new ProductSaveRequestDTO(3L, "Bose QuietComfort 35", "Headphones", BigDecimal.valueOf(25000), 45, 100));
         productService.save(new ProductSaveRequestDTO(4L, "Adidas Soccer Ball", "Sports Equipment", BigDecimal.valueOf(1200), 150, 25));
         productService.save(new ProductSaveRequestDTO(5L, "Fitbit Charge 5", "Fitness Tracker", BigDecimal.valueOf(12000), 90, 10));
 

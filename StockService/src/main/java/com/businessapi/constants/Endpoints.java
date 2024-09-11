@@ -29,4 +29,5 @@ public class Endpoints
     public static final String FIND_ALL = "/find-all";
 
     public static final String FIND_BY_ID = "/find-by-id";
+    public static final String FIND_ALL_BY_MINIMUM_STOCK_LEVEL = "/find-all-by-minimum-stock-level";
 }
