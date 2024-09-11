@@ -37,8 +37,7 @@ public class MailSenderService {
       "                </tr>" +
      "                <tr>" +
        "                    <td style=\"text-align:center;padding-top:20px;\">" +
-       "                        <p style=\"font-size:14px;color:#888888;margin:0;\">Bu e-posta, ASSIM sisteminden gönderilmiştir. Lütfen bu e-postayı yanıtlamayın.</p>" +
-        "                        <img src=\"https://i.pinimg.com/736x/6e/ae/4a/6eae4a13af8db638a5e6bc344364646a.jpg\" alt=\"Company Logo\" style=\"width:150px;height:auto;margin-top:20px;\"/>" +
+       "                        <p style=\"font-size:14px;color:#888888;margin:0;\"> Lütfen bu e-postayı yanıtlamayın.</p>" +
       "                    </td>" +
        "                </tr>" +
       "            </table>" +
