@@ -148,4 +148,18 @@ public class UserService {
         return UserRoleListModel.builder().userRoles(userRolesString).build();
     }
 
+
+
+    public void updateUserStatusToActive(Long authId){
+        User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setStatus(EStatus.ACTIVE);
+        userRepository.save(user);
+    }
+
+    @RabbitListener(queues = "queueActivateUserFromAuth")
+    public void listenAndActivateUser(Long authId){
+        updateUserStatusToActive(authId);
+    }
+
+
 }
