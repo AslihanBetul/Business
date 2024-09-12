@@ -33,6 +33,7 @@ public class Order extends BaseEntity
     Integer quantity;
     BigDecimal unitPrice;
     BigDecimal total;
+    @Enumerated(EnumType.STRING)
     EOrderType orderType;
 
     @PrePersist

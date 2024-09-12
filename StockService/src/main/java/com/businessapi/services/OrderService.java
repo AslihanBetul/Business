@@ -1,10 +1,12 @@
 package com.businessapi.services;
 
-import com.businessapi.dto.request.OrderSaveRequestDTO;
+import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
+import com.businessapi.dto.request.SellOrderSaveRequestDTO;
 import com.businessapi.dto.request.OrderUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.entities.Product;
+import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
@@ -22,7 +24,7 @@ public class OrderService
     private final OrderRepository orderRepository;
     private final ProductService productService;
 
-    public Boolean save(OrderSaveRequestDTO dto)
+    public Boolean saveSellOrder(SellOrderSaveRequestDTO dto)
     {
         Product product = productService.findById(dto.productId());
         if (product.getStockCount() <= dto.quantity())
@@ -33,7 +35,7 @@ public class OrderService
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
         }
-
+        //TODO IT CAN BE MOVED TO SOMEWHERE LIKE APPROVEOFFER.
         product.setStockCount(product.getStockCount() - dto.quantity());
 
         Order order = Order
@@ -42,10 +44,37 @@ public class OrderService
                 .unitPrice(product.getPrice())
                 .quantity(dto.quantity())
                 .productId(dto.productId())
+                .orderType(EOrderType.SELL)
                 .build();
 
         orderRepository.save(order);
         return true;
+    }
+
+    public Boolean saveBuyOrder(BuyOrderSaveRequestDTO dto)
+    {
+        Product product = productService.findById(dto.productId());
+        if (product.getStatus() != EStatus.ACTIVE)
+        {
+            throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
+        }
+
+        Order order = Order
+                .builder()
+                .supplierId(dto.supplierId())
+                .unitPrice(product.getPrice())
+                .quantity(dto.quantity())
+                .productId(dto.productId())
+                .orderType(EOrderType.BUY)
+                .build();
+
+        orderRepository.save(order);
+        return true;
+    }
+
+    public void save(Order order)
+    {
+        orderRepository.save(order);
     }
 
     public Boolean delete(Long id)
@@ -75,4 +104,7 @@ public class OrderService
     {
         return orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
     }
+
+
+
 }

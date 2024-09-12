@@ -18,6 +18,7 @@ public class Product extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long supplierId;
     Long wareHouseId;
     Long productCategoryId;
     String name;
@@ -27,4 +28,7 @@ public class Product extends BaseEntity
     Integer minimumStockLevel;
     @Builder.Default
     Boolean isProductAutoOrdered= false;
+    //TODO CHANGE IT TO FALSE LATER
+    @Builder.Default
+    Boolean isAutoOrderEnabled = true;
 }

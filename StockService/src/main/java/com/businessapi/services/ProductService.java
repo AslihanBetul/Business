@@ -1,6 +1,6 @@
 package com.businessapi.services;
 
-import com.businessapi.dto.request.OrderSaveRequestDTO;
+import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.ProductSaveRequestDTO;
 import com.businessapi.dto.request.ProductUpdateRequestDTO;
@@ -26,11 +26,13 @@ public class ProductService
     private OrderService orderService;
 
     @Autowired
-    public void setServices(@Lazy OrderService orderService) {
+    public void setServices(@Lazy OrderService orderService)
+    {
         this.orderService = orderService;
     }
 
-    public Product findById(Long id){
+    public Product findById(Long id)
+    {
 
         return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }
@@ -42,6 +44,8 @@ public class ProductService
                 .builder()
                 .productCategoryId(dto.productCategoryId())
                 .name(dto.name())
+                .supplierId(dto.supplierId())
+                .wareHouseId(dto.wareHouseId())
                 .description(dto.description())
                 .price(dto.price())
                 .stockCount(dto.stockCount())
@@ -98,10 +102,14 @@ public class ProductService
     {
         List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
 
-        productList.forEach(product -> {
-            if (!product.getIsProductAutoOrdered())
+        productList.forEach(product ->
+        {
+            if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
             {
-                //TODO WILL CONSTRUCT NEW SYSTEM TO AUTO ORDER STOCK
+                //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
+                orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));
+                product.setIsProductAutoOrdered(true);
+                productRepository.save(product);
             }
         });
         return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));

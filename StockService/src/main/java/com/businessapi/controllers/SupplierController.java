@@ -80,4 +80,17 @@ public class SupplierController
                 .code(200)
                 .build());
     }
+
+
+    @PostMapping(APPROVE_ORDER)
+    @Operation(summary = "Approves buy orders")
+    public ResponseEntity<ResponseDTO<Boolean>> approveOrder(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(supplierService.approveOrder(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
 }
