@@ -1,6 +1,6 @@
-package com.bilgeadam.business.notificationservice.repository;
+package com.businessapi.repository;
 
-import com.bilgeadam.business.notificationservice.entity.Notification;
+import com.businessapi.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

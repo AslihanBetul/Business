@@ -1,8 +1,8 @@
-package com.bilgeadam.business.notificationservice.controller;
+package com.businessapi.controller;
 
-import com.bilgeadam.business.notificationservice.dto.request.NotificationRequestDto;
-import com.bilgeadam.business.notificationservice.entity.Notification;
-import com.bilgeadam.business.notificationservice.service.NotificationService;
+import com.businessapi.dto.request.NotificationRequestDto;
+import com.businessapi.entity.Notification;
+import com.businessapi.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

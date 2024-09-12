@@ -1,4 +1,4 @@
-package com.bilgeadam.business.notificationservice.config;
+package com.businessapi.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

@@ -1,4 +1,4 @@
-package com.bilgeadam.business.notificationservice.dto.request;
+package com.businessapi.dto.request;
 
 import lombok.Data;
 

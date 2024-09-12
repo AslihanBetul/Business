@@ -1,4 +1,4 @@
-package com.bilgeadam.business.notificationservice.entity;
+package com.businessapi.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

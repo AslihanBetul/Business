@@ -1,7 +1,7 @@
-package com.bilgeadam.business.notificationservice.service;
+package com.businessapi.service;
 
-import com.bilgeadam.business.notificationservice.entity.Notification;
-import com.bilgeadam.business.notificationservice.repository.NotificationRepository;
+import com.businessapi.entity.Notification;
+import com.businessapi.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
