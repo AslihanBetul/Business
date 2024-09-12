@@ -25,6 +25,7 @@ public class UserController {
     private final UserService userService;
 
 
+
     @PostMapping(EndPoints.SAVE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından kullanıcı oluşturma")
@@ -68,6 +69,12 @@ public class UserController {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("Role added to user").build());
     }
 
+
+    @GetMapping("/get-user-roles")
+    public ResponseEntity<ResponseDTO<List<String>>> getAllUsersRoles(@RequestHeader("Authorization") String token){
+        String jwtToken = token.replace("Bearer ", "");
+        return ResponseEntity.ok(ResponseDTO.<List<String>>builder().code(200).message("User roles sent").data(userService.getUserRoles(jwtToken)).build());
+    }
 
 
 
