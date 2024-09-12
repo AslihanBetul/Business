@@ -53,21 +53,21 @@ public class DemoDataGenerator
 
     private void productDemoData()
     {
-        productService.save(new ProductSaveRequestDTO(1L, "iPhone 13", "Smart Phone", BigDecimal.valueOf(50000), 100, 10));
-        productService.save(new ProductSaveRequestDTO(2L, "Samsung Galaxy S21", "Smart Phone", BigDecimal.valueOf(45000), 80, 15));
-        productService.save(new ProductSaveRequestDTO(3L, "Sony Bravia 55", "Television", BigDecimal.valueOf(70000), 50, 5));
-        productService.save(new ProductSaveRequestDTO(4L, "HP Pavilion Laptop", "Laptop", BigDecimal.valueOf(60000), 40, 8));
-        productService.save(new ProductSaveRequestDTO(5L, "Canon EOS 250D", "Camera", BigDecimal.valueOf(30000), 30, 12));
-        productService.save(new ProductSaveRequestDTO(6L, "PlayStation 5", "Gaming Console", BigDecimal.valueOf(75000), 20, 4));
-        productService.save(new ProductSaveRequestDTO(7L, "KitchenAid Mixer", "Home Appliance", BigDecimal.valueOf(20000), 60, 10));
-        productService.save(new ProductSaveRequestDTO(5L, "Nike Air Max", "Shoes", BigDecimal.valueOf(15000), 120, 20));
-        productService.save(new ProductSaveRequestDTO(10L, "Levi's 501 Jeans", "Clothing", BigDecimal.valueOf(5000), 200, 30));
-        productService.save(new ProductSaveRequestDTO(11L, "The Great Gatsby", "Book", BigDecimal.valueOf(300), 500, 50));
-        productService.save(new ProductSaveRequestDTO(12L, "Apple Watch Series 7", "Smart Watch", BigDecimal.valueOf(30000), 75, 7));
-        productService.save(new ProductSaveRequestDTO(2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 3));
-        productService.save(new ProductSaveRequestDTO(3L, "Bose QuietComfort 35", "Headphones", BigDecimal.valueOf(25000), 45, 6));
-        productService.save(new ProductSaveRequestDTO(4L, "Adidas Soccer Ball", "Sports Equipment", BigDecimal.valueOf(1200), 150, 25));
-        productService.save(new ProductSaveRequestDTO(5L, "Fitbit Charge 5", "Fitness Tracker", BigDecimal.valueOf(12000), 90, 10));
+        productService.save(new ProductSaveRequestDTO(1L,1L,1L, "iPhone 13", "Smart Phone", BigDecimal.valueOf(50000), 100, 10));
+        productService.save(new ProductSaveRequestDTO(2L,1L,2L, "Samsung Galaxy S21", "Smart Phone", BigDecimal.valueOf(45000), 80, 15));
+        productService.save(new ProductSaveRequestDTO(2L,5L,3L, "Sony Bravia 55", "Television", BigDecimal.valueOf(70000), 50, 100));
+        productService.save(new ProductSaveRequestDTO(4L,5L,4L, "HP Pavilion Laptop", "Laptop", BigDecimal.valueOf(60000), 40, 100));
+        productService.save(new ProductSaveRequestDTO(1L,4L,5L, "Canon EOS 250D", "Camera", BigDecimal.valueOf(30000), 30, 12));
+        productService.save(new ProductSaveRequestDTO(4L,1L,6L, "PlayStation 5", "Gaming Console", BigDecimal.valueOf(75000), 20, 4));
+        productService.save(new ProductSaveRequestDTO(1L,1L,7L, "KitchenAid Mixer", "Home Appliance", BigDecimal.valueOf(20000), 60, 10));
+        productService.save(new ProductSaveRequestDTO(1L,3L,5L, "Nike Air Max", "Shoes", BigDecimal.valueOf(15000), 120, 20));
+        productService.save(new ProductSaveRequestDTO(5L,1L,10L, "Levi's 501 Jeans", "Clothing", BigDecimal.valueOf(5000), 200, 30));
+        productService.save(new ProductSaveRequestDTO(1L,5L,11L, "The Great Gatsby", "Book", BigDecimal.valueOf(300), 500, 50));
+        productService.save(new ProductSaveRequestDTO(6L,1L,12L, "Apple Watch Series 7", "Smart Watch", BigDecimal.valueOf(30000), 75, 7));
+        productService.save(new ProductSaveRequestDTO(7L,3L,2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 100));
+        productService.save(new ProductSaveRequestDTO(2L,5L,3L, "Bose QuietComfort 35", "Headphones", BigDecimal.valueOf(25000), 45, 100));
+        productService.save(new ProductSaveRequestDTO(1L,1L,4L, "Adidas Soccer Ball", "Sports Equipment", BigDecimal.valueOf(1200), 150, 25));
+        productService.save(new ProductSaveRequestDTO(2L,3L,5L, "Fitbit Charge 5", "Fitness Tracker", BigDecimal.valueOf(12000), 90, 10));
 
     }
 
@@ -110,16 +110,16 @@ public class DemoDataGenerator
     private void orderDemoData()
     {
 
-        orderService.save(new OrderSaveRequestDTO(1L, 2L, 10));
-        orderService.save(new OrderSaveRequestDTO(2L, 5L, 15));
-        orderService.save(new OrderSaveRequestDTO(3L, 8L, 20));
-        orderService.save(new OrderSaveRequestDTO(4L, 10L, 5));
-        orderService.save(new OrderSaveRequestDTO(5L, 12L, 8));
-        orderService.save(new OrderSaveRequestDTO(6L, 1L, 30));
-        orderService.save(new OrderSaveRequestDTO(7L, 3L, 25));
-        orderService.save(new OrderSaveRequestDTO(8L, 7L, 12));
-        orderService.save(new OrderSaveRequestDTO(9L, 9L, 18));
-        orderService.save(new OrderSaveRequestDTO(10L, 14L, 22));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(1L, 2L, 10));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(2L, 5L, 15));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(3L, 8L, 20));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(4L, 10L, 5));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(5L, 12L, 8));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(6L, 1L, 30));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(7L, 3L, 25));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(8L, 7L, 12));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(9L, 9L, 18));
+        orderService.saveSellOrder(new SellOrderSaveRequestDTO(10L, 14L, 22));
 
 
 

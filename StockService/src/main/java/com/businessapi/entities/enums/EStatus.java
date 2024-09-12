@@ -1,5 +1,5 @@
 package com.businessapi.entities.enums;
 
 public enum EStatus
-{ACTIVE,DELETED,INACTIVE
+{ACTIVE,DELETED, APPROVED, INACTIVE
 }

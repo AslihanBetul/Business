@@ -29,4 +29,8 @@ public class Endpoints
     public static final String FIND_ALL = "/find-all";
 
     public static final String FIND_BY_ID = "/find-by-id";
+    public static final String FIND_ALL_BY_MINIMUM_STOCK_LEVEL = "/find-all-by-minimum-stock-level";
+    public static final String SAVE_BUY_ORDER = "/save-buy-order";
+    public static final String SAVE_SELL_ORDER = "/save-sell-order";
+    public static final String APPROVE_ORDER = "/approve-order";
 }

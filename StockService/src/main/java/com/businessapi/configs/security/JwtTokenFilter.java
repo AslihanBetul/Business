@@ -49,7 +49,6 @@ public class JwtTokenFilter extends OncePerRequestFilter
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-            System.out.println(modal2.getEmail());
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(modal2.getEmail(), null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
