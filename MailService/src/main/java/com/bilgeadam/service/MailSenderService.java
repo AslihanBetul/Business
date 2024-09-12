@@ -19,7 +19,7 @@ public class MailSenderService {
     @RabbitListener(queues = "queueSendVerificationEmail")
    public void sendMailVerifyAccount(EmailVerificationModel model) throws MessagingException {
      String Token= jwtTokenManager.createToken(model.getAuthId()).get();
-       String activationLink = "http://localhost:9090/dev/v1/auth/verify-account?token=" + Token;
+       String activationLink = "http://localhost:3000/dev/v1/auth/verify-account?token=" + Token;
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
