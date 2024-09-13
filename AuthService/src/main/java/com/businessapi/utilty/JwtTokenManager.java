@@ -57,7 +57,7 @@ public class JwtTokenManager {
                 throw new AuthServiceException(ErrorType.INVALID_TOKEN);
             }
 
-            Long id=decodedJWT.getClaim("id").asLong();
+            Long id=decodedJWT.getClaim("authId").asLong();
             return Optional.of(id);
 
         }catch (Exception e){
@@ -65,26 +65,39 @@ public class JwtTokenManager {
             throw new AuthServiceException(ErrorType.INVALID_TOKEN);
         }
     }
+    //  Şifre Sıfırlama İçin Email İle Token Oluşturma
+    public Optional<String> createPasswordResetToken(String email){
+        String token;
+        try {
+            token = JWT.create()
+                    .withClaim("email", email) // Email'i token içinde saklıyoruz
+                    .withIssuer(ISSUER)
+                    .withIssuedAt(new Date()) // Şu anki tarih
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE)) // Token geçerlilik süresi
+                    .sign(Algorithm.HMAC512(SECRETKEY)); // HMAC512 algoritması ile imzalama
+            return Optional.of(token);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+  //  Token'dan Email'i Almak (Şifre Sıfırlama İçin)
 
-//    public ERole getRoleFromToken(String token){
-//        try {
-//            Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
-//            JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
-//            DecodedJWT decodedJWT = verifier.verify(token);
-//
-//            if (decodedJWT == null) {
-//                System.out.println("token null mıı?????");
-//                throw new AuthServiceException(ErrorType.INVALID_TOKEN);
-//            }
-//
-//            String role = decodedJWT.getClaim("role").asString();
-//            return ERole.valueOf(role.toUpperCase());
-//        }catch (Exception e){
-//            System.out.println(e.getMessage());
-//            System.out.println("yoksa bura mıı????");
-//            throw new AuthServiceException(ErrorType.INVALID_TOKEN);
-//        }
-//    }
+    public Optional<String> getEmailFromToken(String token){
+        try {
+            Algorithm algorithm = Algorithm.HMAC512(SECRETKEY);
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(ISSUER).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+
+            if (decodedJWT == null) {
+                throw new AuthServiceException(ErrorType.INVALID_TOKEN);
+            }
+
+            String email = decodedJWT.getClaim("email").asString(); // Token'dan email bilgisi çıkarılıyor
+            return Optional.ofNullable(email);
+        } catch (Exception e) {
+            throw new AuthServiceException(ErrorType.INVALID_TOKEN);
+        }
+    }
 
 
 }
