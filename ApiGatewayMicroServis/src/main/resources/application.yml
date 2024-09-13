@@ -39,3 +39,12 @@ spring:
           uri: http://localhost:9099
           predicates:
             - Path=/dev/v1/ware-house/**
+        - id: userManagement
+          uri: http://localhost:9097
+          predicates:
+            - Path=/dev/v1/role/**
+        - id: userManagement
+          uri: http://localhost:9097
+          predicates:
+            - Path=/dev/v1/user/**
+
