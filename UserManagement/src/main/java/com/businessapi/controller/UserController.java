@@ -63,7 +63,7 @@ public class UserController {
 
     @PutMapping("/add-role-to-user")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
-    @Operation(summary = "Kullanıcıya admin tarafından rol ekleme")
+    @Operation(summary = "Admin tarafından tüm rollerin görüntülenmesi için gerekli istek")
     public ResponseEntity<ResponseDTO<Boolean>> addRoleToUser(@RequestBody AddRoleToUserRequestDTO addRoleToUserRequestDTO){
         userService.addRoleToUser(addRoleToUserRequestDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("Role added to user").build());

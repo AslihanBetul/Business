@@ -1,9 +1,6 @@
 package com.businessapi.service;
 
-import com.businessapi.RabbitMQ.Model.AuthMailUpdateFromUser;
-import com.businessapi.RabbitMQ.Model.CustomerSaveFromUserModel;
-import com.businessapi.RabbitMQ.Model.SaveUserFromAuthModel;
-import com.businessapi.RabbitMQ.Model.UserRoleListModel;
+import com.businessapi.RabbitMQ.Model.*;
 import com.businessapi.dto.requestDTOs.AddRoleToUserRequestDTO;
 import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
 import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
@@ -44,11 +41,16 @@ public class UserService {
         return userRepository.findByAuthId(authId).orElseThrow(()->new UserException(ErrorType.USER_NOT_FOUND));
     }
 
+    @Transactional
     public void saveUser(UserSaveRequestDTO userSaveRequestDTO) {
         User user = UserMapper.INSTANCE.userSaveRequestDTOToUser(userSaveRequestDTO);
         List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
         user.setRole(usersRoles);
         user.setStatus(EStatus.ACTIVE);
+
+        Long authId =(Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveAuthFromUser", SaveAuthFromUserModel.builder().email(userSaveRequestDTO.email()).password(userSaveRequestDTO.password()).build());
+        user.setAuthId(authId);
+
         userRepository.save(user);
     }
 
