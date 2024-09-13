@@ -15,6 +15,7 @@ import com.businessapi.utility.JwtTokenManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -94,13 +95,13 @@ public class CustomerService {
 
     }
 
+    @RabbitListener(queues = "queueFindNameAndLastNameById")
     public CustomerNameLastNameResponseModel findNameAndLastNameById(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
         CustomerNameLastNameResponseModel model = CustomerNameLastNameResponseModel.builder()
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
                 .build();
-        rabbitTemplate.convertAndSend("businessDirectExchange","keyResponseStock", model);
         return model;
     }
 }
