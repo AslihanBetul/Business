@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
@@ -21,12 +20,9 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<Notification> createNotification(@RequestBody NotificationRequestDto dto) {
-        Notification notification = new Notification();
-        notification.setUserId(dto.getUserId());
-        notification.setMessage(dto.getMessage());
+    public ResponseEntity<Void> createNotification(@RequestBody NotificationRequestDto dto) {
         notificationService.createNotification(dto.getUserId(), dto.getMessage());
-        return ResponseEntity.ok(notification);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{userId}")
@@ -47,3 +43,4 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 }
+

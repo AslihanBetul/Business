@@ -7,7 +7,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
 public class NotificationService {
 
@@ -25,6 +24,8 @@ public class NotificationService {
         notification.setUserId(userId);
         notification.setMessage(message);
         notificationRepository.save(notification);
+
+        // WebSocket ile kullanıcıya bildirimi gönder
         messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", notification);
     }
 
