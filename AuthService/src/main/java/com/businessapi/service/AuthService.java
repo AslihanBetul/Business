@@ -7,6 +7,7 @@ import com.businessapi.RabbitMQ.Model.EmailVerificationModel;
 import com.businessapi.RabbitMQ.Model.UserSaveFromAuthModel;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
+import com.businessapi.dto.request.ResetPasswordRequestDTO;
 import com.businessapi.entity.Auth;
 
 
@@ -215,6 +216,28 @@ public class AuthService {
         rabbitTemplate.convertAndSend( " businessDirectExchange","keyEmailFromCustomer",email);
        return email;
 
+    }
+
+    public Boolean forgetPassword(String email) {
+        Auth auth = authRepository.findOptionalByEmail(email)
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyForgetPassword",email );
+        return true;
+    }
+
+    public Boolean resetPassword(ResetPasswordRequestDTO dto) {
+        String email = jwtTokenManager.getEmailFromToken(dto.token()).orElseThrow(() -> new AuthServiceException(INVALID_TOKEN));
+        Auth auth = authRepository.findOptionalByEmail(email)
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        if (!dto.newPassword().equals(dto.rePassword())) {
+            throw new AuthServiceException(PASSWORD_MISMATCH);
+        }
+
+        String encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(dto.newPassword());
+        auth.setPassword(encodedPassword);
+        authRepository.save(auth);
+        return true;
     }
 
 
