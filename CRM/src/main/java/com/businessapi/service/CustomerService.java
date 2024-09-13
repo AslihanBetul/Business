@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
 import com.businessapi.dto.response.CustomerResponseDTO;
@@ -29,6 +30,7 @@ public class CustomerService {
 
     @Lazy
     private final UserService userService;
+    private final RabbitTemplate rabbitTemplate;
 
     // a record from the queue will come here //TEST
     public Boolean save(CustomerSaveDTO customerSaveDTO) {
@@ -90,5 +92,15 @@ public class CustomerService {
     private Long getAuthIdFromToken(String token) {
         return jwtTokenManager.getIdFromToken(token).orElseThrow(()-> new CustomerServiceException(ErrorType.INVALID_TOKEN));
 
+    }
+
+    public CustomerNameLastNameResponseModel findNameAndLastNameById(Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        CustomerNameLastNameResponseModel model = CustomerNameLastNameResponseModel.builder()
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .build();
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyResponseStock", model);
+        return model;
     }
 }

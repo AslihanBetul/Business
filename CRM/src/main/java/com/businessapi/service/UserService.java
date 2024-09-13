@@ -8,7 +8,7 @@ import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;
 
 
-import com.businessapi.rabbitMQ.Model.CustomerSaveFromUserModel;
+import com.businessapi.RabbitMQ.Model.CustomerSaveFromUserModel;
 import com.businessapi.repository.UserRepository;
 import com.businessapi.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
