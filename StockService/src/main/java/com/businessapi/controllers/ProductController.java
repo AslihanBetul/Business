@@ -92,4 +92,17 @@ public class ProductController
                 .code(200)
                 .build());
     }
+
+    @PostMapping(CHANGE_AUTO_ORDER_MODE+"/{id}")
+    @Operation(summary = "Changes auto order mode for product")
+    public ResponseEntity<ResponseDTO<Boolean>>changeAutoOrderMode(@PathVariable Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(productService.changeAutoOrderMode(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }
