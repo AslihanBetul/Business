@@ -95,12 +95,12 @@ public class ProductService
 
     public List<Product> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseOrderByName(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
     {
-        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
 
         productList.forEach(product ->
         {
@@ -112,6 +112,15 @@ public class ProductService
                 productRepository.save(product);
             }
         });
-        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+    }
+
+    public Boolean changeAutoOrderMode(Long id)
+    {
+
+        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
+        product.setIsAutoOrderEnabled(!product.getIsAutoOrderEnabled());
+        productRepository.save(product);
+        return true;
     }
 }
