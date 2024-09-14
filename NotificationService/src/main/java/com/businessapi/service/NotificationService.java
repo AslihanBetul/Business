@@ -23,6 +23,8 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setMessage(message);
+        notification.setRead(false); // Varsayılan olarak okunmamış
+        notification.setDeleted(false); // Varsayılan olarak silinmemiş
         notificationRepository.save(notification);
 
         // WebSocket ile kullanıcıya bildirimi gönder
@@ -33,14 +35,20 @@ public class NotificationService {
         return notificationRepository.findByUserIdAndIsDeletedFalse(userId);
     }
 
+    public List<Notification> getAllNotifications() {
+        return notificationRepository.findAll();
+    }
+
     public void markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
     }
 
     public void deleteNotification(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setDeleted(true);
         notificationRepository.save(notification);
     }

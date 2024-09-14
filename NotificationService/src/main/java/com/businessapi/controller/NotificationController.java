@@ -1,15 +1,18 @@
 package com.businessapi.controller;
+import static com.businessapi.constants.EndPoints.*;
 
 import com.businessapi.dto.request.NotificationRequestDto;
 import com.businessapi.entity.Notification;
 import com.businessapi.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping(NOTIFICATIONS)
+@CrossOrigin(origins = "*")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -31,13 +34,19 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    @PatchMapping("/{notificationId}/read")
+    @GetMapping(GET_ALL_NOTIFICATIONS)
+    public ResponseEntity<List<Notification>> getAllNotifications() {
+        List<Notification> notifications = notificationService.getAllNotifications();
+        return ResponseEntity.ok(notifications);
+    }
+
+    @PatchMapping(READ)
     public ResponseEntity<Void> markAsRead(@PathVariable Long notificationId) {
         notificationService.markAsRead(notificationId);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{notificationId}/delete")
+    @PatchMapping(DELETE)
     public ResponseEntity<Void> deleteNotification(@PathVariable Long notificationId) {
         notificationService.deleteNotification(notificationId);
         return ResponseEntity.noContent().build();
