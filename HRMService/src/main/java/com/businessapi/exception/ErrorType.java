@@ -22,6 +22,7 @@ public enum ErrorType {
     FOLLOW_DATA_NOT_FOUND(999,"Follow datası bulunamadı", HttpStatus.NOT_FOUND),
 
     INVALID_TOKEN(6001,"Token Geçersiz", HttpStatus.BAD_REQUEST),
+    NOT_FOUNDED_ATTENDANCE(6005,"Attendance bulunamadı" ,  HttpStatus.BAD_REQUEST),
 
 
     NOT_FOUNDED_EMPLOYEE(6000,"EMployee bulunamadı",HttpStatus.BAD_REQUEST);

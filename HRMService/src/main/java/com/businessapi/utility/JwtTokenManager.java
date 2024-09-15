@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import com.businessapi.exception.EmployeeException;
+import com.businessapi.exception.HRMException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.utility.enums.ERole;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class JwtTokenManager {
             if (authId != null) {
                 return true;
             } else {
-                throw new EmployeeException(ErrorType.INVALID_TOKEN);
+                throw new HRMException(ErrorType.INVALID_TOKEN);
             }
         } catch (Exception e) {
             return false ;
@@ -60,7 +60,7 @@ public class JwtTokenManager {
             DecodedJWT decodedJWT = verifier.verify(token);
 
             if (decodedJWT == null) {
-                throw new EmployeeException(ErrorType.INVALID_TOKEN);
+                throw new HRMException(ErrorType.INVALID_TOKEN);
             }
 
             Long id = decodedJWT.getClaim("id").asLong();
@@ -68,7 +68,7 @@ public class JwtTokenManager {
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new EmployeeException(ErrorType.INVALID_TOKEN);
+            throw new HRMException(ErrorType.INVALID_TOKEN);
         }
     }
 
@@ -80,7 +80,7 @@ public class JwtTokenManager {
 
             if (decodedJWT == null) {
                 System.out.println("Could the token be empty?????");
-                throw new EmployeeException(ErrorType.INVALID_TOKEN);
+                throw new HRMException(ErrorType.INVALID_TOKEN);
             }
 
             String role = decodedJWT.getClaim("role").asString();
@@ -88,7 +88,7 @@ public class JwtTokenManager {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("yoksa bura mıı????");
-            throw new EmployeeException(ErrorType.INVALID_TOKEN);
+            throw new HRMException(ErrorType.INVALID_TOKEN);
         }
     }
 
