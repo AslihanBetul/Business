@@ -4,9 +4,9 @@ import lombok.Getter;
 
 
 @Getter
-public class EmployeeException extends RuntimeException{
+public class HRMException extends RuntimeException{
      private ErrorType errorType;
-    public EmployeeException(ErrorType errorType){
+    public HRMException(ErrorType errorType){
         super(errorType.getMessage());
         this.errorType = errorType;
     }
