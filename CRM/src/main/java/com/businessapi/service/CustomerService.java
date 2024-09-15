@@ -1,6 +1,9 @@
 package com.businessapi.service;
 
 import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
+import com.businessapi.RabbitMQ.Model.CustomerResponseWithIdModel;
+import com.businessapi.RabbitMQ.Model.CustomerReturnId;
+import com.businessapi.RabbitMQ.Model.EmailResponseModel;
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
 import com.businessapi.dto.response.CustomerResponseDTO;
@@ -42,6 +45,14 @@ public class CustomerService {
         return true;
     }
 
+    // creates a customer ID by email for a registered customer from the user
+    @RabbitListener(queues = "queueSaveCustomerByEmail")
+    public CustomerReturnId saveEmail(EmailResponseModel model) {
+        Customer customer = customerRepository.save(Customer.builder().email(model.getEmail()).build());
+        return CustomerReturnId.builder().customerId(customer.getId()).build();
+
+    }
+
 
 
 
@@ -55,6 +66,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
         return CustomerMapper.INSTANCE.customerToCustomerResponseDTO(customer);
     }
+
 
 
 
@@ -95,13 +107,31 @@ public class CustomerService {
 
     }
 
+    // for stockservice
     @RabbitListener(queues = "queueFindNameAndLastNameById")
     public CustomerNameLastNameResponseModel findNameAndLastNameById(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
-        CustomerNameLastNameResponseModel model = CustomerNameLastNameResponseModel.builder()
+        return CustomerNameLastNameResponseModel.builder()
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
                 .build();
-        return model;
+
+    }
+
+    // for stockservice
+    @RabbitListener(queues = "queueFindCustomerByFirstName")
+    public CustomerResponseWithIdModel findCustomerByName(String name) {
+        Customer customer = customerRepository.findByFirstNameContainingIgnoreCase(name).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        return CustomerResponseWithIdModel.builder()
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .customerId(customer.getId())
+                .build();
+    }
+
+
+    public CustomerResponseDTO findByfirstName(String firstName) {
+        Customer customer = customerRepository.findByFirstNameContainingIgnoreCase(firstName).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        return CustomerMapper.INSTANCE.customerToCustomerResponseDTO(customer);
     }
 }

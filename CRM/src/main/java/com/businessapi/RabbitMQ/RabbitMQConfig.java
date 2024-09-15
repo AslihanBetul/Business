@@ -64,6 +64,14 @@ public class RabbitMQConfig {
     public Queue queueResponseStock() {
         return new Queue(queueResponseStock);
     }
+    @Bean
+    public Queue queueSaveCustomerByEmail() {
+        return new Queue("queueSaveCustomerByEmail");
+    }
+    @Bean
+    public Queue queueFindCustomerByFirstName() {
+        return new Queue("queueFindCustomerByFirstName");
+    }
 
 
 
@@ -86,6 +94,14 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingResponseStock(Queue queueResponseStock, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueResponseStock).to(businessDirectExchange).with(keyResponseStock);
+    }
+    @Bean
+    public Binding bindingSaveCustomerByEmail(Queue queueSaveCustomerByEmail, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSaveCustomerByEmail).to(businessDirectExchange).with("keySaveCustomerByEmail");
+    }
+    @Bean
+    public Binding bindingFindCustomerByFirstName(Queue queueFindCustomerByFirstName, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueFindCustomerByFirstName).to(businessDirectExchange).with("keyFindCustomerByFirstName");
     }
 
     @Bean
