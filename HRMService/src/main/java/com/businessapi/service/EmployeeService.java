@@ -5,7 +5,7 @@ import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.entity.Employee;
-import com.businessapi.exception.EmployeeException;
+import com.businessapi.exception.HRMException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.EmployeeRepository;
 import com.businessapi.utility.enums.EStatus;
@@ -37,7 +37,7 @@ public class EmployeeService {
     }
 
     public Boolean update(EmployeeUpdateRequestDTO dto) {
-        Employee employee = employeeRepository.findById(dto.id()).orElseThrow(() -> new EmployeeException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+            Employee employee = employeeRepository.findById(dto.id()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
         employee.setFirstName(dto.firstName()!=null?dto.firstName(): employee.getFirstName());
         employee.setLastName(dto.lastName()!=null?dto.lastName(): employee.getLastName());
         employee.setPhone(dto.phone()!=null?dto.phone():employee.getPhone());
@@ -52,7 +52,7 @@ public class EmployeeService {
     }
 
     public EmployeeResponseDTO findById(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmployeeException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
         return EmployeeResponseDTO.builder()
                .firstName(employee.getFirstName())
                .lastName(employee.getLastName())
@@ -86,7 +86,7 @@ public class EmployeeService {
     }
 
     public Boolean delete(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmployeeException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
         employee.setStatus(EStatus.PASSIVE);
         employeeRepository.save(employee);
         return true;
