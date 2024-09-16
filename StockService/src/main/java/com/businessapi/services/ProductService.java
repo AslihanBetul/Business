@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.ProductSaveRequestDTO;
 import com.businessapi.dto.request.ProductUpdateRequestDTO;
@@ -9,6 +10,8 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +23,16 @@ public class ProductService
 {
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
+    private OrderService orderService;
 
-    public Product findById(Long id){
+    @Autowired
+    public void setServices(@Lazy OrderService orderService)
+    {
+        this.orderService = orderService;
+    }
+
+    public Product findById(Long id)
+    {
 
         return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }
@@ -33,6 +44,8 @@ public class ProductService
                 .builder()
                 .productCategoryId(dto.productCategoryId())
                 .name(dto.name())
+                .supplierId(dto.supplierId())
+                .wareHouseId(dto.wareHouseId())
                 .description(dto.description())
                 .price(dto.price())
                 .stockCount(dto.stockCount())
@@ -82,6 +95,23 @@ public class ProductService
 
     public List<Product> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContaining(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+    }
+
+    public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
+    {
+        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+
+        productList.forEach(product ->
+        {
+            if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
+            {
+                //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
+                orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));
+                product.setIsProductAutoOrdered(true);
+                productRepository.save(product);
+            }
+        });
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 }

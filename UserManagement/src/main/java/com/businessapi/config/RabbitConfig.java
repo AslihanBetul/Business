@@ -44,6 +44,11 @@ public class RabbitConfig {
     private final String keyDeleteAuth = "keyDeleteAuth";
 
 
+    //Auth hesabı mail ile activate edilen kullanıcının user'ının da activate edilmesi
+    private final String queueActivateUserFromAuth = "queueActivateUserFromAuth";
+    private final String keyActivateUserFromAuth = "keyActivateUserFromAuth";
+
+
 
     @Bean
     public DirectExchange businessDirectExchange() {
@@ -84,6 +89,11 @@ public class RabbitConfig {
         return new Queue(queueDeleteAuth);
     }
 
+    @Bean
+    public Queue queueActivateUserFromAuth() {
+        return new Queue(queueActivateUserFromAuth);
+    }
+
 
 
     @Bean
@@ -116,6 +126,10 @@ public class RabbitConfig {
         return BindingBuilder.bind(queueDeleteAuth).to(businessDirectExchange).with(keyDeleteAuth);
     }
 
+    @Bean
+    public Binding bindingActivateUserFromAuth (Queue queueActivateUserFromAuth, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueActivateUserFromAuth).to(businessDirectExchange).with(keyActivateUserFromAuth);
+    }
 
 
 

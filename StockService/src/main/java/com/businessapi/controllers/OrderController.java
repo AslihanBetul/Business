@@ -9,7 +9,6 @@ import com.businessapi.services.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +21,25 @@ public class OrderController
 {
     private final OrderService orderService;
 
-    @PostMapping(SAVE)
-    @Operation(summary = "Creates new Order")
-    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody OrderSaveRequestDTO dto){
+    @PostMapping(SAVE_SELL_ORDER)
+    @Operation(summary = "Creates new sell Order")
+    public ResponseEntity<ResponseDTO<Boolean>> saveSellOrder(@RequestBody SellOrderSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(orderService.save(dto))
+                .data(orderService.saveSellOrder(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(SAVE_BUY_ORDER)
+    @Operation(summary = "Creates new buy Order")
+    public ResponseEntity<ResponseDTO<Boolean>> saveBuyOrder(@RequestBody BuyOrderSaveRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(orderService.saveBuyOrder(dto))
                 .message("Success")
                 .code(200)
                 .build());
