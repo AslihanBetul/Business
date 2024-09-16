@@ -61,4 +61,9 @@ public class NotificationService {
         }
         notificationRepository.saveAll(notifications);
     }
+
+    // Okunmamış bildirimlerin sayısını döndüren metot
+    public long getUnreadNotificationCount() {
+        return notificationRepository.countByisReadFalse(); // "read" alanı false olan bildirimlerin sayısını döndürür
+    }
 }

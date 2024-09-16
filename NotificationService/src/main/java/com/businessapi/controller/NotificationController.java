@@ -58,6 +58,14 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    // Okunmamış bildirimlerin sayısını döndüren endpoint
+    @GetMapping("/unread/count")
+    public long getUnreadNotificationCount() {
+        return notificationService.getUnreadNotificationCount();
+    }
+
+
+
 
 }
 
