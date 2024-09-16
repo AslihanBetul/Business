@@ -7,9 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -23,7 +22,7 @@ public class Expense extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     //Long categoryId; (category id might be needed)
-    LocalDateTime expenseDate;
+    LocalDate expenseDate;
     BigDecimal amount;
     String description;
 }

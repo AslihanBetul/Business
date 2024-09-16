@@ -4,9 +4,8 @@ import com.businessapi.entity.enums.EInvoiceStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -20,7 +19,7 @@ public class Invoice extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long customerIdOrSupplierId;
-    LocalDateTime invoiceDate;
+    LocalDate invoiceDate;
     BigDecimal totalAmount;
     BigDecimal paidAmount;
     @Enumerated(EnumType.STRING)

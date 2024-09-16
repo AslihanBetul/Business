@@ -1,11 +1,11 @@
 package com.businessapi.dto.request;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record ExpenseUpdateRequestDTO(
         Long id,
-        LocalDateTime expenseDate,
+        LocalDate expenseDate,
         BigDecimal amount,
         String description
 ) {

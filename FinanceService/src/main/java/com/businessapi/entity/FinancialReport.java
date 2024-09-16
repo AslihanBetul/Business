@@ -8,9 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -25,8 +24,8 @@ public class FinancialReport extends BaseEntity{
     Long id;
     @Enumerated(EnumType.STRING)
     EFinancialReportType financialReportType;
-    LocalDateTime startDate;
-    LocalDateTime endDate;
+    LocalDate startDate;
+    LocalDate endDate;
     BigDecimal totalIncome;
     BigDecimal totalOutcome;
     BigDecimal totalProfit;
