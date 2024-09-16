@@ -5,6 +5,7 @@ import static com.businessapi.constants.Endpoints.*;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.dto.response.SellOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.services.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,12 +73,24 @@ public class OrderController
     }
 
     @PostMapping(FIND_ALL_BUY_ORDERS)
-    @Operation(summary = "Finds all orders with respect to pagination")
+    @Operation(summary = "Finds all buy orders with respect to pagination")
     public ResponseEntity<ResponseDTO<List<BuyOrderResponseDTO>>> findAllBuyOrders(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<BuyOrderResponseDTO>>builder()
                 .data(orderService.findAllBuyOrders(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_ALL_SELL_ORDERS)
+    @Operation(summary = "Finds all sell orders with respect to pagination")
+    public ResponseEntity<ResponseDTO<List<SellOrderResponseDTO>>> findAllSellOrders(@RequestBody PageRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<List<SellOrderResponseDTO>>builder()
+                .data(orderService.findAllSellOrders(dto))
                 .message("Success")
                 .code(200)
                 .build());
