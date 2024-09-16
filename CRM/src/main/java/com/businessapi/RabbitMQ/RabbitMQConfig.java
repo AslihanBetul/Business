@@ -1,4 +1,4 @@
-package com.businessapi.rabbitMQ;
+package com.businessapi.RabbitMQ;
 
 
 import org.springframework.amqp.core.Binding;
@@ -33,6 +33,10 @@ public class RabbitMQConfig {
     private final String queueEmailFromAuth = "queueEmailFromAuth";
     private final String keyEmailFromAuth = "keyEmailFromAuth";
 
+    // stock service'e giden kuyruk
+    private final String queueResponseStock = "queueRequestStock";
+    private final String keyResponseStock = "keyRequestStock";
+
 
     @Bean
     public DirectExchange businessDirectExchange() {
@@ -56,6 +60,18 @@ public class RabbitMQConfig {
     public Queue queueEmailFromAuth() {
         return new Queue(queueEmailFromAuth);
     }
+    @Bean
+    public Queue queueResponseStock() {
+        return new Queue(queueResponseStock);
+    }
+    @Bean
+    public Queue queueSaveCustomerByEmail() {
+        return new Queue("queueSaveCustomerByEmail");
+    }
+    @Bean
+    public Queue queueFindCustomerByFirstName() {
+        return new Queue("queueFindCustomerByFirstName");
+    }
 
 
 
@@ -74,6 +90,18 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingEmailFromAuth(Queue queueEmailFromAuth, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueEmailFromAuth).to(businessDirectExchange).with(keyEmailFromAuth);
+    }
+    @Bean
+    public Binding bindingResponseStock(Queue queueResponseStock, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueResponseStock).to(businessDirectExchange).with(keyResponseStock);
+    }
+    @Bean
+    public Binding bindingSaveCustomerByEmail(Queue queueSaveCustomerByEmail, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSaveCustomerByEmail).to(businessDirectExchange).with("keySaveCustomerByEmail");
+    }
+    @Bean
+    public Binding bindingFindCustomerByFirstName(Queue queueFindCustomerByFirstName, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueFindCustomerByFirstName).to(businessDirectExchange).with("keyFindCustomerByFirstName");
     }
 
     @Bean
