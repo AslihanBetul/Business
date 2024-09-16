@@ -35,4 +35,5 @@ public class Endpoints
     public static final String APPROVE_ORDER = "/approve-order";
     public static final String CHANGE_AUTO_ORDER_MODE = "/change-auto-order-mode";
     public static final String FIND_ALL_BUY_ORDERS = "/find-all-buy-orders";
+    public static final String FIND_ALL_SELL_ORDERS = "/find-all-sell-orders";
 }

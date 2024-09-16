@@ -110,12 +110,11 @@ public class CustomerService {
     // for stockservice
     @RabbitListener(queues = "queueFindNameAndLastNameById")
     public CustomerNameLastNameResponseModel findNameAndLastNameById(Long id) {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        Customer customer = customerRepository.findById(id).orElse(null);
         return CustomerNameLastNameResponseModel.builder()
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
+                .firstName(customer != null ? customer.getFirstName() : null)
+                .lastName(customer != null ? customer.getLastName() : null)
                 .build();
-
     }
 
     // for stockservice
