@@ -9,8 +9,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: user
-    password: 1234
+    username: java14user
+    password: root
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/StockDB
