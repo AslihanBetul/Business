@@ -4,6 +4,7 @@ import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.StockMovementSaveDTO;
 import com.businessapi.dto.request.StockMovementUpdateRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.dto.response.StockMovementResponseDTO;
 import com.businessapi.entities.StockMovement;
 import com.businessapi.services.StockMovementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,10 +62,10 @@ public class StockMovementController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Stock Movements with respect to pagination")
-    public ResponseEntity<ResponseDTO<List<StockMovement>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<StockMovementResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<StockMovement>>builder()
+                .<List<StockMovementResponseDTO>>builder()
                 .data(stockMovementService.findAll(dto))
                 .message("Success")
                 .code(200)

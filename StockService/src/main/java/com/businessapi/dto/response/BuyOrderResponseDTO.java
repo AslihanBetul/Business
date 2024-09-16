@@ -11,6 +11,7 @@ public record BuyOrderResponseDTO(
     String supplierName,
     String productName,
     BigDecimal unitPrice,
+    Integer quantity,
     BigDecimal total,
     EOrderType orderType,
     LocalDateTime createdAt,
