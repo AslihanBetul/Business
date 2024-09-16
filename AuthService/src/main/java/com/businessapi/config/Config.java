@@ -1,4 +1,4 @@
-package com.businessapi.RabbitMQ;
+package com.businessapi.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -30,6 +30,9 @@ public class Config {
     private final String queueActivateUserFromAuth = "queueActivateUserFromAuth";
     private final String keyActivateUserFromAuth = "keyActivateUserFromAuth";
 
+    private final String queueForgetPassword = "queueForgetPassword";
+    private final String keyForgetPassword = "keyForgetPassword";
+
 
 
     @Bean
@@ -60,6 +63,11 @@ public class Config {
     @Bean
     public Queue queueActivateUserFromAuth() {
         return new Queue(queueActivateUserFromAuth);
+    }
+
+    @Bean
+    public Queue queueForgetPassword() {
+        return new Queue(queueForgetPassword);
     }
 
 
@@ -96,6 +104,11 @@ public class Config {
     @Bean
     public Binding bindingEmailFromCustomer (Queue queueEmailFromCustomer, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueEmailFromCustomer).to(businessDirectExchange).with(keyEmailFromCustomer);
+    }
+
+    @Bean
+    public Binding bindingForgetPassword (Queue queueForgetPassword, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueForgetPassword).to(businessDirectExchange).with(keyForgetPassword);
     }
 
     @Bean

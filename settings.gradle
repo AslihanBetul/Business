@@ -7,4 +7,5 @@ include 'MailService'
 include 'UserManagement'
 include 'AnalyticsService'
 include 'ApiGatewayMicroServis'
+include 'HRMService'
 
