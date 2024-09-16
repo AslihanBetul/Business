@@ -18,6 +18,7 @@ public class DataSource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String serviceType;  //CRM, HR, Finance, etc.
+    private String endpointType;  //product, order, stock-movement, expense, etc.
 
     @Column(length = 4000)
     private String data;  //JSON data

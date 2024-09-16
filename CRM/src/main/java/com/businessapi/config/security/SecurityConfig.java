@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("dev/v1/customer/**").permitAll()
+                        .requestMatchers("dev/v1/user/**").permitAll()
 
                         .anyRequest().authenticated())
 //                .addFilterBefore(jwtTokenFilter,

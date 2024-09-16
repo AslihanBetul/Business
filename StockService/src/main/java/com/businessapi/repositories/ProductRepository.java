@@ -16,5 +16,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>
     List<Product> findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(
             EStatus status, String name, PageRequest of);
 
+    @Query("SELECT p FROM Product p WHERE p.stockCount < p.minimumStockLevel AND p.status = :status")
+    List<Product> findAllByMinimumStockLevelAndStatus(
+            EStatus status);
+
+
+    List<Product> findAllByNameContainingIgnoreCase(String name);
+
 
 }

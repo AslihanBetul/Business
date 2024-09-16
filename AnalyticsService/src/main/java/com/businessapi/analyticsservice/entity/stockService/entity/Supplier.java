@@ -1,5 +1,6 @@
 package com.businessapi.analyticsservice.entity.stockService.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Supplier {
     private Long id;
     private String name;

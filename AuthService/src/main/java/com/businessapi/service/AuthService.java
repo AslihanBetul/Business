@@ -4,6 +4,7 @@ package com.businessapi.service;
 
 import com.businessapi.RabbitMQ.Model.EmailAndPasswordModel;
 import com.businessapi.RabbitMQ.Model.EmailVerificationModel;
+import com.businessapi.RabbitMQ.Model.SaveAuthFromUserModel;
 import com.businessapi.RabbitMQ.Model.UserSaveFromAuthModel;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
@@ -239,6 +240,20 @@ public class AuthService {
         authRepository.save(auth);
         return true;
     }
+
+    @RabbitListener(queues = "queueSaveAuthFromUser")
+    public Long saveAuthFromUser(SaveAuthFromUserModel model){
+        checkEmailExist(model.getEmail());
+        Auth auth = Auth.builder()
+                .email(model.getEmail())
+                .password(passwordEncoder.bCryptPasswordEncoder().encode(model.getPassword()))
+                .build();
+        authRepository.save(auth);
+        return auth.getId();
+    }
+
+
+
 
 
 }

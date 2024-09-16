@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.businessapi.utility.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,8 @@ public class Performance {
     private String period;
     private Integer score;
     private String feedback;
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
 
 }
