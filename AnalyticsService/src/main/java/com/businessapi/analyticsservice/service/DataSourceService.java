@@ -40,29 +40,38 @@ public class DataSourceService {
             throw new IllegalArgumentException("Invalid service or endpoint type: " + serviceType + ", " + endpointType);
         }
 
-        // Request body
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("searchText", "");
-        requestBody.put("page", 0);
-        requestBody.put("size", 100);
+        String jsonData;
 
-        // Header
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            String jsonData = response.getBody();
-
-            dataSourceRepository.deleteByEndpointType(endpointType);
-
-            saveDataSource(endpointType, serviceType, jsonData);
+        // Used for GET request
+        if (serviceType.equalsIgnoreCase("hrm")) {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                jsonData = response.getBody();
+            } else {
+                throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
+            }
         } else {
-            throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
+            // For Stock and Finance, used POST request with request body
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("searchText", "");
+            requestBody.put("page", 0);
+            requestBody.put("size", 100);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                jsonData = response.getBody();
+            } else {
+                throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
+            }
         }
+        System.out.println(jsonData);
+        dataSourceRepository.deleteByEndpointType(endpointType); // delete old data
+        saveDataSource(endpointType, serviceType, jsonData);
     }
 
     private String getUrlByServiceTypeAndEndpoint(String serviceType, String endpointType) {
@@ -71,6 +80,8 @@ public class DataSourceService {
                 return getStockServiceUrl(endpointType);
             case "finance":
                 return getFinanceServiceUrl(endpointType);
+            case "hrm":
+                return getHrmServiceUrl(endpointType);
             default:
                 return null;
         }
@@ -110,6 +121,23 @@ public class DataSourceService {
         }
     }
 
+    private String getHrmServiceUrl(String endpointType) {
+        // New HRMService URLs
+        switch (endpointType.toLowerCase()) {
+            case "performance":
+                return "http://localhost:9096/dev/v1/performance/find-all";
+            case "payroll":
+                return "http://localhost:9096/dev/v1/payroll/find-all";
+            case "employee":
+                return "http://localhost:9096/dev/v1/employee/find-all";
+            case "benefit":
+                return "http://localhost:9096/dev/v1/benefit/find-all";
+            case "attendance":
+                return "http://localhost:9096/dev/v1/attendance/find-all";
+            default:
+                return null;
+        }
+    }
 
     private void saveDataSource(String endpointType, String serviceType ,String data) {
         DataSource dataSource = DataSource.builder()
@@ -117,7 +145,7 @@ public class DataSourceService {
                 .serviceType(serviceType)
                 .data(data)
                 .build();
-
+        System.out.println(data);
         dataSourceRepository.save(dataSource);
     }
 

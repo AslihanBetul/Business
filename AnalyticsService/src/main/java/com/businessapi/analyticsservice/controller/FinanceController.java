@@ -1,5 +1,6 @@
 package com.businessapi.analyticsservice.controller;
 
+import com.businessapi.analyticsservice.dto.response.ResponseDTO;
 import com.businessapi.analyticsservice.entity.financeService.entity.Expense;
 import com.businessapi.analyticsservice.entity.financeService.entity.FinancialReport;
 import com.businessapi.analyticsservice.entity.financeService.entity.Invoice;
@@ -8,6 +9,7 @@ import com.businessapi.analyticsservice.entity.financeService.enums.EFinancialRe
 import com.businessapi.analyticsservice.entity.financeService.enums.EInvoiceStatus;
 import com.businessapi.analyticsservice.entity.financeService.enums.ETaxType;
 import com.businessapi.analyticsservice.service.FinanceService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/finances")
+@RequestMapping("/dev/v1/finances")
 public class FinanceController {
 
     private final FinanceService financeService;
@@ -28,31 +30,37 @@ public class FinanceController {
         this.financeService = financeService;
     }
 
-    /*
-     * Invoice
-     */
     @GetMapping("/status-count")
-    public ResponseEntity<Map<EInvoiceStatus, Long>> getInvoiceStatusCount() throws Exception {
+    @Operation(summary = "Get invoice status count")
+    public ResponseEntity<ResponseDTO<Map<EInvoiceStatus, Long>>> getInvoiceStatusCount() throws Exception {
         String jsonInvoice = financeService.getDataFromDataSource("invoice");
-        List<Invoice> invoice= financeService.parseInvoice(jsonInvoice);
+        List<Invoice> invoice = financeService.parseInvoice(jsonInvoice);
         Map<EInvoiceStatus, Long> statusCount = financeService.getInvoiceStatusCount(invoice);
-        return ResponseEntity.ok(statusCount);
+        return ResponseEntity.ok(
+                ResponseDTO.<Map<EInvoiceStatus, Long>>builder()
+                        .data(statusCount)
+                        .message("Invoice status count fetched successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
-    /*
-     * Tax
-     */
     @GetMapping("/tax-filter")
-    public ResponseEntity<List<Tax>> getTaxByType(@RequestParam(required = false) ETaxType taxType) throws Exception {
+    @Operation(summary = "Get tax by type")
+    public ResponseEntity<ResponseDTO<List<Tax>>> getTaxByType(@RequestParam(required = false) ETaxType taxType) throws Exception {
         List<Tax> filteredTaxes = financeService.getTaxesByType(taxType);
-        return ResponseEntity.ok(filteredTaxes);
+        return ResponseEntity.ok(
+                ResponseDTO.<List<Tax>>builder()
+                        .data(filteredTaxes)
+                        .message("Taxes filtered successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
-    /*
-     * Financial Report
-     */
     @GetMapping("/financial-report")
-    public ResponseEntity<List<FinancialReport>> getFinancialReports(
+    @Operation(summary = "Get financial report")
+    public ResponseEntity<ResponseDTO<List<FinancialReport>>> getFinancialReports(
             @RequestParam(required = false) EFinancialReportType financialReportType,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
@@ -65,21 +73,30 @@ public class FinanceController {
 
         List<FinancialReport> filteredReports = financeService.getFinancialReports(
                 financialReportType, startDate, endDate, minIncome, maxIncome, minOutcome, maxOutcome, minProfit, maxProfit);
-        return ResponseEntity.ok(filteredReports);
+        return ResponseEntity.ok(
+                ResponseDTO.<List<FinancialReport>>builder()
+                        .data(filteredReports)
+                        .message("Financial reports fetched successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
-    /*
-     * Expense
-     */
     @GetMapping("/expense")
-    public ResponseEntity<List<Expense>> getExpenses(
+    @Operation(summary = "Get expenses")
+    public ResponseEntity<ResponseDTO<List<Expense>>> getExpenses(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Double minAmount,
             @RequestParam(required = false) Double maxAmount) throws Exception {
 
         List<Expense> filteredExpenses = financeService.getExpenses(startDate, endDate, minAmount, maxAmount);
-        return ResponseEntity.ok(filteredExpenses);
+        return ResponseEntity.ok(
+                ResponseDTO.<List<Expense>>builder()
+                        .data(filteredExpenses)
+                        .message("Expenses fetched successfully")
+                        .code(200)
+                        .build()
+        );
     }
-
 }
