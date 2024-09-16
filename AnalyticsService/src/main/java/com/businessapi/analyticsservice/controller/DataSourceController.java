@@ -17,9 +17,9 @@ public class DataSourceController {
         this.dataSourceService = dataSourceService;
     }
 
-    @PostMapping("/fetch-and-save/{serviceType}")
-    public ResponseEntity<Void> fetchDataAndSave(@PathVariable String serviceType) {
-        dataSourceService.fetchDataAndSave(serviceType);
+    @PostMapping("/fetch-and-save/{serviceType}/{endpointType}")
+    public ResponseEntity<Void> fetchDataAndSave(@PathVariable String serviceType, @PathVariable String endpointType) {
+        dataSourceService.fetchDataAndSave(serviceType, endpointType);
         return ResponseEntity.ok().build();
     }
 
