@@ -34,8 +34,8 @@ public class RabbitMQConfig {
     private final String keyEmailFromAuth = "keyEmailFromCustomer";
 
     // stock service'e giden kuyruk
-    private final String queueResponseStock = "queueRequestStock";
-    private final String keyResponseStock = "keyRequestStock";
+    private final String queueResponseStock = "queueFindNameAndLastNameById";
+    private final String keyResponseStock = "keyFindNameAndLastNameById";
 
 
     @Bean

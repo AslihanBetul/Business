@@ -32,9 +32,9 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(EmployeeException.class)
+    @ExceptionHandler(HRMException.class)
     @ResponseBody
-    public ResponseEntity<ResponseDTO> handlerSatisException(EmployeeException satisException){
+    public ResponseEntity<ResponseDTO> handlerSatisException(HRMException satisException){
         return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), satisException.getErrorType().getHttpStatus());
     }
 

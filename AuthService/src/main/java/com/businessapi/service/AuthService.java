@@ -2,9 +2,7 @@ package com.businessapi.service;
 
 
 
-import com.businessapi.RabbitMQ.Model.EmailAndPasswordModel;
-import com.businessapi.RabbitMQ.Model.EmailVerificationModel;
-import com.businessapi.RabbitMQ.Model.UserSaveFromAuthModel;
+import com.businessapi.RabbitMQ.Model.*;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
 import com.businessapi.dto.request.ResetPasswordRequestDTO;
@@ -202,19 +200,25 @@ public class AuthService {
   }
 
     /**
-     * Retrieves the email associated with the given authId and sends it to a RabbitMQ queue.
+     * Listener method that listens to email update messages from the RabbitMQ queue.
+     * Retrieves the email address associated with the provided authentication ID (authId).
      *
-     * @param authId The ID of the authentication entity whose email is to be retrieved.
-     * @return The email address associated with the provided authId.
-     * @throws AuthServiceException if the user with the given authId is not found.
+     * @param authId The ID of the authentication record whose email is to be retrieved.
+     * @return EmailResponseModel A model containing the email address for the corresponding authentication record.
+     * @throws AuthServiceException If the user is not found or any other error occurs.
      */
-    public String getEmailByAuthId(Long authId) {
+
+    @RabbitListener(queues ="queueEmailFromCustomer" )
+    public EmailResponseModel getEmailByAuthId(Long authId) {
 
         Auth auth = authRepository.findById(authId)
                 .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
        String email = auth.getEmail();
-        rabbitTemplate.convertAndSend( " businessDirectExchange","keyEmailFromCustomer",email);
-       return email;
+
+      return  EmailResponseModel.builder()
+               .email(email)
+               .build();
+
 
     }
 
@@ -239,6 +243,20 @@ public class AuthService {
         authRepository.save(auth);
         return true;
     }
+
+    @RabbitListener(queues = "queueSaveAuthFromUser")
+    public Long saveAuthFromUser(SaveAuthFromUserModel model){
+        checkEmailExist(model.getEmail());
+        Auth auth = Auth.builder()
+                .email(model.getEmail())
+                .password(passwordEncoder.bCryptPasswordEncoder().encode(model.getPassword()))
+                .build();
+        authRepository.save(auth);
+        return auth.getId();
+    }
+
+
+
 
 
 }

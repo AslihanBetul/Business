@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.businessapi.utility.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,11 @@ public class Benefit {
     private Long id;
     private Long employeeId;
     private String type;
-    private Double value;
+    private Double amount;
     private LocalDate startDate;
     private LocalDate endDate;
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
 
 }

@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.businessapi.utility.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,9 +21,10 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long employeeId;
-    private LocalDate date;
-    private LocalDate checkInTime;
-    private LocalDate checkOutTime;
+    private LocalDateTime checkInDateTime;
+    private LocalDateTime checkOutDateTime;
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
 
 }
