@@ -25,6 +25,8 @@ public enum ErrorType {
     NOT_FOUNDED_PERFORMANCE(6004, "Performance bulunamadı", HttpStatus.BAD_REQUEST),
 
     NOT_FOUNDED_EMPLOYEE(6000,"EMployee bulunamadı",HttpStatus.BAD_REQUEST),
+    NOT_FOUNDED_BENEFIT(6003,"Benefit bulunamadı ",HttpStatus.BAD_REQUEST ),
+
     NOT_FOUNDED_PAYROLL(6002,"Payroll bulunamadı" ,HttpStatus.BAD_REQUEST );
 
 

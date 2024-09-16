@@ -43,8 +43,64 @@ spring:
           uri: http://localhost:9097
           predicates:
             - Path=/dev/v1/role/**
-        - id: userManagement
-          uri: http://localhost:9097
+        - id: analytics
+          uri: http://localhost:9098
           predicates:
-            - Path=/dev/v1/user/**
+            - Path=/api/dashboards/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/dataSources/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/finances/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/kpis/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/reports/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/stocks/**
+        - id: analytics
+          uri: http://localhost:9098
+          predicates:
+            - Path=/api/widgets/**
+        - id: hrm
+          uri: http://localhost:9096
+          predicates:
+            - Path=/dev/v1/attendance/**
+        - id: hrm
+          uri: http://localhost:9096
+          predicates:
+            - Path=/dev/v1/benefit/**
+        - id: hrm
+          uri: http://localhost:9096
+          predicates:
+            - Path=/dev/v1/employee/**
+        - id: hrm
+          uri: http://localhost:9096
+          predicates:
+            - Path=/dev/v1/payroll/**
+        - id: hrm
+          uri: http://localhost:9096
+          predicates:
+            - Path=/dev/v1/performance/**
+        - id: notification
+          uri: http://localhost:9095
+          predicates:
+            - Path=/api/notifications/**
+        - id: notification
+          uri: http://localhost:9095
+          predicates:
+            - Path=/api/notify/**
+
+
+
+
 
