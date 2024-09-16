@@ -24,7 +24,8 @@ public enum ErrorType {
     INVALID_TOKEN(6001,"Token Geçersiz", HttpStatus.BAD_REQUEST),
     NOT_FOUNDED_PERFORMANCE(6004, "Performance bulunamadı", HttpStatus.BAD_REQUEST),
 
-    NOT_FOUNDED_EMPLOYEE(6000,"EMployee bulunamadı",HttpStatus.BAD_REQUEST);
+    NOT_FOUNDED_EMPLOYEE(6000,"EMployee bulunamadı",HttpStatus.BAD_REQUEST),
+    NOT_FOUNDED_PAYROLL(6002,"Payroll bulunamadı" ,HttpStatus.BAD_REQUEST );
 
 
 

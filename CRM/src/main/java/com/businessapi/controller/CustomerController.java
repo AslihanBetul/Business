@@ -49,6 +49,14 @@ public class CustomerController {
                 .code(200)
                 .message("Customer found successfully").build());
     }
+    @GetMapping(FINDBYNAME)
+    @Operation(summary = "Find customer by name",description = "Find customer by name")
+    public ResponseEntity<ResponseDTO<CustomerResponseDTO>> findByfirstName(@RequestParam String firstName) {
+        return ResponseEntity.ok(ResponseDTO.<CustomerResponseDTO>builder()
+                .data(customerService.findByfirstName(firstName))
+                .code(200)
+                .message("Customer found successfully").build());
+    }
 
     @PutMapping(UPDATE)
     @Operation(summary = "Update customer by token",description = "Update customer by token")
@@ -68,6 +76,7 @@ public class CustomerController {
                 .code(200)
                 .message("Customer deleted successfully").build());
     }
+
 
 
 

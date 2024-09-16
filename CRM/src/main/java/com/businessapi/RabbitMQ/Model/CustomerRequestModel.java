@@ -1,4 +1,4 @@
-package com.businessapi.rabbitMQ.Model;
+package com.businessapi.RabbitMQ.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class CustomerResponseModel {
-    String firsName;
-    String lastName;
-    String email;
-    String phone;
+public class CustomerRequestModel {
+    Long userId;
+    Long authId;
 
 }

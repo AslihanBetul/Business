@@ -33,11 +33,11 @@ public class DataSourceService {
     }
 
     // Fetch serviceType data from Rest API and save it to database
-    public void fetchDataAndSave(String serviceType) {
-        String url = getUrlByDataSourceType(serviceType);
+    public void fetchDataAndSave(String serviceType, String endpointType) {
+        String url = getUrlByServiceTypeAndEndpoint(serviceType, endpointType);
 
         if (url == null) {
-            throw new IllegalArgumentException("Invalid service type: " + serviceType);
+            throw new IllegalArgumentException("Invalid service or endpoint type: " + serviceType + ", " + endpointType);
         }
 
         // Request body
@@ -57,16 +57,27 @@ public class DataSourceService {
         if (response.getStatusCode().is2xxSuccessful()) {
             String jsonData = response.getBody();
 
-            dataSourceRepository.deleteByServiceType(serviceType);
+            dataSourceRepository.deleteByEndpointType(endpointType);
 
-            saveDataSource(serviceType, jsonData);
+            saveDataSource(endpointType, serviceType, jsonData);
         } else {
             throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
         }
     }
 
-    private String getUrlByDataSourceType(String serviceType) {
+    private String getUrlByServiceTypeAndEndpoint(String serviceType, String endpointType) {
         switch (serviceType.toLowerCase()) {
+            case "stock":
+                return getStockServiceUrl(endpointType);
+            case "finance":
+                return getFinanceServiceUrl(endpointType);
+            default:
+                return null;
+        }
+    }
+
+    private String getStockServiceUrl(String endpointType) {
+        switch (endpointType.toLowerCase()) {
             case "product":
                 return "http://localhost:9099/dev/v1/product/find-all";
             case "order":
@@ -82,8 +93,27 @@ public class DataSourceService {
         }
     }
 
-    private void saveDataSource(String serviceType, String data) {
+    private String getFinanceServiceUrl(String endpointType) {
+        switch (endpointType.toLowerCase()) {
+            case "tax":
+                return "http://localhost:9089/tax/find-all";
+            case "invoice":
+                return "http://localhost:9089/invoice/find-all";
+            case "financial-report":
+                return "http://localhost:9089/financial-report/find-all";
+            case "expense":
+                return "http://localhost:9089/expense/find-all";
+            case "budget":
+                return "http://localhost:9089/budget/find-all";
+            default:
+                return null;
+        }
+    }
+
+
+    private void saveDataSource(String endpointType, String serviceType ,String data) {
         DataSource dataSource = DataSource.builder()
+                .endpointType(endpointType)
                 .serviceType(serviceType)
                 .data(data)
                 .build();
