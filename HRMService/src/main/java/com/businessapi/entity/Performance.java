@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,7 +20,7 @@ public class Performance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long employeeId;
-    private String period;
+    private LocalDate date;
     private Integer score;
     private String feedback;
     @Enumerated(EnumType.STRING)

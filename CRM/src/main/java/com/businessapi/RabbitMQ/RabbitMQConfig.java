@@ -30,8 +30,8 @@ public class RabbitMQConfig {
     private final String keyRequestCustomerFromAuth = "keyRequestCustomerFromAuth";
 
     // auth'dan user'a gelen email bilgisi kuyrugu
-    private final String queueEmailFromAuth = "queueEmailFromAuth";
-    private final String keyEmailFromAuth = "keyEmailFromAuth";
+    private final String queueEmailFromAuth = "queueEmailFromCustomer";
+    private final String keyEmailFromAuth = "keyEmailFromCustomer";
 
     // stock service'e giden kuyruk
     private final String queueResponseStock = "queueFindNameAndLastNameById";

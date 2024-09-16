@@ -142,7 +142,7 @@ public class OrderService
         {
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
             String supplierName = supplierService.findById(order.getSupplierId()).getName();
-            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(),order.getQuantity(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
         return buyOrderResponseDTOList;
     }
@@ -169,7 +169,7 @@ public class OrderService
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
             CustomerNameLastNameResponseModel customer = (CustomerNameLastNameResponseModel)rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyFindNameAndLastNameById", order.getCustomerId());
 
-            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getFirstName() + " " + customer.getLastName() , productName ,order.getUnitPrice(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getFirstName() + " " + customer.getLastName() , productName ,order.getUnitPrice(), order.getTotal(),order.getQuantity(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
         return sellOrderResponseDTOList;
     }

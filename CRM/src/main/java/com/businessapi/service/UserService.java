@@ -36,7 +36,7 @@ public class UserService {
                 .userId(model.getUserId())
                 .build());
 
-        EmailResponseModel emailResponseModel = (EmailResponseModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailFromAuth", user.getAuthId());
+        EmailResponseModel emailResponseModel = (EmailResponseModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailFromCustomer", user.getAuthId());
         if (emailResponseModel.getEmail() != null){
             user.setEmail(emailResponseModel.getEmail());
             userRepository.save(user);
