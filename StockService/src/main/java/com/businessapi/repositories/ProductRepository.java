@@ -21,4 +21,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>
             EStatus status);
 
 
+    List<Product> findAllByNameContainingIgnoreCase(String name);
 }

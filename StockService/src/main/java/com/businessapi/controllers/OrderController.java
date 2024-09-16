@@ -3,6 +3,7 @@ package com.businessapi.controllers;
 import static com.businessapi.constants.Endpoints.*;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.services.OrderService;
@@ -70,13 +71,13 @@ public class OrderController
                 .build());
     }
 
-    @PostMapping(FIND_ALL)
+    @PostMapping(FIND_ALL_BUY_ORDERS)
     @Operation(summary = "Finds all orders with respect to pagination")
-    public ResponseEntity<ResponseDTO<List<Order>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<BuyOrderResponseDTO>>> findAllBuyOrders(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Order>>builder()
-                .data(orderService.findAll(dto))
+                .<List<BuyOrderResponseDTO>>builder()
+                .data(orderService.findAllBuyOrders(dto))
                 .message("Success")
                 .code(200)
                 .build());

@@ -121,4 +121,9 @@ public class ProductService
     {
         return productRepository.findAllByMinimumStockLevelAndStatus(status);
     }
+
+    public List<Product> findAllByProductNameContainingIgnoreCase(String name)
+    {
+        return productRepository.findAllByNameContainingIgnoreCase(name);
+    }
 }
