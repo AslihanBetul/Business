@@ -33,7 +33,7 @@ public class CustomerController {
 
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all customers",description = "Find all customers")
     public ResponseEntity<ResponseDTO<List<CustomerResponseDTO>>> findAll() {
         return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseDTO>>builder()
@@ -41,7 +41,7 @@ public class CustomerController {
                 .code(200)
                 .message("Customers found successfully").build());
     }
-    @GetMapping(FINDBYID)
+    @PostMapping(FINDBYID)
     @Operation(summary = "Find customer by id",description = "Find customer by id")
     public ResponseEntity<ResponseDTO<CustomerResponseDTO>> findById(@RequestParam Long id) {
         return ResponseEntity.ok(ResponseDTO.<CustomerResponseDTO>builder()
@@ -51,9 +51,9 @@ public class CustomerController {
     }
     @GetMapping(FINDBYNAME)
     @Operation(summary = "Find customer by name",description = "Find customer by name")
-    public ResponseEntity<ResponseDTO<CustomerResponseDTO>> findByfirstName(@RequestParam String firstName) {
-        return ResponseEntity.ok(ResponseDTO.<CustomerResponseDTO>builder()
-                .data(customerService.findByfirstName(firstName))
+    public ResponseEntity<ResponseDTO<List<CustomerResponseDTO>>> findByFirstName(@RequestParam String firstName) {
+        return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseDTO>>builder()
+                .data(customerService.findByFirstName(firstName))
                 .code(200)
                 .message("Customer found successfully").build());
     }

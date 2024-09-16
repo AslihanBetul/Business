@@ -20,7 +20,9 @@ public interface CustomerMapper {
     List<CustomerResponseDTO> customersToCustomerResponseDTOs(List<Customer> customers);
 
 
+
     CustomerResponseDTO customerToCustomerResponseDTO(Customer customer);
+
 
 }
 
