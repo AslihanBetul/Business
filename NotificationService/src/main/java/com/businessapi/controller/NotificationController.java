@@ -24,12 +24,12 @@ public class NotificationController {
 
     @PostMapping
     public ResponseEntity<Void> createNotification(@RequestBody NotificationRequestDto dto) {
-        notificationService.createNotification(dto.getUserId(), dto.getMessage());
+        notificationService.createNotification(dto.getUserId(), dto.getTitle(),  dto.getMessage());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Notification>> getNotifications(@PathVariable String userId) {
+    public ResponseEntity<List<Notification>> getNotifications(@PathVariable @RequestParam String userId) {
         List<Notification> notifications = notificationService.getNotifications(userId);
         return ResponseEntity.ok(notifications);
     }
@@ -40,16 +40,25 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
-    @PatchMapping(READ)
-    public ResponseEntity<Void> markAsRead(@PathVariable Long notificationId) {
+    @GetMapping(GET_ALL_UNREAD_NOTIFICATIONS)
+    public ResponseEntity<List<Notification>> getAllUnReadNotifications() {
+        List<Notification> notifications = notificationService.getAllUnReadNotifications();
+        return ResponseEntity.ok(notifications);}
+
+
+
+        @PatchMapping(READ)
+    public ResponseEntity<Void> markAsRead(@PathVariable @RequestParam  Long notificationId) {
         notificationService.markAsRead(notificationId);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping(DELETE)
-    public ResponseEntity<Void> deleteNotification(@PathVariable Long notificationId) {
-        notificationService.deleteNotification(notificationId);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteNotifications(@RequestBody List<Long> notificationIds) {
+        notificationService.deleteNotifications(notificationIds);
         return ResponseEntity.noContent().build();
     }
+
+
 }
 

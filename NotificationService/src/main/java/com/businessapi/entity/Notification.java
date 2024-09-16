@@ -19,6 +19,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     private String userId;
+    private String title;
     private String message;
     private LocalDateTime createdAt = LocalDateTime.now();
     private boolean isRead = false;

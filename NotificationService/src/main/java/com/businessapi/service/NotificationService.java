@@ -19,9 +19,10 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void createNotification(String userId, String message) {
+    public void createNotification(String userId, String title, String message) {
         Notification notification = new Notification();
         notification.setUserId(userId);
+        notification.setTitle(title);
         notification.setMessage(message);
         notification.setRead(false); // Varsayılan olarak okunmamış
         notification.setDeleted(false); // Varsayılan olarak silinmemiş
@@ -36,7 +37,11 @@ public class NotificationService {
     }
 
     public List<Notification> getAllNotifications() {
-        return notificationRepository.findAll();
+        // Silinmemiş bildirimleri getir
+        return notificationRepository.findByIsDeleted(false);
+    }
+    public List<Notification> getAllUnReadNotifications() {
+        return notificationRepository.findByIsReadFalse(); // Okunmayan bildirimleri döndürür
     }
 
     public void markAsRead(Long notificationId) {
@@ -46,10 +51,14 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void deleteNotification(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
-        notification.setDeleted(true);
-        notificationRepository.save(notification);
+    public void deleteNotifications(List<Long> notificationIds) {
+        List<Notification> notifications = notificationRepository.findAllById(notificationIds);
+        if (notifications.isEmpty()) {
+            throw new RuntimeException("No notifications found with the given IDs");
+        }
+        for (Notification notification : notifications) {
+            notification.setDeleted(true);
+        }
+        notificationRepository.saveAll(notifications);
     }
 }

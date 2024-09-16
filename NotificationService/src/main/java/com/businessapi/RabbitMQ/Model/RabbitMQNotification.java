@@ -12,6 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class RabbitMQNotification implements Serializable {
     private String userId;
+    private String title;
     private String message;
 }
 

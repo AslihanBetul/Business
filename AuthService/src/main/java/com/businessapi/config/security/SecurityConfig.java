@@ -23,10 +23,11 @@ public class SecurityConfig {
 
                         //local host
                         .anyRequest().authenticated())
-                        .csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable());
 
-		return httpSecurity.build();
+        return httpSecurity.build();
 
     }
 }
+
 
