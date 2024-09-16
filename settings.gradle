@@ -8,4 +8,4 @@ include 'UserManagement'
 include 'AnalyticsService'
 include 'ApiGatewayMicroServis'
 include 'HRMService'
-
+include 'NotificationService'
