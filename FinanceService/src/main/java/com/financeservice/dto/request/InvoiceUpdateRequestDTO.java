@@ -1,14 +1,13 @@
 package com.financeservice.dto.request;
 
 import com.financeservice.entity.enums.EInvoiceStatus;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record InvoiceUpdateRequestDTO(
         Long id,
         Long customerIdOrSupplierId,
-        LocalDateTime invoiceDate,
+        LocalDate invoiceDate,
         BigDecimal totalAmount,
         BigDecimal paidAmount,
         EInvoiceStatus invoiceStatus,

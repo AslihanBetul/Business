@@ -1,10 +1,10 @@
 package com.financeservice.dto.request;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record ExpenseSaveRequestDTO(
-        LocalDateTime expenseDate,
+        LocalDate expenseDate,
         BigDecimal amount,
         String description
 ) {
