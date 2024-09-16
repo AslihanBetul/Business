@@ -4,6 +4,7 @@ import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
 import com.businessapi.dto.request.SellOrderSaveRequestDTO;
 import com.businessapi.dto.request.OrderUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.entities.Product;
 import com.businessapi.entities.enums.EOrderType;
@@ -12,10 +13,14 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +28,12 @@ public class OrderService
 {
     private final OrderRepository orderRepository;
     private final ProductService productService;
+    private  SupplierService supplierService;
+
+    @Autowired
+    private void setService (@Lazy SupplierService supplierService){
+        this.supplierService = supplierService;
+    }
 
     public Boolean saveSellOrder(SellOrderSaveRequestDTO dto)
     {
@@ -96,7 +107,7 @@ public class OrderService
     public List<Order> findAll(PageRequestDTO dto)
     {
 
-            return orderRepository.findAll( PageRequest.of(dto.page(), dto.size())).getContent();
+        return orderRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
 
     }
 
@@ -106,5 +117,29 @@ public class OrderService
     }
 
 
-
+    /**
+     * Finds products with name containing search text
+     * Finds buy orders with respect to pagination
+     * Converts orders to BuyOrderResponseDTO
+     * @param dto search text , page number , page size parameters
+     * @return List of BuyOrderResponseDTO
+     */
+    public List<BuyOrderResponseDTO> findAllBuyOrders(PageRequestDTO dto)
+    {
+        //Finds products with name containing search text
+        List<Product> products = productService.findAllByProductNameContainingIgnoreCase(dto.searchText());
+        //Mapping products to their ids
+        List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
+        //Finds buy orders with respect to pagination, order type and product ids
+        List<Order> orderList = orderRepository.findAllByProductIdInAndOrderType(productIdList,EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
+        List<BuyOrderResponseDTO> buyOrderResponseDTOList = new ArrayList<>();
+        //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
+        orderList.stream().forEach(order ->
+        {
+            String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
+            String supplierName = supplierService.findById(order.getSupplierId()).getName();
+            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+        });
+        return buyOrderResponseDTOList;
+    }
 }
