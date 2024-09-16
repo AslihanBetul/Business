@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dashboards")
+@RequestMapping("/api/dashboards" +
+        "")
 public class DashboardController {
 
     private final DashboardService dashboardService;
