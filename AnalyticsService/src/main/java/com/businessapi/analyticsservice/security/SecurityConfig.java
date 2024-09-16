@@ -35,7 +35,8 @@ public class SecurityConfig {
                                 "/api/reports/**",
                                 "/api/widgets/**",
                                 "/api/kpis/**",
-                                "/api/stocks/**"
+                                "/api/stocks/**",
+                                "/api/finances/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

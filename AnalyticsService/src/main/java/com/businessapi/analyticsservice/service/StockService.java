@@ -28,9 +28,9 @@ public class StockService {
     }
 
     // fetch data from the DataSource by serviceType
-    public String getDataFromDataSource(String serviceType) {
-        DataSource dataSource = dataSourceRepository.findByServiceType(serviceType)
-                .orElseThrow(() -> new RuntimeException("DataSource not found for service type: " + serviceType));
+    public String getDataFromDataSource(String endpointType) {
+        DataSource dataSource = dataSourceRepository.findByEndpointType(endpointType)
+                .orElseThrow(() -> new RuntimeException("DataSource not found for service type: " + endpointType));
         return dataSource.getData();
     }
 

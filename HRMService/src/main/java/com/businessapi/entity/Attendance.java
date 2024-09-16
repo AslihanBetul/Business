@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.businessapi.utility.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,8 @@ public class Attendance {
     private LocalDate date;
     private LocalDate checkInTime;
     private LocalDate checkOutTime;
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
 
 }
