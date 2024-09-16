@@ -1,6 +1,6 @@
 package com.businessapi.dto.request;
 
-import com.financeservice.entity.enums.EInvoiceStatus;
+import com.businessapi.entity.enums.EInvoiceStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
