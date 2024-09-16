@@ -16,6 +16,8 @@ public class Config {
     private final String businessDirectExchange = "businessDirectExchange";
     private final String queueSendVerificationEmail = "queueSendVerificationEmail";
     private final String keySendVerificationEmail = "keySendVerificationEmail";
+    private final String queueForgetPassword = "queueForgetPassword";
+    private final String keyForgetPassword = "keyForgetPassword";
 
     @Bean
     public DirectExchange directExchange(){
@@ -35,6 +37,16 @@ public class Config {
     @Bean
     MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();
+    }
+    @Bean
+    public Queue queueForgetPassword() {
+        return new Queue(queueForgetPassword);
+    }
+
+
+    @Bean
+    public Binding bindingForgetPassword (Queue queueForgetPassword, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueForgetPassword).to(businessDirectExchange).with(keyForgetPassword);
     }
 
 

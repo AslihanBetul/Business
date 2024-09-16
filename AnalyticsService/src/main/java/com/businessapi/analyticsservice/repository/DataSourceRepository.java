@@ -9,6 +9,8 @@ import java.util.Optional;
 @Repository
 public interface DataSourceRepository extends JpaRepository<DataSource, Long> {
     void deleteByServiceType(String serviceType);
+    void deleteByEndpointType(String endpointType);
     Optional<DataSource> findByServiceType(String serviceType);
+    Optional<DataSource> findByEndpointType(String endpointType);
 }
 

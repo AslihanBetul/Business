@@ -1,6 +1,7 @@
 package com.businessapi.analyticsservice.entity.stockService.entity;
 
 import com.businessapi.analyticsservice.util.CustomLocalDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
     private Long id;
     private Long customerId;

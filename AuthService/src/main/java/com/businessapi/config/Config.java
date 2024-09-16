@@ -33,6 +33,9 @@ public class Config {
     private final String queueForgetPassword = "queueForgetPassword";
     private final String keyForgetPassword = "keyForgetPassword";
 
+    private final String queueSaveAuthFromUser = "queueSaveAuthFromUser";
+    private final String keySaveAuthFromUser = "keySaveAuthFromUser";
+
 
 
     @Bean
@@ -69,6 +72,10 @@ public class Config {
     public Queue queueForgetPassword() {
         return new Queue(queueForgetPassword);
     }
+    @Bean
+    public Queue queueSaveAuthFromUser() {
+        return new Queue(queueSaveAuthFromUser);
+}
 
 
     @Bean
@@ -110,11 +117,16 @@ public class Config {
     public Binding bindingForgetPassword (Queue queueForgetPassword, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueForgetPassword).to(businessDirectExchange).with(keyForgetPassword);
     }
+    @Bean
+    public Binding bindingSaveAuthFromUser(Queue queueSaveAuthFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSaveAuthFromUser).to(businessDirectExchange).with(keySaveAuthFromUser);
+    }
 
     @Bean
     MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();
     }
+
 
 
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){

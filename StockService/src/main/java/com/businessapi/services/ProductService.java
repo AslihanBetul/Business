@@ -54,6 +54,12 @@ public class ProductService
         return true;
     }
 
+    public Boolean save(Product product)
+    {
+      productRepository.save(product);
+        return true;
+    }
+
     public Boolean delete(Long id)
     {
         Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
@@ -100,18 +106,6 @@ public class ProductService
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
     {
-        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
-
-        productList.forEach(product ->
-        {
-            if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
-            {
-                //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
-                orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));
-                product.setIsProductAutoOrdered(true);
-                productRepository.save(product);
-            }
-        });
         return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
@@ -123,4 +117,14 @@ public class ProductService
         productRepository.save(product);
         return true;
     }
+    public List<Product> findAllByMinimumStockLevelAndStatus(EStatus status)
+    {
+        return productRepository.findAllByMinimumStockLevelAndStatus(status);
+    }
+
+    public List<Product> findAllByProductNameContainingIgnoreCase(String name)
+    {
+        return productRepository.findAllByNameContainingIgnoreCase(name);
+    }
+
 }

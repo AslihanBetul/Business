@@ -84,7 +84,7 @@ public class AuthController {
                .build());
     }
 
-    @GetMapping(RESETPASSWORD)
+    @PostMapping (RESETPASSWORD)
     @Operation(
            summary = "Reset password",
            description = "Resets the password of a user with the provided email and reset token. The email and reset token must be provided in the request body.")
