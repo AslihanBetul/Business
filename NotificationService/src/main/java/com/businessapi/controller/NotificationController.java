@@ -5,7 +5,6 @@ import com.businessapi.dto.request.NotificationRequestDto;
 import com.businessapi.entity.Notification;
 import com.businessapi.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +52,7 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
+    @DeleteMapping(DELETE)
     public ResponseEntity<Void> deleteNotifications(@RequestBody List<Long> notificationIds) {
         notificationService.deleteNotifications(notificationIds);
         return ResponseEntity.noContent().build();
