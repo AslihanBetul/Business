@@ -6,6 +6,7 @@ import com.businessapi.RabbitMQ.Model.CustomerReturnId;
 import com.businessapi.RabbitMQ.Model.EmailResponseModel;
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.CustomerResponseDTO;
 import com.businessapi.entity.Customer;
 
@@ -21,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -57,8 +60,11 @@ public class CustomerService {
 
 
     // This method will return all customers
-    public List<CustomerResponseDTO> findAll() {
-        return CustomerMapper.INSTANCE.customersToCustomerResponseDTOs(customerRepository.findAll());
+    public List<Customer> findAll(PageRequestDTO dto) {
+        return customerRepository.findAllByFirstNameContainingIgnoreCase(dto.searchText(), PageRequest.of(
+                dto.page(), dto.size()));
+
+
     }
 
     // This method will find customer by id
@@ -129,8 +135,4 @@ public class CustomerService {
     }
 
 
-    public List<CustomerResponseDTO> findByFirstName(String firstName) {
-        List<Customer> customers = customerRepository.findCustomerByFirstNameContainingIgnoreCase(firstName).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
-        return CustomerMapper.INSTANCE.customersToCustomerResponseDTOs(customers);
-    }
 }
