@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class NotificationRequestDto {
-    private String userId;
+    private Long userId;
     private String title;
     private String message;
 }

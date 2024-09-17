@@ -18,7 +18,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    private String userId;
+    private Long userId;
     private String title;
     private String message;
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -7,4 +7,6 @@ include 'MailService'
 include 'UserManagement'
 include 'AnalyticsService'
 include 'ApiGatewayMicroServis'
+include 'YeniNotificationService'
+include 'NotificationService'
 

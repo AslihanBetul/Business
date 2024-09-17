@@ -19,6 +19,12 @@ public class RabbitMQListener {
 
     @RabbitListener(queues = RabbitMQConfig.NOTIFICATION_QUEUE)
     public void listen(RabbitMQNotification rabbitMQNotification) {
-        notificationService.createNotification(rabbitMQNotification.getUserId(), rabbitMQNotification.getTitle(), rabbitMQNotification.getMessage());
+       saveNotifications(rabbitMQNotification);
+    }
+
+    public void saveNotifications(RabbitMQNotification rabbitMQNotification) {
+        rabbitMQNotification.getUserIds().forEach(userId -> {
+            notificationService.createNotification(userId, rabbitMQNotification.getTitle(), rabbitMQNotification.getMessage());
+        });
     }
 }

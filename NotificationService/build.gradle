@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'com.bilgeadam.business'
+group = 'com.business'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -13,47 +13,36 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // WebSocket desteği için
+    // Spring Boot starter'lar (temel bağımlılıklar)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    // JWT (JSON Web Token) desteği için
-    implementation 'com.auth0:java-jwt:4.4.0'
-
-    // Springdoc OpenAPI UI (Swagger) desteği için
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-    // PostgreSQL veritabanı bağlantısı için
+    // Database driver (e.g., PostgreSQL)
     runtimeOnly 'org.postgresql:postgresql'
 
-    // Lombok desteği (kod üretimi için)
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Spring Boot starter'lar (temel bağımlılıklar)
-    implementation 'org.springframework.boot:spring-boot-starter-web'    // Web desteği
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // JPA (veritabanı) desteği
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'    // RabbitMQ (AMQP) desteği
-    implementation 'org.springframework.boot:spring-boot-starter-mail'    // E-posta desteği
-    implementation 'org.springframework.boot:spring-boot-starter-security'    // Güvenlik desteği
-    implementation 'org.springframework.boot:spring-boot-starter-validation'    // Veri doğrulama desteği
 
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // JWT
+    implementation 'com.auth0:java-jwt:4.4.0'
+
+    // Springdoc OpenAPI UI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
 
 }
-
 
 tasks.named('test') {
     useJUnitPlatform()

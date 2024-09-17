@@ -19,7 +19,7 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void createNotification(String userId, String title, String message) {
+    public void createNotification(Long userId, String title, String message) {
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setTitle(title);
@@ -29,10 +29,11 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         // WebSocket ile kullanıcıya bildirimi gönder
-        messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", notification);
+        messagingTemplate.convertAndSendToUser(userId.toString(), "/queue/notifications", notification);
     }
 
-    public List<Notification> getNotifications(String userId) {
+
+    public List<Notification> getNotifications(Long userId) {
         return notificationRepository.findByUserIdAndIsDeletedFalse(userId);
     }
 
