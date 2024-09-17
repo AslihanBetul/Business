@@ -6,6 +6,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,8 +14,10 @@ import java.util.Optional;
 
 @Service
 public class JwtTokenManager {
-    private final String SECRETKEY ="secretkey";
-    private final String ISSUER ="workforce";
+    @Value("${mail.secret.secret-key}")
+    String secretKey;
+    @Value("${mail.secret.issuer}")
+    String issuer;
     private final Long EXDATE = 1000L * 60 * 60 ;
 
     public Optional<String> createToken (Long authId){

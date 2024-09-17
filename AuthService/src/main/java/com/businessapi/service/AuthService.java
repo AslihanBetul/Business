@@ -100,7 +100,7 @@ public class AuthService {
         // Return token if login is successful, throw exception otherwise
 
         Auth auth = authRepository.findOptionalByEmail(dto.email())
-                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthServiceException(EMAIL_OR_PASSWORD_WRONG));
 
         if (auth.getStatus().equals(EStatus.PENDING))  {
 
@@ -109,7 +109,7 @@ public class AuthService {
 
         }
         if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
-            throw new AuthServiceException(INVALID_LOGIN_PARAMETER);
+            throw new AuthServiceException(EMAIL_OR_PASSWORD_WRONG);
         }
 
 
