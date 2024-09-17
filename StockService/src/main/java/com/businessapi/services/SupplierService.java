@@ -72,7 +72,7 @@ public class SupplierService
 
     public List<Supplier> findAll(PageRequestDTO dto)
     {
-        return supplierRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return supplierRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Supplier findById(Long id)

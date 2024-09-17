@@ -19,4 +19,5 @@ public class EndPoints {
     public static final String FINDBYNAME = "/find-by-name";
     public static final String UPDATE = "/update";
     public static final String DELETE = "/delete";
+
 }

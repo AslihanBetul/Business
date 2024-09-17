@@ -5,6 +5,8 @@ import com.businessapi.analyticsservice.entity.stockService.entity.StockMovement
 import com.businessapi.analyticsservice.entity.stockService.entity.Supplier;
 import com.businessapi.analyticsservice.service.StockService;
 import com.businessapi.analyticsservice.entity.stockService.entity.Product;
+import com.businessapi.analyticsservice.dto.response.ResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/stocks")
+@RequestMapping("/dev/v1/stocks")
 public class StockController {
 
     private final StockService stockService;
@@ -27,55 +29,80 @@ public class StockController {
      * Order
      */
     @GetMapping("/get-total-sales")
-    public ResponseEntity<BigDecimal> getTotalSales() throws Exception {
+    @Operation(summary = "Get total sales")
+    public ResponseEntity<ResponseDTO<BigDecimal>> getTotalSales() throws Exception {
         String jsonOrders = stockService.getDataFromDataSource("order");
         List<Order> orders = stockService.parseOrders(jsonOrders);
         BigDecimal totalSales = stockService.analyzeTotalSalesOverTime(orders);
 
-        return ResponseEntity.ok(totalSales);
+        return ResponseEntity.ok(ResponseDTO.<BigDecimal>builder()
+                .data(totalSales)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     /*
      * Product
      */
     @GetMapping("/sales-per-day")
-    public ResponseEntity<Map<LocalDate, BigDecimal>> calculateTotalSalesPerDay() throws Exception {
+    @Operation(summary = "Get total sales per day")
+    public ResponseEntity<ResponseDTO<Map<LocalDate, BigDecimal>>> calculateTotalSalesPerDay() throws Exception {
         String jsonOrders = stockService.getDataFromDataSource("order");
         List<Order> orders = stockService.parseOrders(jsonOrders);
         Map<LocalDate, BigDecimal> totalSalesByDay = stockService.calculateTotalSalesPerDay(orders);
 
-        return ResponseEntity.ok(totalSalesByDay);
+        return ResponseEntity.ok(ResponseDTO.<Map<LocalDate, BigDecimal>>builder()
+                .data(totalSalesByDay)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     @PostMapping("/low-stock")
-    public ResponseEntity<List<Product>> getLowStockAlerts() throws Exception {
+    @Operation(summary = "Get low stock alerts")
+    public ResponseEntity<ResponseDTO<List<Product>>> getLowStockAlerts() throws Exception {
         String jsonProducts = stockService.getDataFromDataSource("product");
         List<Product> products = stockService.parseProduct(jsonProducts);
         List<Product> lowStockProducts = stockService.getLowStockAlerts(products);
 
-        return ResponseEntity.ok(lowStockProducts);
+        return ResponseEntity.ok(ResponseDTO.<List<Product>>builder()
+                .data(lowStockProducts)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     /*
      * Stock Movement
      */
     @PostMapping("/stock-per-warehouse")
-    public ResponseEntity<Map<Long, Integer>> getStockPerWarehouse() throws Exception {
+    @Operation(summary = "Get stock per warehouse")
+    public ResponseEntity<ResponseDTO<Map<Long, Integer>>> getStockPerWarehouse() throws Exception {
         String jsonStockMovements = stockService.getDataFromDataSource("stock-movement");
         List<StockMovement> stockMovements = stockService.parseStockMovement(jsonStockMovements);
         Map<Long, Integer> stockPerWarehouse = stockService.analyzeStockPerWarehouse(stockMovements);
-        return ResponseEntity.ok(stockPerWarehouse);
+        return ResponseEntity.ok(ResponseDTO.<Map<Long, Integer>>builder()
+                .data(stockPerWarehouse)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     /*
      * Supplier
      */
     @PostMapping("/num-of-suppliers-per-country")
-    public ResponseEntity<Map<String, Long>> getNumOfSuppliersPerCountry() throws Exception {
+    @Operation(summary = "Get number of suppliers per country")
+    public ResponseEntity<ResponseDTO<Map<String, Long>>> getNumOfSuppliersPerCountry() throws Exception {
         String jsonSupplier = stockService.getDataFromDataSource("supplier");
         List<Supplier> supplier = stockService.parseSupplier(jsonSupplier);
         Map<String, Long> stockPerWarehouse = stockService.analyzeNumOfSuppliersPerCountry(supplier);
-        return ResponseEntity.ok(stockPerWarehouse);
+        return ResponseEntity.ok(ResponseDTO.<Map<String, Long>>builder()
+                .data(stockPerWarehouse)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
 }

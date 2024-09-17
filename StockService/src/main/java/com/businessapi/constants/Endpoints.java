@@ -8,9 +8,10 @@ public class Endpoints
 
     //profiles
     public static final String DEV = "/dev";
+    public static final String MICROSERVICE = "/stock";
 
 
-    public static final String ROOT = DEV + VERSION;
+    public static final String ROOT = DEV + VERSION + MICROSERVICE;
 
     //controllers
 

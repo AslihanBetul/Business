@@ -45,7 +45,7 @@ public class ProductCategoryService
 
     public List<ProductCategory> findAll(PageRequestDTO dto)
     {
-        return productCategoryRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productCategoryRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public ProductCategory findById(Long id)
