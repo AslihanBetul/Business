@@ -2,13 +2,14 @@ package com.businessapi.analyticsservice.controller;
 
 import com.businessapi.analyticsservice.dto.request.WidgetRequestDto;
 import com.businessapi.analyticsservice.dto.response.WidgetResponseDto;
+import com.businessapi.analyticsservice.dto.response.ResponseDTO;
 import com.businessapi.analyticsservice.service.WidgetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/widgets")
+@RequestMapping("/dev/v1/widgets")
 public class WidgetController {
 
     private final WidgetService widgetService;
@@ -18,24 +19,42 @@ public class WidgetController {
     }
 
     @PostMapping
-    public ResponseEntity<WidgetResponseDto> createWidget(@RequestBody WidgetRequestDto widgetRequestDto) {
-        return ResponseEntity.ok(widgetService.createWidget(widgetRequestDto));
+    public ResponseEntity<ResponseDTO<WidgetResponseDto>> createWidget(@RequestBody WidgetRequestDto widgetRequestDto) {
+        WidgetResponseDto widget = widgetService.createWidget(widgetRequestDto);
+        return ResponseEntity.ok(ResponseDTO.<WidgetResponseDto>builder()
+                .data(widget)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     @GetMapping
-    public ResponseEntity<List<WidgetResponseDto>> getAllWidgets() {
-        return ResponseEntity.ok(widgetService.getAllWidgets());
+    public ResponseEntity<ResponseDTO<List<WidgetResponseDto>>> getAllWidgets() {
+        List<WidgetResponseDto> widgets = widgetService.getAllWidgets();
+        return ResponseEntity.ok(ResponseDTO.<List<WidgetResponseDto>>builder()
+                .data(widgets)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WidgetResponseDto> getWidgetById(@PathVariable Long id) {
-        return ResponseEntity.ok(widgetService.getWidgetById(id));
+    public ResponseEntity<ResponseDTO<WidgetResponseDto>> getWidgetById(@PathVariable Long id) {
+        WidgetResponseDto widget = widgetService.getWidgetById(id);
+        return ResponseEntity.ok(ResponseDTO.<WidgetResponseDto>builder()
+                .data(widget)
+                .message("Success")
+                .code(200)
+                .build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWidget(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Void>> deleteWidget(@PathVariable Long id) {
         widgetService.deleteWidget(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ResponseDTO.<Void>builder()
+                .message("Success")
+                .code(200)
+                .build());
     }
 }
 

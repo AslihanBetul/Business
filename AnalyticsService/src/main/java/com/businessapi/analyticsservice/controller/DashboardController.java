@@ -2,14 +2,14 @@ package com.businessapi.analyticsservice.controller;
 
 import com.businessapi.analyticsservice.dto.request.DashboardRequestDto;
 import com.businessapi.analyticsservice.dto.response.DashboardResponseDto;
+import com.businessapi.analyticsservice.dto.response.ResponseDTO;
 import com.businessapi.analyticsservice.service.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/dashboards" +
-        "")
+@RequestMapping("/dev/v1/dashboards")
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -19,24 +19,48 @@ public class DashboardController {
     }
 
     @PostMapping
-    public ResponseEntity<DashboardResponseDto> createDashboard(@RequestBody DashboardRequestDto dashboardRequestDto) {
-        return ResponseEntity.ok(dashboardService.createDashboard(dashboardRequestDto));
+    public ResponseEntity<ResponseDTO<DashboardResponseDto>> createDashboard(@RequestBody DashboardRequestDto dashboardRequestDto) {
+        return ResponseEntity.ok(
+                ResponseDTO.<DashboardResponseDto>builder()
+                        .data(dashboardService.createDashboard(dashboardRequestDto))
+                        .message("Dashboard created successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<DashboardResponseDto>> getAllDashboards() {
-        return ResponseEntity.ok(dashboardService.getAllDashboards());
+    public ResponseEntity<ResponseDTO<List<DashboardResponseDto>>> getAllDashboards() {
+        return ResponseEntity.ok(
+                ResponseDTO.<List<DashboardResponseDto>>builder()
+                        .data(dashboardService.getAllDashboards())
+                        .message("All dashboards fetched successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DashboardResponseDto> getDashboardById(@PathVariable Long id) {
-        return ResponseEntity.ok(dashboardService.getDashboardById(id));
+    public ResponseEntity<ResponseDTO<DashboardResponseDto>> getDashboardById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                ResponseDTO.<DashboardResponseDto>builder()
+                        .data(dashboardService.getDashboardById(id))
+                        .message("Dashboard fetched successfully")
+                        .code(200)
+                        .build()
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDashboard(@PathVariable Long id) {
+    public ResponseEntity<ResponseDTO<Boolean>> deleteDashboard(@PathVariable Long id) {
         dashboardService.deleteDashboard(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                ResponseDTO.<Boolean>builder()
+                        .data(true)
+                        .message("Dashboard deleted successfully")
+                        .code(200)
+                        .build()
+        );
     }
 }
 
