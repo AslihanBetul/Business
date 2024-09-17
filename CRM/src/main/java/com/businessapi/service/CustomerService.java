@@ -129,8 +129,8 @@ public class CustomerService {
     }
 
 
-    public CustomerResponseDTO findByfirstName(String firstName) {
-        Customer customer = customerRepository.findByFirstNameContainingIgnoreCase(firstName).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
-        return CustomerMapper.INSTANCE.customerToCustomerResponseDTO(customer);
+    public List<CustomerResponseDTO> findByFirstName(String firstName) {
+        List<Customer> customers = customerRepository.findCustomerByFirstNameContainingIgnoreCase(firstName).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        return CustomerMapper.INSTANCE.customersToCustomerResponseDTOs(customers);
     }
 }
