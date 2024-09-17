@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface WareHouseRepository extends JpaRepository<WareHouse, Long>
 {
-    List<WareHouse> findAllByNameContainingIgnoreCase(String name, PageRequest pageRequest);
+    List<WareHouse> findAllByNameContainingIgnoreCaseOrderByNameAsc(String name, PageRequest pageRequest);
 }

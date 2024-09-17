@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -144,7 +145,9 @@ public class OrderService
             String supplierName = supplierService.findById(order.getSupplierId()).getName();
             buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(),order.getQuantity(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
-        return buyOrderResponseDTOList;
+        return buyOrderResponseDTOList.stream()
+                .sorted(Comparator.comparing(BuyOrderResponseDTO::productName))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -171,6 +174,9 @@ public class OrderService
 
             sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getFirstName() + " " + customer.getLastName() , productName ,order.getUnitPrice(), order.getTotal(),order.getQuantity(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
-        return sellOrderResponseDTOList;
+        return sellOrderResponseDTOList.stream()
+                .sorted(Comparator.comparing(SellOrderResponseDTO::productName))
+                .collect(Collectors.toList());
+
     }
 }

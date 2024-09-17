@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,9 @@ public class StockMovementService
             String wareHouseName = wareHouseService.findById(stock.getWarehouseId()).getName();
             stockMovementDtoList.add(new StockMovementResponseDTO(stock.getId(), productName,wareHouseName,stock.getQuantity(),stock.getStatus(),stock.getStockMovementType(),stock.getCreatedAt()));
         });
-        return stockMovementDtoList;
+        return stockMovementDtoList.stream()
+                .sorted(Comparator.comparing(StockMovementResponseDTO::productName))
+                .collect(Collectors.toList());
     }
 }
 
