@@ -79,7 +79,7 @@ public class UserService {
     @Transactional
     public void saveUserFromAuthService(SaveUserFromAuthModel saveUserFromAuthModel){
         List<Role> usersRoles = new ArrayList<>();
-        usersRoles.add(roleService.getRoleById(3L));
+        usersRoles.add(roleService.getRoleById(3L)); //Unassigned rol olarak kaydedilir.
         User user = User.builder()
                 .authId(saveUserFromAuthModel.getAuthId())
                 .firstName(saveUserFromAuthModel.getFirstName())
@@ -155,11 +155,12 @@ public class UserService {
     }
 
 
-
+    @Transactional
     public void updateUserStatusToActive(Long authId){
         User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
         user.setStatus(EStatus.ACTIVE);
         userRepository.save(user);
+        rabbitTemplate.convertAndSend("notificationExchange","notificationKey",RabbitMQNotification.builder().userId(1L).message(user.getFirstName()+" isimli "+ user.getId()+ " user id'li kullanıcı Hesabını aktive etti").build());
     }
 
     @RabbitListener(queues = "queueActivateUserFromAuth")

@@ -25,10 +25,10 @@ public class JwtTokenManager {
         try{
             token = JWT.create().withAudience()
                     .withClaim("authId", authId)
-                    .withIssuer(ISSUER)
+                    .withIssuer(issuer)
                     .withIssuedAt(new Date())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE))
-                    .sign(Algorithm.HMAC512(SECRETKEY));
+                    .sign(Algorithm.HMAC512(secretKey));
             return Optional.of(token);
         }catch (Exception e){
             return Optional.empty();
@@ -44,10 +44,10 @@ public class JwtTokenManager {
         try {
             token = JWT.create()
                     .withClaim("email", email) // Email'i token içinde saklıyoruz
-                    .withIssuer(ISSUER)
+                    .withIssuer(issuer)
                     .withIssuedAt(new Date()) // Şu anki tarih
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE)) // Token geçerlilik süresi
-                    .sign(Algorithm.HMAC512(SECRETKEY)); // HMAC512 algoritması ile imzalama
+                    .sign(Algorithm.HMAC512(secretKey)); // HMAC512 algoritması ile imzalama
             return Optional.of(token);
         } catch (Exception e) {
             return Optional.empty();
