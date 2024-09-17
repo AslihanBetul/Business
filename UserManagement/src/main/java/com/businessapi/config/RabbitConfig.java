@@ -48,6 +48,11 @@ public class RabbitConfig {
     private final String queueActivateUserFromAuth = "queueActivateUserFromAuth";
     private final String keyActivateUserFromAuth = "keyActivateUserFromAuth";
 
+    //Adminin oluşturduğu user'dan auth oluşturmak için gerekli bilgilerin gönderildiği kuyruk
+
+    private final String queueSaveAuthFromUser = "queueSaveAuthFromUser";
+    private final String keySaveAuthFromUser = "keySaveAuthFromUser";
+
 
 
     @Bean
@@ -94,6 +99,12 @@ public class RabbitConfig {
         return new Queue(queueActivateUserFromAuth);
     }
 
+    @Bean
+    public Queue queueSaveAuthFromUser() {
+        return new Queue(queueSaveAuthFromUser);
+    }
+
+
 
 
     @Bean
@@ -129,6 +140,10 @@ public class RabbitConfig {
     @Bean
     public Binding bindingActivateUserFromAuth (Queue queueActivateUserFromAuth, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueActivateUserFromAuth).to(businessDirectExchange).with(keyActivateUserFromAuth);
+    }
+    @Bean
+    public Binding bindingSaveAuthFromUser(Queue queueSaveAuthFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSaveAuthFromUser).to(businessDirectExchange).with(keySaveAuthFromUser);
     }
 
 

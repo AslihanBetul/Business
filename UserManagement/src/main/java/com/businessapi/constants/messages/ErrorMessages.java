@@ -18,5 +18,8 @@ public class ErrorMessages {
     public static final String ROLE_ID_CANT_BE_BLANK = "Role cannot be blank";
 
     public static final String EMAIL_TYPE_IS_WRONG ="Email type is wrong";
+    public static final String EMAIL_NOT_BLANK = "Email cannot be blank";
+
+    public static final String PASSWORD_NOT_BLANK = "Password cannot be blank";
 
 }
