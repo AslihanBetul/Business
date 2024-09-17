@@ -12,6 +12,7 @@ public record SellOrderResponseDTO(
     String productName,
     BigDecimal unitPrice,
     BigDecimal total,
+    Integer quantity,
     EOrderType orderType,
     LocalDateTime createdAt,
     EStatus status)

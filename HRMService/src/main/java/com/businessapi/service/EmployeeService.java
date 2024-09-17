@@ -37,7 +37,7 @@ public class EmployeeService {
     }
 
     public Boolean update(EmployeeUpdateRequestDTO dto) {
-            Employee employee = employeeRepository.findById(dto.id()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+        Employee employee = employeeRepository.findById(dto.id()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
         employee.setFirstName(dto.firstName()!=null?dto.firstName(): employee.getFirstName());
         employee.setLastName(dto.lastName()!=null?dto.lastName(): employee.getLastName());
         employee.setPhone(dto.phone()!=null?dto.phone():employee.getPhone());
