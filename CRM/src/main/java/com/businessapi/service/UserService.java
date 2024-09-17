@@ -17,6 +17,8 @@ import com.businessapi.utility.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,12 +27,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final RabbitTemplate rabbitTemplate;
     private final JwtTokenManager jwtTokenManager;
+    private CustomerService customerService;
+
+    @Autowired
+    public void setService(@Lazy CustomerService service) {
+        this.customerService = service;
+    }
 
 
 
 
     @RabbitListener(queues = "queueSaveCustomerFromUser")
-    public boolean save(CustomerSaveFromUserModel model) {
+    public void save(CustomerSaveFromUserModel model) {
         User user = userRepository.save(User.builder()
                 .authId(model.getAuthId())
                 .userId(model.getUserId())
@@ -40,12 +48,9 @@ public class UserService {
         if (emailResponseModel.getEmail() != null){
             user.setEmail(emailResponseModel.getEmail());
             userRepository.save(user);
-            CustomerReturnId customerReturnId = (CustomerReturnId) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveCustomerByEmail", model);
-            user.setCustomerId(customerReturnId.getCustomerId());
+            CustomerReturnId id = customerService.saveEmail(emailResponseModel);
+            user.setCustomerId(id.getCustomerId());
             userRepository.save(user);
-            return true;
-        }else {
-            return false;
         }
 
     }
