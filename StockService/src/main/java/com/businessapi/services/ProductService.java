@@ -23,13 +23,6 @@ public class ProductService
 {
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
-    private OrderService orderService;
-
-    @Autowired
-    public void setServices(@Lazy OrderService orderService)
-    {
-        this.orderService = orderService;
-    }
 
     public Product findById(Long id)
     {
@@ -124,7 +117,7 @@ public class ProductService
 
     public List<Product> findAllByProductNameContainingIgnoreCase(String name)
     {
-        return productRepository.findAllByNameContainingIgnoreCase(name);
+        return productRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(name);
     }
 
 }
