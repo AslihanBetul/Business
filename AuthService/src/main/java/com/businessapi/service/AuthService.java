@@ -226,8 +226,12 @@ public class AuthService {
         Auth auth = authRepository.findOptionalByEmail(email)
                 .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
 
-        rabbitTemplate.convertAndSend("businessDirectExchange","keyForgetPassword",email );
-        return true;
+        if (auth.getStatus() == EStatus.ACTIVE) {
+            rabbitTemplate.convertAndSend("businessDirectExchange", "keyForgetPassword", email);
+            return true;
+        } else {
+            throw new AuthServiceException(USER_IS_NOT_ACTIVE);
+        }
     }
 
     public Boolean resetPassword(ResetPasswordRequestDTO dto) {

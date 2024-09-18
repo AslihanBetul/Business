@@ -59,7 +59,7 @@ public class MailSenderService {
 
       String token = jwtTokenManager.createPasswordResetToken(email).get();
 
-  String resetLink = "http://localhost:3000/dev/v1/auth/forget-change-password?token=" + token;
+  String resetLink = "http://localhost:3000/dev/v1/auth/reset-password?token=" + token;
 
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
