@@ -29,7 +29,5 @@ public class EndPoints {
     public static final String FINDALLORDERBYFIYAT = "/findallorderbyfiyat";
 
 
-
-
-
+    public static final String FINDBYPROJECTID ="/findbyprojectid"; ;
 }

@@ -1,6 +1,8 @@
 package com.bilgeadam.businessapi.service;
 
 import com.bilgeadam.businessapi.dto.request.TaskSaveRequestDTO;
+import com.bilgeadam.businessapi.dto.request.TaskUpdateRequestDTO;
+import com.bilgeadam.businessapi.dto.response.TaskResponseDTO;
 import com.bilgeadam.businessapi.dto.response.TaskSaveResponseDTO;
 import com.bilgeadam.businessapi.entity.Project;
 import com.bilgeadam.businessapi.entity.Task;
@@ -9,7 +11,9 @@ import com.bilgeadam.businessapi.repository.TaskRepository;
 import com.bilgeadam.businessapi.utility.ServiceManager;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService extends ServiceManager<Task,Long> {
@@ -48,6 +52,7 @@ private final ProjectRepository projectRepository;
 
 
         return TaskSaveResponseDTO.builder()
+                .id(savedTask.getId())
                 .name(savedTask.getName())
                 .description(savedTask.getDescription())
                 .assignedUserId(savedTask.getAssignedUserId())
@@ -58,4 +63,24 @@ private final ProjectRepository projectRepository;
                 .build();
 
     }
+
+    public List<TaskResponseDTO> findTasksByProjectId(Long projectId) {
+
+      List<Task> tasks= taskRepository.findAllByProjectId(projectId);
+        return tasks.stream().map(task -> new TaskResponseDTO(task.getId(),task.getName(),task.getAssignedUserId(), task.getStatus(), projectId)).collect(Collectors.toList());
+    }
+
+    public void updateTask(TaskUpdateRequestDTO dto) {
+       Task task = taskRepository.findById(dto.id())
+                .orElseThrow(() -> new IllegalArgumentException("Task bulunamadı: " + dto.id()));
+
+        task.setName(dto.name());
+        task.setDescription(dto.description());
+        task.setStatus(dto.status());
+        task.setAssignedUserId(dto.assignedUserId());
+        task.setPriority(dto.priority());
+        task.setStatus(dto.status());
+        taskRepository.save(task);
+    }
+
 }
