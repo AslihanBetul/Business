@@ -4,11 +4,12 @@ import com.businessapi.constants.messages.ErrorMessages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
 public record UserUpdateRequestDTO(
-        @NotBlank(message = ErrorMessages.AUTH_ID_CANT_BE_BLANK)
+        @NotNull(message = ErrorMessages.AUTH_ID_CANT_BE_NULL)
         Long authId,
         @Size(max = 40, message = ErrorMessages.FIRST_NAME_CANT_EXCEED_LENGTH)
         @NotBlank(message = ErrorMessages.FIRST_NAME_CANT_BE_BLANK)

@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class CustomerSaveFromUserModel {
     private Long authId;
     private Long userId;
+    private String firstName;
+    private String lastName;
     private EStatus status;
 
 }

@@ -11,6 +11,7 @@ import com.businessapi.service.RoleService;
 import com.businessapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class RoleController {
     @PostMapping(EndPoints.CREATE_USER_ROLE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından kullanıcı rolü eklenmesi",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<Boolean>> createUserRole(@RequestBody RoleCreateDTO roleCreateDTO){
+    public ResponseEntity<ResponseDTO<Boolean>> createUserRole(@RequestBody @Valid RoleCreateDTO roleCreateDTO){
         roleService.createUserRole(roleCreateDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message(SuccesMessages.ROLE_CREATED).build());
     }
@@ -38,7 +39,7 @@ public class RoleController {
     @PutMapping(EndPoints.UPDATE_USER_ROLE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "admin tarafından var olan bir rolun düzenlenmesi",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<Boolean>> updateUserRole(@RequestBody RoleUpdateRequestDTO roleUpdateRequestDTO){
+    public ResponseEntity<ResponseDTO<Boolean>> updateUserRole(@RequestBody @Valid RoleUpdateRequestDTO roleUpdateRequestDTO){
         roleService.updateUserRole(roleUpdateRequestDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message(SuccesMessages.ROLE_UPDATED).build());
     }
