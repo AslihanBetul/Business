@@ -4,6 +4,7 @@ import static com.businessapi.constants.EndPoints.*;
 
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
+import com.businessapi.dto.request.ResetPasswordRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +70,27 @@ public class AuthController {
                 .code(200)
                 .message("Succesfully deleted")
                 .build());
+    }
+
+@PostMapping(FORGETPASSWORD)
+    @Operation(
+           summary = "Forget password",
+           description = "Forgets the password of a user with the provided email. The email must be provided in the request body.")
+    public ResponseEntity<ResponseDTO<Boolean>> forgetPassword(@RequestParam String email) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+               .data(authService.forgetPassword(email))
+               .code(200)
+               .message("Password reset link sent")
+               .build());
+    }
+
+    @PostMapping (RESETPASSWORD)
+    @Operation(
+           summary = "Reset password",
+           description = "Resets the password of a user with the provided email and reset token. The email and reset token must be provided in the request body.")
+    public ResponseEntity<ResponseDTO<Boolean>> resetPassword(@RequestBody ResetPasswordRequestDTO dto){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+               .data(authService.resetPassword(dto)).code(200).message("Password reset successfully").build());
     }
 
 

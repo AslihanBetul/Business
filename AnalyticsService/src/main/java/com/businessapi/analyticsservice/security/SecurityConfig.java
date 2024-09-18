@@ -30,12 +30,15 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/webjars/**",
-                                "/api/dashboards/**",
-                                "/api/dataSources/**",
-                                "/api/reports/**",
-                                "/api/widgets/**",
-                                "/api/kpis/**",
-                                "/api/stocks/**"
+                                "/dev/v1/dashboards/**",
+                                "/dev/v1/dataSources/**",
+                                "/dev/v1/reports/**",
+                                "/dev/v1/widgets/**",
+                                "/dev/v1/kpis/**",
+                                "/dev/v1/stocks/**",
+                                "/dev/v1/finances/**,",
+                                "/dev/v1/hrm/**"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

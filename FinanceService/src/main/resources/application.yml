@@ -2,6 +2,11 @@ server:
   port: 9089
 
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: java14user
+    password: root
   security:
     user:
       name: admin
@@ -13,4 +18,4 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update

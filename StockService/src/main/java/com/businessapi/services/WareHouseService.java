@@ -56,7 +56,7 @@ public class WareHouseService
 
     public List<WareHouse> findAll(PageRequestDTO dto)
     {
-       return wareHouseRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+       return wareHouseRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public WareHouse findById(Long id)

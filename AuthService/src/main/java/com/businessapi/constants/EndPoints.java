@@ -14,6 +14,8 @@ public class EndPoints {
     public static final String REGISTER = "/register";
     public static final String VERIFYACCOUNT = "/verify-account";
     public static final String DELETE = "/delete";
+    public static final String RESETPASSWORD = "/reset-password" ;
+    public static final String FORGETPASSWORD = "/forget-password";
 
 
 

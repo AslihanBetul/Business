@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface SupplierRepository extends JpaRepository<Supplier, Long>
 {
-    List<Supplier> findAllByNameContainingIgnoreCase(String s, PageRequest of);
+    List<Supplier> findAllByNameContainingIgnoreCaseOrderByNameAsc(String s, PageRequest of);
 
 }

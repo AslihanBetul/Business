@@ -1,11 +1,13 @@
 package com.businessapi.util;
 
+import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
 import com.businessapi.entity.Role;
 import com.businessapi.entity.User;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.repository.RoleRepository;
 import com.businessapi.repository.UserRepository;
 
+import com.businessapi.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,12 +20,14 @@ import java.util.List;
 public class DemoData {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final UserService userService;
 
 
     @PostConstruct
     public void saveDate(){
         saveBaseRoles();
         saveSuperAdmin();
+        saveUsers();
     }
 
     private void saveSuperAdmin(){
@@ -63,6 +67,12 @@ public class DemoData {
     }
 
 
-
+    private void saveUsers(){
+        List<Long> roles = new ArrayList<>();
+        roles.add(4L);
+        roles.add(3L);
+        UserSaveRequestDTO user = new UserSaveRequestDTO("Salih","ER","ertugrulsaliher@gmail.com","123",roles);
+        userService.saveUser(user);
+    }
 
 }

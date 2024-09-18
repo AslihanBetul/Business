@@ -8,9 +8,10 @@ public class Endpoints
 
     //profiles
     public static final String DEV = "/dev";
+    public static final String MICROSERVICE = "/stock";
 
 
-    public static final String ROOT = DEV + VERSION;
+    public static final String ROOT = DEV + VERSION + MICROSERVICE;
 
     //controllers
 
@@ -33,4 +34,7 @@ public class Endpoints
     public static final String SAVE_BUY_ORDER = "/save-buy-order";
     public static final String SAVE_SELL_ORDER = "/save-sell-order";
     public static final String APPROVE_ORDER = "/approve-order";
+    public static final String CHANGE_AUTO_ORDER_MODE = "/change-auto-order-mode";
+    public static final String FIND_ALL_BUY_ORDERS = "/find-all-buy-orders";
+    public static final String FIND_ALL_SELL_ORDERS = "/find-all-sell-orders";
 }

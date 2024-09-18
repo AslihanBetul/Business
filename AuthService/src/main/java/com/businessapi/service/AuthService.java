@@ -2,11 +2,10 @@ package com.businessapi.service;
 
 
 
-import com.businessapi.RabbitMQ.Model.EmailAndPasswordModel;
-import com.businessapi.RabbitMQ.Model.EmailVerificationModel;
-import com.businessapi.RabbitMQ.Model.UserSaveFromAuthModel;
+import com.businessapi.RabbitMQ.Model.*;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
+import com.businessapi.dto.request.ResetPasswordRequestDTO;
 import com.businessapi.entity.Auth;
 
 
@@ -101,16 +100,17 @@ public class AuthService {
         // Return token if login is successful, throw exception otherwise
 
         Auth auth = authRepository.findOptionalByEmail(dto.email())
-                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthServiceException(EMAIL_OR_PASSWORD_WRONG));
 
-        if (auth.getStatus().equals(EStatus.PENDING))  {
+        if (auth.getStatus().equals(EStatus.PENDING) || auth.getStatus().equals(EStatus.DELETED))  {
 
             throw new AuthServiceException(USER_IS_NOT_ACTIVE);
 
 
         }
+
         if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
-            throw new AuthServiceException(INVALID_LOGIN_PARAMETER);
+            throw new AuthServiceException(EMAIL_OR_PASSWORD_WRONG);
         }
 
 
@@ -190,32 +190,79 @@ public class AuthService {
      */
 
   @RabbitListener(queues = "queueAuthMailUpdateFromUser")
-   public void updateEmail(Long authId,String email) {
-     Auth auth = authRepository.findById(authId)
+   public void updateEmail(AuthMailUpdateFromUser authMailUpdateFromUser) {
+     Auth auth = authRepository.findById(authMailUpdateFromUser.getAuthId())
                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
-      if (authRepository.existsByEmail(email)) {
+      if (authRepository.existsByEmail(authMailUpdateFromUser.getEmail())) {
            throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
        }
-     auth.setEmail(email);
+     auth.setEmail(authMailUpdateFromUser.getEmail());
        authRepository.save(auth);
   }
 
     /**
-     * Retrieves the email associated with the given authId and sends it to a RabbitMQ queue.
+     * Listener method that listens to email update messages from the RabbitMQ queue.
+     * Retrieves the email address associated with the provided authentication ID (authId).
      *
-     * @param authId The ID of the authentication entity whose email is to be retrieved.
-     * @return The email address associated with the provided authId.
-     * @throws AuthServiceException if the user with the given authId is not found.
+     * @param authId The ID of the authentication record whose email is to be retrieved.
+     * @return EmailResponseModel A model containing the email address for the corresponding authentication record.
+     * @throws AuthServiceException If the user is not found or any other error occurs.
      */
-    public String getEmailByAuthId(Long authId) {
+
+    @RabbitListener(queues ="queueEmailFromCustomer" )
+    public EmailResponseModel getEmailByAuthId(Long authId) {
 
         Auth auth = authRepository.findById(authId)
                 .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
        String email = auth.getEmail();
-        rabbitTemplate.convertAndSend( " businessDirectExchange","keyEmailFromCustomer",email);
-       return email;
+
+      return  EmailResponseModel.builder()
+               .email(email)
+               .build();
+
 
     }
+
+    public Boolean forgetPassword(String email) {
+        Auth auth = authRepository.findOptionalByEmail(email)
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+
+        if (auth.getStatus() == EStatus.ACTIVE) {
+            rabbitTemplate.convertAndSend("businessDirectExchange", "keyForgetPassword", email);
+            return true;
+        } else {
+            throw new AuthServiceException(USER_IS_NOT_ACTIVE);
+        }
+    }
+
+    public Boolean resetPassword(ResetPasswordRequestDTO dto) {
+        String email = jwtTokenManager.getEmailFromToken(dto.token()).orElseThrow(() -> new AuthServiceException(INVALID_TOKEN));
+        Auth auth = authRepository.findOptionalByEmail(email)
+                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        if (!dto.newPassword().equals(dto.rePassword())) {
+            throw new AuthServiceException(PASSWORD_MISMATCH);
+        }
+
+        String encodedPassword = passwordEncoder.bCryptPasswordEncoder().encode(dto.newPassword());
+        auth.setPassword(encodedPassword);
+        authRepository.save(auth);
+        return true;
+    }
+
+    @RabbitListener(queues = "queueSaveAuthFromUser")
+    public Long saveAuthFromUser(SaveAuthFromUserModel model){
+        checkEmailExist(model.getEmail());
+        Auth auth = Auth.builder()
+                .email(model.getEmail())
+                .password(passwordEncoder.bCryptPasswordEncoder().encode(model.getPassword()))
+                .status(EStatus.ACTIVE)
+                .build();
+        authRepository.save(auth);
+        return auth.getId();
+    }
+
+
+
 
 
 }

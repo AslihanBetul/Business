@@ -23,13 +23,6 @@ public class ProductService
 {
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
-    private OrderService orderService;
-
-    @Autowired
-    public void setServices(@Lazy OrderService orderService)
-    {
-        this.orderService = orderService;
-    }
 
     public Product findById(Long id)
     {
@@ -51,6 +44,12 @@ public class ProductService
                 .stockCount(dto.stockCount())
                 .minimumStockLevel(dto.minimumStockLevel())
                 .build());
+        return true;
+    }
+
+    public Boolean save(Product product)
+    {
+        productRepository.save(product);
         return true;
     }
 
@@ -95,23 +94,31 @@ public class ProductService
 
     public List<Product> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseAndStatusOrderByName(dto.searchText(), EStatus.ACTIVE, PageRequest.of(dto.page(), dto.size()));
     }
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
     {
-        List<Product> productList = productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
-
-        productList.forEach(product ->
-        {
-            if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
-            {
-                //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
-                orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));
-                product.setIsProductAutoOrdered(true);
-                productRepository.save(product);
-            }
-        });
-        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCase(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
+
+    public Boolean changeAutoOrderMode(Long id)
+    {
+
+        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
+        product.setIsAutoOrderEnabled(!product.getIsAutoOrderEnabled());
+        productRepository.save(product);
+        return true;
+    }
+
+    public List<Product> findAllByMinimumStockLevelAndStatus(EStatus status)
+    {
+        return productRepository.findAllByMinimumStockLevelAndStatus(status);
+    }
+
+    public List<Product> findAllByProductNameContainingIgnoreCase(String name)
+    {
+        return productRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(name);
+    }
+
 }
