@@ -52,6 +52,7 @@ public class UserService {
         user.setAuthId(authId);
 
         userRepository.save(user);
+        isUserCustomer(user);
     }
 
     public void deleteUser(UserDeleteRequestDTO userDeleteRequestDTO) {
