@@ -16,7 +16,6 @@ java {
 repositories {
     mavenCentral()
 }
-
 dependencies {
     // Spring Boot starter'lar (temel bağımlılıklar)
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -33,15 +32,11 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-
     // JWT
     implementation 'com.auth0:java-jwt:4.4.0'
 
     // Springdoc OpenAPI UI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-
 }
 
 tasks.named('test') {
