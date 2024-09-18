@@ -21,13 +21,13 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping
+    @PostMapping(CREATE_NOTIFICATION)
     public ResponseEntity<Void> createNotification(@RequestBody NotificationRequestDto dto) {
         notificationService.createNotification(dto.getUserId(), dto.getTitle(),  dto.getMessage());
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping(GET_NOTIFICATION_FOR_USERID)
     public ResponseEntity<List<Notification>> getNotifications(@PathVariable @RequestParam Long userId) {
         List<Notification> notifications = notificationService.getNotifications(userId);
         return ResponseEntity.ok(notifications);
@@ -59,7 +59,7 @@ public class NotificationController {
     }
 
     // Okunmamış bildirimlerin sayısını döndüren endpoint
-    @GetMapping("/unread/count")
+    @GetMapping(GET_UNREAD_COUNT)
     public long getUnreadNotificationCount() {
         return notificationService.getUnreadNotificationCount();
     }
