@@ -102,12 +102,13 @@ public class AuthService {
         Auth auth = authRepository.findOptionalByEmail(dto.email())
                 .orElseThrow(() -> new AuthServiceException(EMAIL_OR_PASSWORD_WRONG));
 
-        if (auth.getStatus().equals(EStatus.PENDING))  {
+        if (auth.getStatus().equals(EStatus.PENDING) || auth.getStatus().equals(EStatus.DELETED))  {
 
             throw new AuthServiceException(USER_IS_NOT_ACTIVE);
 
 
         }
+
         if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
             throw new AuthServiceException(EMAIL_OR_PASSWORD_WRONG);
         }
@@ -189,13 +190,13 @@ public class AuthService {
      */
 
   @RabbitListener(queues = "queueAuthMailUpdateFromUser")
-   public void updateEmail(Long authId,String email) {
-     Auth auth = authRepository.findById(authId)
+   public void updateEmail(AuthMailUpdateFromUser authMailUpdateFromUser) {
+     Auth auth = authRepository.findById(authMailUpdateFromUser.getAuthId())
                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
-      if (authRepository.existsByEmail(email)) {
+      if (authRepository.existsByEmail(authMailUpdateFromUser.getEmail())) {
            throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
        }
-     auth.setEmail(email);
+     auth.setEmail(authMailUpdateFromUser.getEmail());
        authRepository.save(auth);
   }
 
@@ -226,8 +227,12 @@ public class AuthService {
         Auth auth = authRepository.findOptionalByEmail(email)
                 .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
 
-        rabbitTemplate.convertAndSend("businessDirectExchange","keyForgetPassword",email );
-        return true;
+        if (auth.getStatus() == EStatus.ACTIVE) {
+            rabbitTemplate.convertAndSend("businessDirectExchange", "keyForgetPassword", email);
+            return true;
+        } else {
+            throw new AuthServiceException(USER_IS_NOT_ACTIVE);
+        }
     }
 
     public Boolean resetPassword(ResetPasswordRequestDTO dto) {
@@ -250,6 +255,7 @@ public class AuthService {
         Auth auth = Auth.builder()
                 .email(model.getEmail())
                 .password(passwordEncoder.bCryptPasswordEncoder().encode(model.getPassword()))
+                .status(EStatus.ACTIVE)
                 .build();
         authRepository.save(auth);
         return auth.getId();

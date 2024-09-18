@@ -1,4 +1,4 @@
-package com.businessapi.config.security;
+package com.businessapi.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,15 +19,14 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
 
-                        .requestMatchers("/swagger-ui/**","/dev/v1/auth/**","/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**","/dev/v1/notifications/**","/v3/api-docs/**").permitAll()
 
                         //local host
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.disable());
+                        .csrf(csrf -> csrf.disable());
 
-        return httpSecurity.build();
+		return httpSecurity.build();
 
     }
 }
-
 

@@ -2,8 +2,10 @@ package com.businessapi.controller;
 
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.CustomerResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.entity.Customer;
 import com.businessapi.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +37,12 @@ public class CustomerController {
 
     @PostMapping(FINDALL)
     @Operation(summary = "Find all customers",description = "Find all customers")
-    public ResponseEntity<ResponseDTO<List<CustomerResponseDTO>>> findAll() {
-        return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseDTO>>builder()
-                .data(customerService.findAll())
+    public ResponseEntity<ResponseDTO<List<Customer>>> findAll(@RequestBody PageRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
+                .data(customerService.findAll(dto))
                 .code(200)
-                .message("Customers found successfully").build());
+                .message("Customers found successfully")
+                .build());
     }
     @PostMapping(FINDBYID)
     @Operation(summary = "Find customer by id",description = "Find customer by id")
@@ -49,14 +52,7 @@ public class CustomerController {
                 .code(200)
                 .message("Customer found successfully").build());
     }
-    @GetMapping(FINDBYNAME)
-    @Operation(summary = "Find customer by name",description = "Find customer by name")
-    public ResponseEntity<ResponseDTO<List<CustomerResponseDTO>>> findByFirstName(@RequestParam String firstName) {
-        return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseDTO>>builder()
-                .data(customerService.findByFirstName(firstName))
-                .code(200)
-                .message("Customer found successfully").build());
-    }
+
 
     @PutMapping(UPDATE)
     @Operation(summary = "Update customer by token",description = "Update customer by token")

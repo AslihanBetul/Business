@@ -52,6 +52,7 @@ public class UserService {
         user.setAuthId(authId);
 
         userRepository.save(user);
+        isUserCustomer(user);
     }
 
     public void deleteUser(UserDeleteRequestDTO userDeleteRequestDTO) {
@@ -126,7 +127,12 @@ public class UserService {
     private void isUserCustomer(User user) {
         user.getRole().forEach(role -> {
             if(role.getRoleName().equals("CUSTOMER")){
-                sendUserInfoForSaveCustomer(CustomerSaveFromUserModel.builder().authId(user.getAuthId()).userId(user.getId()).status(user.getStatus()).build());
+                sendUserInfoForSaveCustomer(CustomerSaveFromUserModel.builder()
+                        .authId(user.getAuthId())
+                        .userId(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .status(user.getStatus()).build());
             }
         });
     }

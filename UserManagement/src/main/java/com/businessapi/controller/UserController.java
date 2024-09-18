@@ -11,6 +11,7 @@ import com.businessapi.dto.responseDTOs.ResponseDTO;
 import com.businessapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class UserController {
     @PostMapping(EndPoints.SAVE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından kullanıcı oluşturma",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<Boolean>> saveUser(@RequestBody UserSaveRequestDTO userSaveRequestDTO){
+    public ResponseEntity<ResponseDTO<Boolean>> saveUser(@RequestBody @Valid UserSaveRequestDTO userSaveRequestDTO){
         userService.saveUser(userSaveRequestDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message(SuccesMessages.USER_SAVED).build());
     }
@@ -40,7 +41,7 @@ public class UserController {
     @PutMapping(EndPoints.UPDATE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','UNASSIGNED')")
     @Operation(summary = "AuthId'si verilen kullanıcıların bilgilerinin güncellenmesi",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<Boolean>> updateUser(@RequestBody UserUpdateRequestDTO userUpdateRequestDTO){
+    public ResponseEntity<ResponseDTO<Boolean>> updateUser(@RequestBody @Valid UserUpdateRequestDTO userUpdateRequestDTO){
         userService.updateUser(userUpdateRequestDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message(SuccesMessages.USER_UPDATED).build());
     }
@@ -65,7 +66,7 @@ public class UserController {
     @PutMapping("/add-role-to-user")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Admin tarafından tüm rollerin görüntülenmesi için gerekli istek",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<Boolean>> addRoleToUser(@RequestBody AddRoleToUserRequestDTO addRoleToUserRequestDTO){
+    public ResponseEntity<ResponseDTO<Boolean>> addRoleToUser(@RequestBody  AddRoleToUserRequestDTO addRoleToUserRequestDTO){
         userService.addRoleToUser(addRoleToUserRequestDTO);
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("Role added to user").build());
     }
