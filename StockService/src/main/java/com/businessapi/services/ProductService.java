@@ -49,7 +49,7 @@ public class ProductService
 
     public Boolean save(Product product)
     {
-      productRepository.save(product);
+        productRepository.save(product);
         return true;
     }
 
@@ -94,7 +94,7 @@ public class ProductService
 
     public List<Product> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseOrderByName(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseAndStatusOrderByName(dto.searchText(), EStatus.ACTIVE, PageRequest.of(dto.page(), dto.size()));
     }
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
@@ -110,6 +110,7 @@ public class ProductService
         productRepository.save(product);
         return true;
     }
+
     public List<Product> findAllByMinimumStockLevelAndStatus(EStatus status)
     {
         return productRepository.findAllByMinimumStockLevelAndStatus(status);

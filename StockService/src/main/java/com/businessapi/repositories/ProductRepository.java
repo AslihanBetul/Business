@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long>
 {
-    List<Product> findAllByNameContainingIgnoreCaseOrderByName(String s, PageRequest of);
+    List<Product> findAllByNameContainingIgnoreCaseAndStatusOrderByName(String s, EStatus status, PageRequest of);
     @Query("SELECT p FROM Product p WHERE p.stockCount < p.minimumStockLevel AND p.status = :status AND p.name ILIKE %:name% ORDER BY p.name ASC")
     List<Product> findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(
             EStatus status, String name, PageRequest of);
