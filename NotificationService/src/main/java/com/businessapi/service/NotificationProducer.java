@@ -6,6 +6,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class NotificationProducer {
 
@@ -16,9 +19,12 @@ public class NotificationProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendNotification(String userId, String message) {
+    public void sendNotification(Long userId, String title, String message) {
+        List<Long> userIdsList = new ArrayList<>();
+        userIdsList.add(userId);
         RabbitMQNotification notification = RabbitMQNotification.builder()
-                .userId(userId)
+                .userIds(userIdsList)
+                .title(title)
                 .message(message)
                 .build();
 
