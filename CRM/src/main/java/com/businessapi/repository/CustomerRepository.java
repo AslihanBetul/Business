@@ -1,6 +1,7 @@
 package com.businessapi.repository;
 
 import com.businessapi.entity.Customer;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByFirstNameContainingIgnoreCase(String firstName);
-    Optional<List<Customer>> findCustomerByFirstNameContainingIgnoreCase(String firstName);
+
+    List<Customer> findAllByFirstNameContainingIgnoreCase(String firstName, PageRequest pageRequest);
 
 }
