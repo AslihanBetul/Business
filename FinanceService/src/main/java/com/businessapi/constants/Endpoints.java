@@ -18,6 +18,8 @@ public class Endpoints {
     public static final String FINANCIALREPORT = "/financial-report";
     public static final String INVOICE = "/invoice";
     public static final String TAX = "/tax";
+    public static final String INCOME = "/income";
+    public static final String DECLARATION = "/declaration";
 
 
     //methods
@@ -26,6 +28,14 @@ public class Endpoints {
     public static final String DELETE = "/delete";
     public static final String UPDATE = "/update";
     public static final String FIND_ALL = "/find-all";
-
     public static final String FIND_BY_ID = "/find-by-id";
+    public static final String FIND_BY_CATEGORY = "/find-by-category";
+    public static final String APPROVE = "/approve";
+    public static final String REJECT = "/reject";
+    public static final String CALCULATE = "/calculate";
+    public static final String FIND_BY_DATE = "/find-by-date";
+    public static final String CREATE_FOR_INCOME_TAX = "/create-for-income-tax";
+    public static final String CREATE_FOR_VAT = "/create-for-vat";
+    public static final String CREATE_FOR_CORPORATE_TAX = "/create-for-corporate-tax";
+    public static final String COMPARE = "/compare";
 }

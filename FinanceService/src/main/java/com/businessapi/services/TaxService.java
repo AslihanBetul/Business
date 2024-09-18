@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -53,5 +54,37 @@ public class TaxService {
 
     public Tax findById(Long id) {
         return taxRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.TAX_NOT_FOUND));
+    }
+
+    public BigDecimal calculateIncomeTax(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.valueOf(110000)) < 0) {
+            return amount.multiply(BigDecimal.valueOf(0.15));
+        }
+        else if (amount.compareTo(BigDecimal.valueOf(110000)) > 0 && amount.compareTo(BigDecimal.valueOf(230000)) < 0) {
+            return amount.multiply(BigDecimal.valueOf(0.20));
+        }
+        else if (amount.compareTo(BigDecimal.valueOf(230000)) > 0 && amount.compareTo(BigDecimal.valueOf(580000)) < 0) {
+            return amount.multiply(BigDecimal.valueOf(0.27));
+        }
+        else if (amount.compareTo(BigDecimal.valueOf(580000)) > 0 && amount.compareTo(BigDecimal.valueOf(3000000)) < 0) {
+            return amount.multiply(BigDecimal.valueOf(0.35));
+        }
+        else {
+            return amount.multiply(BigDecimal.valueOf(0.40));
+        }
+    }
+
+    public BigDecimal calculateVat(BigDecimal amount) {
+        return amount.multiply(BigDecimal.valueOf(0.20));
+    }
+
+    public BigDecimal calculateCorporateTax(BigDecimal amount) {
+        return amount.multiply(BigDecimal.valueOf(0.25));
+    }
+
+    public Boolean calculateTax(Long id, BigDecimal amount) {
+        Tax tax = taxRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.TAX_NOT_FOUND));
+        BigDecimal taxedAmount = amount.multiply(tax.getTaxRate());
+        return true;
     }
 }

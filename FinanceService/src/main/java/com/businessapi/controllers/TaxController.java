@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -72,6 +73,17 @@ public class TaxController {
         return ResponseEntity.ok(ResponseDTO
                 .<Tax>builder()
                 .data(taxService.findById(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(CALCULATE)
+    @Operation(summary = "Calculates the tax amount with respect to the given tax id and amount")
+    public ResponseEntity<ResponseDTO<Boolean>> calculateTax(Long id, BigDecimal amount) {
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(taxService.calculateTax(id, amount))
                 .message("Success")
                 .code(200)
                 .build());

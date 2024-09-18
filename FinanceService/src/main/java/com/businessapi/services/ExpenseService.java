@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +23,7 @@ public class ExpenseService {
 
     public Boolean save(ExpenseSaveRequestDTO dto) {
         Expense expense = Expense.builder()
+                .expenseCategory(dto.expenseCategory())
                 .expenseDate(dto.expenseDate())
                 .amount(dto.amount())
                 .description(dto.description())
@@ -53,5 +56,40 @@ public class ExpenseService {
 
     public Expense findById(Long id) {
         return expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
+    }
+
+    public Boolean findByCategory(String category) {
+        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategory(category);
+        if (expensesByCategory.isEmpty()) {
+            throw new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND);
+        }
+        return true;
+    }
+
+    public Boolean approve(Long id) {
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
+        expense.setStatus(EStatus.APPROVED);
+        expenseRepository.save(expense);
+        return true;
+    }
+
+    public Boolean reject(Long id) {
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
+        expense.setStatus(EStatus.REJECTED);
+        expenseRepository.save(expense);
+        return true;
+    }
+
+    public List<Expense> findByDate(LocalDate startDate, LocalDate endDate) {
+        return expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
+    }
+
+    public BigDecimal calculateTotalExpenseBetweenDates(LocalDate startDate, LocalDate endDate) {
+        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
+        BigDecimal totalExpense = BigDecimal.ZERO;
+        for (Expense expense : expenseList) {
+            totalExpense = totalExpense.add(expense.getAmount());
+        }
+        return totalExpense;
     }
 }
