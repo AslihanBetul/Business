@@ -1,8 +1,6 @@
 package com.bilgeadam.businessapi.entity;
 
-import com.bilgeadam.businessapi.entity.enums.EPriority;
 import com.bilgeadam.businessapi.entity.enums.EStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,51 +10,32 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Entity
-@Table(name = "tbltasks")
-public class Task {
+@Table(name = "tblequipments")
+public class Equipment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //private Long projectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task task;
 
     private String name;
-
-    @Column(length = 60)
     private String description;
-
-    private Long assignedUserId;
-
-    private Long createdUserId; //scrum master
-
     @CreationTimestamp
     private LocalDateTime createAt;
 
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
-    private LocalDateTime endDate;
-
-    @Enumerated(EnumType.STRING)
-    EPriority priority;
-
     @Enumerated(EnumType.STRING)
     EStatus status;
-
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    @JsonIgnore //sonsuz döngüyü engeller
-    private Project project;
-
-
-
 
 
 

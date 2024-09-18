@@ -46,6 +46,12 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
+    private Long createdUserId;
+
+    //private LocalDateTime milestone;
+
+
+
 
 
 

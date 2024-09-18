@@ -19,7 +19,11 @@ public class Milestone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long projectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
+
     private String name;
     private String description;
     private LocalDateTime targetDate;

@@ -34,9 +34,7 @@ public class ProjectController {
 
         return ResponseEntity.ok(projectService.findAllProjects());
 
-
     }
-
 
     @PutMapping(UPDATE)
     @CrossOrigin("*")
@@ -50,7 +48,11 @@ public class ProjectController {
     public ResponseEntity<String> deleteProject(@RequestBody Long id){
         projectService.deleteById(id);
         return ResponseEntity.ok("proje silindi");
+
     }
+
+
+
 
 
 
