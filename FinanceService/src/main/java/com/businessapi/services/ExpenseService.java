@@ -4,6 +4,7 @@ import com.businessapi.dto.request.ExpenseSaveRequestDTO;
 import com.businessapi.dto.request.ExpenseUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.entity.Expense;
+import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +31,9 @@ public class ExpenseService {
                 .description(dto.description())
                 .build();
 
+        if (dto.expenseCategory().equals(EExpenseCategory.TAX)) {
+            expense.setStatus(EStatus.APPROVED);
+        }
         expenseRepository.save(expense);
         return true;
     }
@@ -58,12 +63,12 @@ public class ExpenseService {
         return expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
     }
 
-    public Boolean findByCategory(String category) {
-        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategory(category);
+    public List<Expense> findByCategory(EExpenseCategory expenseCategory) {
+        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategory(expenseCategory);
         if (expensesByCategory.isEmpty()) {
             throw new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND);
         }
-        return true;
+        return expensesByCategory;
     }
 
     public Boolean approve(Long id) {
@@ -85,9 +90,15 @@ public class ExpenseService {
     }
 
     public BigDecimal calculateTotalExpenseBetweenDates(LocalDate startDate, LocalDate endDate) {
-        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
+        List<Expense> allExpenseList = expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
         BigDecimal totalExpense = BigDecimal.ZERO;
-        for (Expense expense : expenseList) {
+        List<Expense> approvedExpenseList = new ArrayList<>();
+        for (Expense expense : allExpenseList) {
+            if (expense.getStatus().equals(EStatus.APPROVED)) {
+                approvedExpenseList.add(expense);
+            }
+        }
+        for (Expense expense : approvedExpenseList) {
             totalExpense = totalExpense.add(expense.getAmount());
         }
         return totalExpense;

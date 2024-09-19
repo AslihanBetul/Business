@@ -28,6 +28,8 @@ public class FinancialReport extends BaseEntity{
     LocalDate endDate;
     BigDecimal totalIncome;
     BigDecimal totalOutcome;
+    BigDecimal totalTax;
     BigDecimal totalProfit;
+    String message;
 
 }
