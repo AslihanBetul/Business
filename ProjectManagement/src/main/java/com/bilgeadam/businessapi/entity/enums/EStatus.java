@@ -1,8 +1,10 @@
 package com.bilgeadam.businessapi.entity.enums;
 
 public enum EStatus {
+    STARTED,
     ACTIVE,
     INACTIVE,
+    FINISHED,
     DECLINED,
     PENDING,
     DELETED,

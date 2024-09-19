@@ -6,11 +6,17 @@ import com.bilgeadam.businessapi.dto.response.TaskResponseDTO;
 import com.bilgeadam.businessapi.dto.response.TaskSaveResponseDTO;
 import com.bilgeadam.businessapi.entity.Project;
 import com.bilgeadam.businessapi.entity.Task;
+import com.bilgeadam.businessapi.entity.enums.EStatus;
 import com.bilgeadam.businessapi.repository.ProjectRepository;
 import com.bilgeadam.businessapi.repository.TaskRepository;
 import com.bilgeadam.businessapi.utility.ServiceManager;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,6 +87,43 @@ private final ProjectRepository projectRepository;
         task.setPriority(dto.priority());
         task.setStatus(dto.status());
         taskRepository.save(task);
+    }
+
+    public ResponseEntity<String> startTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task bulunamadı: " + taskId));
+        task.setStatus(EStatus.STARTED);
+        task.setStartDate(LocalDateTime.now());
+        taskRepository.save(task);
+        return ResponseEntity.ok("Task başlatıldı: " + taskId);
+    }
+
+
+    public ResponseEntity<String> endTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task bulunamadı: " + taskId));
+        task.setStatus(EStatus.FINISHED);
+        task.setEndDate(LocalDateTime.now());
+        taskRepository.save(task);
+        return ResponseEntity.ok("Task bitti " + taskId);
+    }
+
+
+    public ResponseEntity<String> calculateTimeTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task bulunamadı: " + taskId));
+
+        if (task.getStartDate() == null){
+            return ResponseEntity.ok("Task henüz başlamadı: " + taskId);
+        }
+
+        if(task.getStatus()== EStatus.FINISHED){
+            Duration duration = Duration.between(task.getStartDate(), task.getEndDate());
+            return ResponseEntity.ok("Task süresi: " + duration.toMinutes() + " dakika");
+        }
+        Duration duration = Duration.between(task.getStartDate(), LocalDateTime.now());
+        return ResponseEntity.ok("Task süresi: " + duration.toMinutes() + " dakika");
+
     }
 
 }

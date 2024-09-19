@@ -41,7 +41,9 @@ public class Task {
     @UpdateTimestamp
     private LocalDateTime updateAt;
 
+    private LocalDateTime startDate;
     private LocalDateTime endDate;
+
 
     @Enumerated(EnumType.STRING)
     EPriority priority;

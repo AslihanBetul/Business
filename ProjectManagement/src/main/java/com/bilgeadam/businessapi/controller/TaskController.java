@@ -56,6 +56,27 @@ public class TaskController {
                 priority(dto.priority()).status(dto.status()).build());
     }
 
+    @GetMapping("start-task/{taskId}")
+    @CrossOrigin("*")
+    public ResponseEntity<String> startTask(@PathVariable Long taskId) {
+        return taskService.startTask(taskId);
+    }
+
+    @GetMapping("end-task/{taskId}")
+    @CrossOrigin("*")
+    public ResponseEntity<String> endTask(@PathVariable Long taskId) {
+        return taskService.endTask(taskId);
+    }
+
+    @GetMapping("calculate-task-time/{taskId}")
+    @CrossOrigin("*")
+    public ResponseEntity<String> calculateTimeTask(@PathVariable Long taskId) {
+        return taskService.calculateTimeTask(taskId);
+    }
+
+
+
+
 
 
 
