@@ -76,4 +76,38 @@ public class ExpenseController {
                 .code(200)
                 .build());
     }
+
+    @PostMapping(FIND_BY_CATEGORY)
+    @Operation(summary = "Finds expenses related to a specific category")
+    public ResponseEntity<ResponseDTO<Boolean>> findByCategory(String category) {
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(expenseService.findByCategory(category))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(APPROVE)
+    @Operation(summary = "Approves an expense")
+    public ResponseEntity<ResponseDTO<Boolean>> approve(Long id) {
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(expenseService.approve(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(REJECT)
+    @Operation(summary = "Rejects an expense")
+    public ResponseEntity<ResponseDTO<Boolean>> reject(Long id) {
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(expenseService.reject(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }

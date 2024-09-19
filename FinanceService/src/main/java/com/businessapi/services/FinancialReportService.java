@@ -12,21 +12,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FinancialReportService {
     private final FinancialRepository financialRepository;
+    private final IncomeService incomeService;
+    private final ExpenseService expenseService;
 
     public Boolean save(FinancialReportSaveRequestDTO dto) {
+        BigDecimal totalIncome = incomeService.calculateTotalIncomeBetweenDates(dto.startDate(), dto.endDate());
+        BigDecimal totalOutcome = expenseService.calculateTotalExpenseBetweenDates(dto.startDate(), dto.endDate());
         FinancialReport financialReport = FinancialReport.builder()
                 .financialReportType(dto.financialReportType())
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
-                .totalIncome(dto.totalIncome())
-                .totalOutcome(dto.totalOutcome())
-                .totalProfit(dto.totalProfit())
+                .totalIncome(totalIncome)
+                .totalOutcome(totalOutcome)
+                .totalProfit(totalIncome.subtract(totalOutcome))
                 .build();
 
         financialRepository.save(financialReport);
