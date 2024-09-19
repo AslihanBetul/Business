@@ -4,6 +4,7 @@ import com.businessapi.dto.request.InvoiceSaveRequestDTO;
 import com.businessapi.dto.request.InvoiceUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.entity.Invoice;
+import com.businessapi.entity.enums.EInvoiceStatus;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
@@ -59,6 +60,10 @@ public class InvoiceService {
 
     public Invoice findById(Long id) {
         return invoiceRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.INVOICE_NOT_FOUND));
+    }
+
+    public List<Invoice> findUnpaidAndPartiallyPaidInvoices() {
+        return invoiceRepository.findAllByInvoiceStatusIn(List.of(EInvoiceStatus.UNPAID, EInvoiceStatus.PARTIALLY_PAID));
     }
 }
 
