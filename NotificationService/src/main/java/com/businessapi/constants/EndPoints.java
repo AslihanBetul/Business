@@ -12,12 +12,12 @@ public class EndPoints {
 
     public static final String GET_ALL_NOTIFICATIONS = "/getallnotifications";
     public static final String GET_ALL_UNREAD_NOTIFICATIONS = "/getallunreadnotifications";
+    public static final String GET_UNREAD_COUNT = "/getallunreadnotifications";
+    public static final String GET_NOTIFICATION_FOR_USERID = "/getnotificationforuserıd";
+    public static final String CREATE_NOTIFICATION = "/createnotification";
 
 
     public static final String DELETE = "/delete";
     public static final String READ = "/read";
-
-
-
 
 }
