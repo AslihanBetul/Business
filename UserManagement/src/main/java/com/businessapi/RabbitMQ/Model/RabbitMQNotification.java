@@ -5,13 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RabbitMQNotification implements Serializable {
-    private Long userId;
+    private List<Long> userIds;
     private String message;
+    private String title;
 }
 
