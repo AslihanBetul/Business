@@ -5,6 +5,7 @@ import com.businessapi.dto.request.ExpenseUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Expense;
+import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.services.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -79,10 +80,10 @@ public class ExpenseController {
 
     @PostMapping(FIND_BY_CATEGORY)
     @Operation(summary = "Finds expenses related to a specific category")
-    public ResponseEntity<ResponseDTO<Boolean>> findByCategory(String category) {
+    public ResponseEntity<ResponseDTO<List<Expense>>> findByCategory(EExpenseCategory expenseCategory) {
         return ResponseEntity.ok(ResponseDTO
-                .<Boolean>builder()
-                .data(expenseService.findByCategory(category))
+                .<List<Expense>>builder()
+                .data(expenseService.findByCategory(expenseCategory))
                 .message("Success")
                 .code(200)
                 .build());

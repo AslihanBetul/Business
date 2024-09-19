@@ -77,4 +77,15 @@ public class FinancialReportController {
                 .build());
     }
 
+    @PostMapping(COMPARE)
+    @Operation(summary = "Compares given number of financial reports")
+    public ResponseEntity<ResponseDTO<FinancialReport>> compare(@RequestParam List<Long> ids) {
+        return ResponseEntity.ok(ResponseDTO
+                .<FinancialReport>builder()
+                .data(financialReportService.compare(ids))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }
