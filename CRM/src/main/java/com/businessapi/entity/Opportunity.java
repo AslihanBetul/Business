@@ -10,21 +10,19 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "tblcustomer")
+@Table(name = "tblopportunity")
 @EqualsAndHashCode(callSuper = true)
-public class Customer extends BaseEntity{
+public class Opportunity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String address;
+    private Long customerId;
+    private String name;
+    private String description;
+    private Double value;
+    private String stage;
+    private Double probability;
+    private Long responsibleUserId;
     @Enumerated(EnumType.STRING)
-    private EStatus status;
-    private Long userId;
-
-
-
+    EStatus status;
 }

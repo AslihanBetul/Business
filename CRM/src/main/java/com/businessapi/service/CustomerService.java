@@ -4,9 +4,7 @@ import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
 import com.businessapi.RabbitMQ.Model.CustomerResponseWithIdModel;
 import com.businessapi.RabbitMQ.Model.CustomerReturnId;
 import com.businessapi.RabbitMQ.Model.EmailResponseModel;
-import com.businessapi.dto.request.CustomerSaveDTO;
-import com.businessapi.dto.request.CustomerUpdateDTO;
-import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseDTO;
 import com.businessapi.entity.Customer;
 
@@ -21,11 +19,13 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -34,24 +34,35 @@ import java.util.stream.Collectors;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final JwtTokenManager jwtTokenManager;
+    private UserService userService;
 
-    @Lazy
-    private final UserService userService;
+    @Autowired
+    public void setService(@Lazy UserService service) {
+        this.userService = service;
+    }
+
     private final RabbitTemplate rabbitTemplate;
 
     // a record from the queue will come here //TEST
     public Boolean save(CustomerSaveDTO customerSaveDTO) {
-
         Customer customer = customerRepository.save(CustomerMapper.INSTANCE.customerSaveDTOToCustomer(customerSaveDTO));
         customer.setStatus(EStatus.ACTIVE);
         customerRepository.save(customer);
+        userService.addCustomerId(customerSaveDTO.userId(), customer.getId());
         return true;
     }
+    public List<Customer> findCustomerByUserId(Long userId) {
+        return customerRepository.findCustomersByUserId(userId);
+    }
 
-    // creates a customer ID by email for a registered customer from the user
-    @RabbitListener(queues = "queueSaveCustomerByEmail")
-    public CustomerReturnId saveEmail(EmailResponseModel model) {
-        Customer customer = customerRepository.save(Customer.builder().email(model.getEmail()).build());
+
+
+
+    public CustomerReturnId saveCustomerFromUser(SaveCustomerFromUserDTO dto) {
+        Customer customer = customerRepository.save(Customer.builder()
+                .email(dto.getEmail())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName()).build());
         return CustomerReturnId.builder().customerId(customer.getId()).build();
 
     }
@@ -61,14 +72,44 @@ public class CustomerService {
 
     // This method will return all customers
     public List<Customer> findAll(PageRequestDTO dto) {
-        return customerRepository.findAllByFirstNameContainingIgnoreCase(dto.searchText(), PageRequest.of(
-                dto.page(), dto.size()));
+            return customerRepository.findAllByFirstNameContainingIgnoreCaseOrderByFirstNameAsc(dto.searchText(), PageRequest.of(
+                    dto.page(), dto.size()
+            ));
+
 
 
     }
+    // This method will return all customers
+    public List<Customer> findAllTest(PageRequestTestDTO dto) {
+        Optional<Long> authId = jwtTokenManager.getIdFromToken(dto.token());
+        if (authId.isEmpty()) {
+            throw new CustomerServiceException(ErrorType.INVALID_TOKEN);
+        }else {
+            Long userId = userService.findByAuthId(authId.get());
+            return customerRepository.findCustomerByUserIdAndFirstNameContainingIgnoreCaseOrderByFirstNameAsc(userId, dto.searchText(), PageRequest.of(
+                    dto.page(), dto.size()
+            ));
+        }
+
+
+    }
+    // This method will return just customer by userId
+    public List<Customer> findAllTest2(String token) {
+        Optional<Long> authId = jwtTokenManager.getIdFromToken(token);
+        if (authId.isEmpty()) {
+            throw new CustomerServiceException(ErrorType.INVALID_TOKEN);
+        } else {
+            Long userId = userService.findByAuthId(authId.get());
+            return findCustomerByUserId(userId);
+        }
+    }
+
+//    public List<Customer> findAllCustomerForUser(Long userId) {
+//        return customerRepository.findAllByUserId(userId);
+//    }
 
     // This method will find customer by id
-    public CustomerResponseDTO findById(Long id) {
+    public CustomerResponseDTO findById(Long id)  {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
         return CustomerMapper.INSTANCE.customerToCustomerResponseDTO(customer);
     }
@@ -78,7 +119,7 @@ public class CustomerService {
 
     // This method will update customer by token //TEST
     public Boolean update(CustomerUpdateDTO customerUpdateDTO) {
-        Customer customer = findCustomerByToken(customerUpdateDTO.token());
+        Customer customer = customerRepository.findById(customerUpdateDTO.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
         if (customer.getStatus() != EStatus.DELETED && customer.getStatus() != EStatus.PENDING) {
             customer.setFirstName(customerUpdateDTO.firstName()!=null?customerUpdateDTO.firstName():customer.getFirstName());
             customer.setLastName(customerUpdateDTO.lastName()!=null?customerUpdateDTO.lastName():customer.getLastName());
@@ -93,17 +134,20 @@ public class CustomerService {
         }
     }
 
-    private Customer findCustomerByToken(String token) {
-        Long authId = getAuthIdFromToken(token);
-        Long customerId = userService.findByAuthIdForCustomer(authId);
-        return customerRepository.findById(customerId).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
-
-    }
+//    private User findUserByToken(String token) {
+//        Long authId = getAuthIdFromToken(token);
+//        Long customerId = userService.findByAuthIdForCustomer(authId);
+//        return customerRepository.findById(customerId).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+//
+//    }
 
 
     // This method will delete customer by token
-    public Boolean delete(String token) {
-        Customer customer = findCustomerByToken(token);
+    public Boolean delete(Long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        if (customer.getStatus() == EStatus.DELETED) {
+            throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_DELETED);
+        }
         customer.setStatus(EStatus.DELETED);
         return true;
     }

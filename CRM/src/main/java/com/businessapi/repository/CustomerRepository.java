@@ -13,6 +13,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByFirstNameContainingIgnoreCase(String firstName);
 
-    List<Customer> findAllByFirstNameContainingIgnoreCase(String firstName, PageRequest pageRequest);
+    List<Customer> findAllByFirstNameContainingIgnoreCaseOrderByFirstNameAsc(String firstName, PageRequest pageRequest);
+    List<Customer> findCustomerByUserIdAndFirstNameContainingIgnoreCaseOrderByFirstNameAsc(Long userId, String firstName, PageRequest pageRequest);
+
+    List<Customer> findCustomersByUserId(Long userId);
+
 
 }
