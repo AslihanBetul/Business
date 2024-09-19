@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class JwtUserDetails implements UserDetailsService {
 
     private final UserService userService;
-    private final CustomerService customerService;
+
 
 
     @Override
@@ -26,10 +26,10 @@ public class JwtUserDetails implements UserDetailsService {
     }
 
     public UserDetails loadUserByAuthid(Long authid) {
-        Long customerId = userService.findByAuthIdForCustomer(authid);
-        CustomerResponseDTO customer = customerService.findById(customerId);
+        Long userId = userService.findByAuthId(authid);
+         com.businessapi.entity.User user =userService.findById(userId);
         return User.builder()
-                    .username(customer.firstName() + customer.lastName())
+                    .username(user.getFirstName() + user.getLastName())
                     .password("")
                     .build();
     }

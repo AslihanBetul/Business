@@ -5,9 +5,7 @@ import com.businessapi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-
-import static com.businessapi.constants.EndPoints.SAVE;
-import static com.businessapi.constants.EndPoints.USER;
+import static com.businessapi.constants.EndPoints.*;
 
 @RestController
 @RequestMapping(USER)
@@ -20,5 +18,11 @@ public class UserController {
         userService.saveUserTest(dto);
         return true;
     }
+    @PostMapping(CREATETOKEN)
+    public String createToken(@RequestParam Long authId){
+
+        return userService.createATestToken(authId);
+    }
+
 
 }

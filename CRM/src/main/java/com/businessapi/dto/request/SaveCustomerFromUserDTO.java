@@ -1,6 +1,5 @@
-package com.businessapi.RabbitMQ.Model;
+package com.businessapi.dto.request;
 
-import com.businessapi.utility.enums.EStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class CustomerSaveFromUserModel {
-    private Long authId;
-    private Long userId;
+public class SaveCustomerFromUserDTO {
+
     private String firstName;
     private String lastName;
-    private EStatus status;
-
+    private String email;
 }

@@ -2,29 +2,27 @@ package com.businessapi.entity;
 
 import com.businessapi.utility.enums.EStatus;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import java.time.LocalDate;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @Data
 @Entity
-@Table(name = "tblcustomer")
-@EqualsAndHashCode(callSuper = true)
-public class Customer extends BaseEntity{
+@Table(name = "tblsalesactivity")
+public class SalesActivity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String address;
+    private Long opportunityId;
+    private String type;
+    private LocalDate date;
+    private String notes;
     @Enumerated(EnumType.STRING)
-    private EStatus status;
-    private Long userId;
-
-
-
+    EStatus status;
 }

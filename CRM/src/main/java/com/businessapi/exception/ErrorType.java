@@ -21,7 +21,11 @@ public enum ErrorType {
     // Customer errors
     CUSTOMER_EMAIL_EXIST(3000,"The email already exists" , HttpStatus.BAD_REQUEST),
     NOT_FOUNDED_CUSTOMER(3001,"The customer not found" ,HttpStatus.NOT_FOUND ),
-    CUSTOMER_NOT_ACTIVE(3002,"The customer may be inactive or deleted" ,HttpStatus.BAD_REQUEST );
+    CUSTOMER_NOT_ACTIVE(3002,"The customer may be inactive or deleted" ,HttpStatus.BAD_REQUEST ),
+    CUSTOMER_ALREADY_DELETED(3004,"The customer already deleted" ,HttpStatus.BAD_REQUEST ),
+
+    // User errors
+    USER_NOT_FOUND(4000,"The user not found" ,HttpStatus.BAD_REQUEST );
 
 
 
