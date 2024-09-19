@@ -9,6 +9,7 @@ include 'AnalyticsService'
 include 'ApiGatewayMicroServis'
 include 'HRMService'
 include 'NotificationService'
+include 'ProjectManagement'
 include 'YeniNotificationService'
 include 'WebSocket'
 
