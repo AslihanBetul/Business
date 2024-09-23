@@ -22,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -54,6 +52,28 @@ public class UserService {
         userRepository.save(user);
         isUserCustomer(user);
     }
+
+
+
+    @RabbitListener(queues = "queueSaveUserFromOtherServices")
+    public Long saveUserFromOtherServices(SaveUserFromOtherServicesModel saveUserFromOtherServicesModel) {
+        User user = UserMapper.INSTANCE.saveUserFromOtherServicesToUser(saveUserFromOtherServicesModel);
+        if(!(roleService.checkIfRoleExistsByRoleName(saveUserFromOtherServicesModel.getRole()))){
+            //TODO rol yoksa kaydetmek lazım? ancak Rolü de sadece adminler atar dedik kararvermeliyiz
+        } else{
+            //TODO rolü burada kullanıcıya ata
+        }
+        user.setStatus(EStatus.ACTIVE);
+        Long authId =(Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveAuthFromUser", SaveAuthFromUserModel.builder().email(saveUserFromOtherServicesModel.getEmail()).password(saveUserFromOtherServicesModel.getPassword()).build());
+        user.setAuthId(authId);
+        userRepository.save(user);
+        // sorgulanması gerekir isUserCustomer(user);
+        return authId;
+    }
+
+
+
+
 
     public void deleteUser(UserDeleteRequestDTO userDeleteRequestDTO) {
         User user = userRepository.findById(userDeleteRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));

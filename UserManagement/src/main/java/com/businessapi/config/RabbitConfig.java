@@ -56,6 +56,13 @@ public class RabbitConfig {
     public static final String NOTIFICATION_EXCHANGE = "notificationExchange";
     public static final String NOTIFICATION_ROUTING_KEY = "notificationKey";
 
+    //Diğer Servislerden  kullanıcı kaydetme talebi
+    public static final String queueSaveUserFromOtherServices = "queueSaveUserFromOtherServices";
+    public static final String keySaveUserFromOtherServices = "keySaveUserFromOtherServices";
+
+
+
+
     @Bean
     public Queue queue() {
         return new Queue(NOTIFICATION_QUEUE, false);
@@ -122,6 +129,10 @@ public class RabbitConfig {
         return new Queue(queueSaveAuthFromUser);
     }
 
+    @Bean
+    public Queue queueSaveUserFromOtherServices() {
+        return new Queue(queueSaveUserFromOtherServices);
+    }
 
 
 
@@ -162,6 +173,11 @@ public class RabbitConfig {
     @Bean
     public Binding bindingSaveAuthFromUser(Queue queueSaveAuthFromUser, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueSaveAuthFromUser).to(businessDirectExchange).with(keySaveAuthFromUser);
+    }
+
+    @Bean
+    public Binding bindingSaveUserFromOtherServices(Queue queueSaveUserFromOtherServices, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSaveUserFromOtherServices).to(businessDirectExchange).with(keySaveUserFromOtherServices);
     }
 
 

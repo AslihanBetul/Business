@@ -17,6 +17,8 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     List<GetAllRoleView> getAllRoles(EStatus status);
 
 
+    Boolean existsByRoleName(String roleName);
+
 
 
 

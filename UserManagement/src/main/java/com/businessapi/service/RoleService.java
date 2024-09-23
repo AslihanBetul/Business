@@ -79,6 +79,9 @@ public class RoleService {
     }
 
 
+    public Boolean checkIfRoleExistsByRoleName(String roleName) {
+        return roleRepository.existsByRoleName(roleName);
+    }
 
 
 
