@@ -1,8 +1,8 @@
-package com.business.service;
+package com.businessapi.service;
 
-import com.business.config.rabbit.model.EmailSendModal;
-import com.business.config.rabbit.model.EmailVerificationModel;
-import com.business.utilty.JwtTokenManager;
+import com.businessapi.config.rabbit.model.EmailSendModal;
+import com.businessapi.config.rabbit.model.EmailVerificationModel;
+import com.businessapi.utilty.JwtTokenManager;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

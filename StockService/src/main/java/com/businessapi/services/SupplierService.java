@@ -1,6 +1,6 @@
 package com.businessapi.services;
 
-import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
+
 import com.businessapi.RabbitMQ.Model.EmailSendModal;
 import com.businessapi.RabbitMQ.Model.SaveUserFromOtherServicesModel;
 import com.businessapi.dto.request.PageRequestDTO;
@@ -40,7 +40,8 @@ public class SupplierService
         //saving supplier as auth and user
         Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(),password,"SUPPLIER"));
         //sending password to suppliers
-        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(dto.email(), "Supplier Registration","You can use your mail ("+dto.email()+") to login. Your password is: " + password)+" You can check your orders in our panel." );
+        EmailSendModal emailObject =  new EmailSendModal(dto.email(), "Supplier Registration","You can use your mail ("+dto.email()+") to login. Your password is: " + password+" You can check your orders in our panel.");
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail",emailObject);
 
         supplierRepository.save(Supplier
                 .builder()
