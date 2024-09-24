@@ -12,4 +12,5 @@ include 'NotificationService'
 include 'ProjectManagement'
 include 'YeniNotificationService'
 include 'WebSocket'
+include 'ProjectManagement'
 

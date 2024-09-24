@@ -1,7 +1,8 @@
-package com.bilgeadam.service;
+package com.business.service;
 
-import com.bilgeadam.config.rabbit.model.EmailVerificationModel;
-import com.bilgeadam.utilty.JwtTokenManager;
+import com.business.config.rabbit.model.EmailSendModal;
+import com.business.config.rabbit.model.EmailVerificationModel;
+import com.business.utilty.JwtTokenManager;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +99,17 @@ public class MailSenderService {
         helper.setSubject("Şifrenizi Yenileyin");
 
 
+        javaMailSender.send(mimeMessage);
+    }
+
+    @RabbitListener(queues = "queueSendMail")
+    public void sendMail(EmailSendModal email) throws MessagingException {
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        helper.setText(email.getMessage());
+        helper.setTo(email.getEmail());
+        helper.setSubject(email.getSubject());
         javaMailSender.send(mimeMessage);
     }
 

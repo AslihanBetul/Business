@@ -1,4 +1,4 @@
-package com.bilgeadam.config.rabbit.model;
+package com.business.config.rabbit.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.bilgeadam.config.rabbit;
+package com.business.config.rabbit;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -18,6 +18,8 @@ public class Config {
     private final String keySendVerificationEmail = "keySendVerificationEmail";
     private final String queueForgetPassword = "queueForgetPassword";
     private final String keyForgetPassword = "keyForgetPassword";
+    private final String queueSendMail = "queueSendMail";
+    private final String keySendMail = "keySendMail";
 
     @Bean
     public DirectExchange directExchange(){
@@ -33,6 +35,14 @@ public class Config {
     public Binding bindingSendVerificationEmail(){
         return BindingBuilder.bind(queueSendVerificationEmail()).to(directExchange()).with(keySendVerificationEmail);
     }
+    @Bean
+    public Queue queueSendMail(){
+        return new Queue(queueSendMail);
+    }
+    @Bean
+    public Binding bindingKeySendMail(){
+        return BindingBuilder.bind(queueSendMail()).to(directExchange()).with(keySendMail);
+    }
 
     @Bean
     MessageConverter messageConverter(){
@@ -42,6 +52,7 @@ public class Config {
     public Queue queueForgetPassword() {
         return new Queue(queueForgetPassword);
     }
+
 
 
     @Bean
