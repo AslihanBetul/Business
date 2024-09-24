@@ -6,6 +6,7 @@ import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
+import com.businessapi.dto.response.SupplierOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.services.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -110,10 +111,10 @@ public class OrderController
 
     @PostMapping(FIND_ORDERS_OF_SUPPLIER)
     @Operation(summary = "Find all of the supplier's orders")
-    public ResponseEntity<ResponseDTO<List<Order>>> findOrdersOfSupplier(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<SupplierOrderResponseDTO>>> findOrdersOfSupplier(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Order>>builder()
+                .<List<SupplierOrderResponseDTO>>builder()
                 .data(orderService.findOrdersOfSupplier(dto))
                 .message("Success")
                 .code(200)

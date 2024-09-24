@@ -7,6 +7,7 @@ import com.businessapi.dto.request.OrderUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
+import com.businessapi.dto.response.SupplierOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.entities.Product;
 import com.businessapi.entities.Supplier;
@@ -183,7 +184,7 @@ public class OrderService
 
     }
 
-    public List<Order> findOrdersOfSupplier(PageRequestDTO dto)
+    public List<SupplierOrderResponseDTO> findOrdersOfSupplier(PageRequestDTO dto)
     {
 
 
@@ -191,6 +192,7 @@ public class OrderService
         Long authId = Long.parseLong(authentication.getName());
         Supplier supplier = supplierService.findByAuthId(authId);
 
-        return orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(),supplier.getId(),EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        return  orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+
     }
 }
