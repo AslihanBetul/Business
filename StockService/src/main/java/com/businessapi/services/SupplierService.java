@@ -118,4 +118,9 @@ public class SupplierService
         orderService.save(order);
         return true;
     }
+
+    public Supplier findByAuthId(Long authId)
+    {
+        return supplierRepository.findByAuthId(authId).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+    }
 }

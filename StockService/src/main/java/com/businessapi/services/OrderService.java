@@ -9,6 +9,7 @@ import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.entities.Product;
+import com.businessapi.entities.Supplier;
 import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -19,6 +20,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -178,5 +181,16 @@ public class OrderService
                 .sorted(Comparator.comparing(SellOrderResponseDTO::productName))
                 .collect(Collectors.toList());
 
+    }
+
+    public List<Order> findOrdersOfSupplier(PageRequestDTO dto)
+    {
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long authId = Long.parseLong(authentication.getName());
+        Supplier supplier = supplierService.findByAuthId(authId);
+
+        return orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(),supplier.getId(),EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 }
