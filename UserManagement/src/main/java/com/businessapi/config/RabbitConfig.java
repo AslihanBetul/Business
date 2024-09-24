@@ -179,7 +179,7 @@ public class RabbitConfig {
     public Binding bindingSaveUserFromOtherServices(Queue queueSaveUserFromOtherServices, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueSaveUserFromOtherServices).to(businessDirectExchange).with(keySaveUserFromOtherServices);
     }
--
+
 
 
     @Bean

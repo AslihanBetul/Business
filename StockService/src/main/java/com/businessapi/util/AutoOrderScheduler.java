@@ -33,14 +33,13 @@ public class AutoOrderScheduler
     public void AutoOrderByStockLevel() {
 
         List<Product> productList = productService.findAllByMinimumStockLevelAndStatus(EStatus.ACTIVE);
-        System.out.println("Scheduler worked");
         productList.forEach(product ->
         {
             if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
             {
                 //Sending suppliers email to inform them.
                 Supplier supplier = supplierService.findById(product.getSupplierId());
-                rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(supplier.getEmail(), "Auto Order", "Your product is below minimum stock level. We would like to order " + product.getMinimumStockLevel()*2 + " of it."));
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(supplier.getEmail(), "Auto Order", "Your product " + product.getName()+" is below minimum stock level. We would like to order " + product.getMinimumStockLevel()*2 + " of it."));
 
                 //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
                 orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));

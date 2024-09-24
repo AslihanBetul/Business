@@ -1,4 +1,4 @@
-package com.business.config.rabbit.model;
+package com.businessapi.config.rabbit.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -7,8 +7,10 @@ import com.businessapi.dto.request.OrderUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
+import com.businessapi.dto.response.SupplierOrderResponseDTO;
 import com.businessapi.entities.Order;
 import com.businessapi.entities.Product;
+import com.businessapi.entities.Supplier;
 import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -19,6 +21,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -177,6 +181,18 @@ public class OrderService
         return sellOrderResponseDTOList.stream()
                 .sorted(Comparator.comparing(SellOrderResponseDTO::productName))
                 .collect(Collectors.toList());
+
+    }
+
+    public List<SupplierOrderResponseDTO> findOrdersOfSupplier(PageRequestDTO dto)
+    {
+
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long authId = Long.parseLong(authentication.getName());
+        Supplier supplier = supplierService.findByAuthId(authId);
+
+        return  orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
 
     }
 }

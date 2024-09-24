@@ -19,3 +19,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+auth:
+  secret:
+    secret-key: ${JAVA_14_SECRET_KEY}
+    issuer: ${JAVA_14_ISSUER}

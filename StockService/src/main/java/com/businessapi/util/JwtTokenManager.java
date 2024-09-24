@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,8 +16,10 @@ import java.util.Optional;
 @Service
 public class JwtTokenManager
 {
-    private final String SECRETKEY ="secretkey";
-    private final String ISSUER ="workforce";
+    @Value("${auth.secret.secret-key}")
+    String SECRETKEY;
+    @Value("${auth.secret.issuer}")
+    String ISSUER;
     private final Long EXDATE = 1000L * 60 * 60 ; // 1 Hour
 
     public Optional<String> createToken (Long authId){
