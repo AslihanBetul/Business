@@ -58,12 +58,15 @@ public class UserService {
     @RabbitListener(queues = "queueSaveUserFromOtherServices")
     public Long saveUserFromOtherServices(SaveUserFromOtherServicesModel saveUserFromOtherServicesModel) {
         User user = UserMapper.INSTANCE.saveUserFromOtherServicesToUser(saveUserFromOtherServicesModel);
+        List<Role> userRoles = new ArrayList<>();
         if(!(roleService.checkIfRoleExistsByRoleName(saveUserFromOtherServicesModel.getRole()))){
             Role role = roleService.saveRole(Role.builder().roleName(saveUserFromOtherServicesModel.getRole().toUpperCase()).build());
-            user.getRole().add(role);
+            userRoles.add(role);
+            user.setRole(userRoles);
         } else{
             Role role = roleService.findByRoleName(saveUserFromOtherServicesModel.getRole());
-            user.getRole().add(role);
+            userRoles.add(role);
+            user.setRole(userRoles);
         }
         user.setStatus(EStatus.ACTIVE);
         Long authId =(Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveAuthFromUser", SaveAuthFromUserModel.builder().email(saveUserFromOtherServicesModel.getEmail()).password(saveUserFromOtherServicesModel.getPassword()).build());
