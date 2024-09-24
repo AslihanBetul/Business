@@ -1,5 +1,8 @@
 package com.businessapi.services;
 
+import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
+import com.businessapi.RabbitMQ.Model.EmailSendModal;
+import com.businessapi.RabbitMQ.Model.SaveUserFromOtherServicesModel;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.SupplierSaveRequestDTO;
 import com.businessapi.dto.request.SupplierUpdateRequestDTO;
@@ -11,9 +14,12 @@ import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.SupplierRepository;
+import com.businessapi.util.PasswordGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,16 +30,27 @@ public class SupplierService
     private final SupplierRepository supplierRepository;
     private final OrderService orderService;
     private final ProductService productService;
+    private final RabbitTemplate rabbitTemplate;
 
+
+    @Transactional
     public Boolean save(SupplierSaveRequestDTO dto)
     {
+        String password = PasswordGenerator.generatePassword();
+        //saving supplier as auth and user
+        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(),password,"SUPPLIER"));
+        //sending password to suppliers
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(dto.email(), "Supplier Registration","You can use your mail ("+dto.email()+") to login. Your password is: " + password)+" You can check your orders in our panel." );
 
         supplierRepository.save(Supplier
                 .builder()
                 .name(dto.name())
+                .surname(dto.surname())
+                .email(dto.email())
                 .contactInfo(dto.contactInfo())
                 .address(dto.address())
                 .notes(dto.notes())
+                .authId(authId)
                 .build());
 
         return true;
@@ -96,7 +113,7 @@ public class SupplierService
         Product product = productService.findById(order.getProductId());
         order.setStatus(EStatus.APPROVED);
         product.setIsProductAutoOrdered(false);
-        product.setStockCount(product.getStockCount()+order.getQuantity());
+        product.setStockCount(product.getStockCount() + order.getQuantity());
         orderService.save(order);
         return true;
     }

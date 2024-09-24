@@ -64,7 +64,7 @@ public class DemoDataGenerator
         productService.save(new ProductSaveRequestDTO(5L,1L,10L, "Levi's 501 Jeans", "Clothing", BigDecimal.valueOf(5000), 200, 30));
         productService.save(new ProductSaveRequestDTO(1L,5L,11L, "The Great Gatsby", "Book", BigDecimal.valueOf(300), 500, 50));
         productService.save(new ProductSaveRequestDTO(6L,1L,12L, "Apple Watch Series 7", "Smart Watch", BigDecimal.valueOf(30000), 75, 7));
-        productService.save(new ProductSaveRequestDTO(7L,3L,2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 100));
+        productService.save(new ProductSaveRequestDTO(11L,3L,2L, "Dyson V11 Vacuum", "Home Appliance", BigDecimal.valueOf(40000), 25, 100));
         productService.save(new ProductSaveRequestDTO(2L,5L,3L, "Bose QuietComfort 35", "Headphones", BigDecimal.valueOf(25000), 45, 100));
         productService.save(new ProductSaveRequestDTO(1L,1L,4L, "Adidas Soccer Ball", "Sports Equipment", BigDecimal.valueOf(1200), 150, 25));
         productService.save(new ProductSaveRequestDTO(2L,3L,5L, "Fitbit Charge 5", "Fitness Tracker", BigDecimal.valueOf(12000), 90, 10));
@@ -74,16 +74,17 @@ public class DemoDataGenerator
     private void supplierDemoData()
     {
 
-        supplierService.save(new SupplierSaveRequestDTO("Apple", "USA", "Apple address", "Some notes about Apple"));
-        supplierService.save(new SupplierSaveRequestDTO("Samsung", "South Korea", "Samsung HQ, Seoul", "Leading tech company in mobile devices"));
-        supplierService.save(new SupplierSaveRequestDTO("Sony", "Japan", "Sony Tower, Tokyo", "Renowned for electronics and entertainment products"));
-        supplierService.save(new SupplierSaveRequestDTO("Microsoft", "USA", "Microsoft Campus, Redmond", "Global leader in software development"));
-        supplierService.save(new SupplierSaveRequestDTO("Nike", "USA", "Nike World HQ, Oregon", "Top brand for sportswear and equipment"));
-        supplierService.save(new SupplierSaveRequestDTO("Adidas", "Germany", "Adidas HQ, Herzogenaurach", "Famous for sports shoes and apparel"));
-        supplierService.save(new SupplierSaveRequestDTO("Canon", "Japan", "Canon HQ, Tokyo", "Specializes in cameras and imaging solutions"));
-        supplierService.save(new SupplierSaveRequestDTO("HP", "USA", "HP HQ, Palo Alto", "Known for printers and personal computing devices"));
-        supplierService.save(new SupplierSaveRequestDTO("LG", "South Korea", "LG Twin Towers, Seoul", "Major producer of electronics and home appliances"));
-        supplierService.save(new SupplierSaveRequestDTO("Dell", "USA", "Dell Technologies, Texas", "Leading company in computers and IT infrastructure"));
+        supplierService.save(new SupplierSaveRequestDTO("Apple","Production" ,"apple@gmail.com", "USA","Apple address", "Some notes about Apple"));
+        supplierService.save(new SupplierSaveRequestDTO("Samsung", "Production" ,"samsung@gmail.com","South Korea", "Samsung HQ, Seoul", "Leading tech company in mobile devices"));
+        supplierService.save(new SupplierSaveRequestDTO("Sony", "Production" ,"sony@gmail.com","Japan", "Sony Tower, Tokyo", "Renowned for electronics and entertainment products"));
+        supplierService.save(new SupplierSaveRequestDTO("Microsoft","Production" ,"microsoft@gmail.com", "USA", "Microsoft Campus, Redmond", "Global leader in software development"));
+        supplierService.save(new SupplierSaveRequestDTO("Nike", "Production" ,"nike@gmail.com","USA", "Nike World HQ, Oregon", "Top brand for sportswear and equipment"));
+        supplierService.save(new SupplierSaveRequestDTO("Adidas", "Production" ,"adidas@gmail.com","Germany", "Adidas HQ, Herzogenaurach", "Famous for sports shoes and apparel"));
+        supplierService.save(new SupplierSaveRequestDTO("Canon", "Production" ,"canon@gmail.com","Japan", "Canon HQ, Tokyo", "Specializes in cameras and imaging solutions"));
+        supplierService.save(new SupplierSaveRequestDTO("HP", "Production" ,"hp@gmail.com","USA", "HP HQ, Palo Alto", "Known for printers and personal computing devices"));
+        supplierService.save(new SupplierSaveRequestDTO("LG", "Production" ,"lg@gmail.com","South Korea", "LG Twin Towers, Seoul", "Major producer of electronics and home appliances"));
+        supplierService.save(new SupplierSaveRequestDTO("Dell","Production" ,"dell@gmail.com", "USA", "Dell Technologies, Texas", "Leading company in computers and IT infrastructure"));
+        supplierService.save(new SupplierSaveRequestDTO("Can Deniz","Gumus" ,"celestialalpacastudios@gmail.com", "Turkey", "Istanbul", "Technology company"));
 
 
     }

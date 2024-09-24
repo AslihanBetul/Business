@@ -19,7 +19,10 @@ public class Supplier extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long authId;
+    String email;
     String name;
+    String surname;
     String contactInfo;
     String address;
     String notes;

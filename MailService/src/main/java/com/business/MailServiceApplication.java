@@ -1,4 +1,4 @@
-package com.bilgeadam;
+package com.business;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
