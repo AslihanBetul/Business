@@ -1,5 +1,6 @@
 package com.businessapi.mapper;
 
+import com.businessapi.RabbitMQ.Model.SaveUserFromOtherServicesModel;
 import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
 import com.businessapi.entity.User;
 import org.mapstruct.Mapper;
@@ -15,5 +16,10 @@ public interface UserMapper {
 
     @Mapping(target = "role",ignore = true)
     User userSaveRequestDTOToUser(UserSaveRequestDTO userSaveRequestDTO);
+
+    @Mapping(target = "role",ignore = true)
+    User saveUserFromOtherServicesToUser(SaveUserFromOtherServicesModel saveUserFromOtherServicesModel);
+
+
 
 }

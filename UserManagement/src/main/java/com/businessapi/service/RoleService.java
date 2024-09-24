@@ -79,8 +79,16 @@ public class RoleService {
     }
 
 
+    public Boolean checkIfRoleExistsByRoleName(String roleName) {
+        return roleRepository.existsByRoleNameIgnoreCase(roleName);
+    }
 
 
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
+    }
 
-
+    public Role findByRoleName(String roleName) {
+        return roleRepository.findByRoleNameIgnoreCase(roleName).orElseThrow(()-> new UserException(ErrorType.ROLE_NOT_FOUND));
+    }
 }
