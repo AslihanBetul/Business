@@ -205,9 +205,8 @@ public class OrderService
      */
     public List<BuyOrderResponseDTO> findAllBuyOrders(PageRequestDTO dto)
     {
-        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), memberId, EStatus.DELETED);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.memberId, EStatus.DELETED);
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
