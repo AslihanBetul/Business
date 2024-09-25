@@ -62,7 +62,7 @@ public class StockMovementService
         stockMovementRepository.save(StockMovement
                 .builder()
                 .productId(dto.productId())
-                .memberId(1L)
+                .memberId(2L)
                 .warehouseId(dto.warehouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())

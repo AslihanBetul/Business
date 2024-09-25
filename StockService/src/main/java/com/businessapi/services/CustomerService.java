@@ -38,7 +38,7 @@ public class CustomerService
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
             throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(1L).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
+        customerRepository.save(Customer.builder().memberId(2L).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
     }
 
     public Boolean delete(Long id)

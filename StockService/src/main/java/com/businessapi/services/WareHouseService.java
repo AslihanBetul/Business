@@ -37,7 +37,7 @@ public class WareHouseService
         wareHouseRepository.save(WareHouse
                 .builder()
                 .name(dto.name())
-                .memberId(1L)
+                .memberId(2L)
                 .location(dto.location())
                 .build());
         return true;

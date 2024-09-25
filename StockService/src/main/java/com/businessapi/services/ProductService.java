@@ -61,7 +61,7 @@ public class ProductService
                 .name(dto.name())
                 .supplierId(dto.supplierId())
                 .wareHouseId(dto.wareHouseId())
-                .memberId(1L)
+                .memberId(2L)
                 .description(dto.description())
                 .price(dto.price())
                 .stockCount(dto.stockCount())
@@ -140,6 +140,11 @@ public class ProductService
     public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String name, Long memberId, EStatus status)
     {
         return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(name, memberId, status);
+    }
+
+    public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(String name, Long memberId)
+    {
+        return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(name, memberId);
     }
 
     public List<Product> findAllByMinimumStockLevelAndStatus(EStatus eStatus)

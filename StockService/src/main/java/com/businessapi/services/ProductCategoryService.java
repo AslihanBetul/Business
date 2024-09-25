@@ -28,7 +28,7 @@ public class ProductCategoryService
     }
     public Boolean saveForDemoData(ProductCategorySaveRequestDTO dto)
     {
-        productCategoryRepository.save(ProductCategory.builder().memberId(1L).name(dto.name()).build());
+        productCategoryRepository.save(ProductCategory.builder().memberId(2L).name(dto.name()).build());
         return true;
     }
 

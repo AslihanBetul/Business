@@ -73,7 +73,7 @@ public class SupplierService
                 .builder()
                 .name(dto.name())
                 .surname(dto.surname())
-                .memberId(1L)
+                .memberId(2L)
                 .email(dto.email())
                 .contactInfo(dto.contactInfo())
                 .address(dto.address())
