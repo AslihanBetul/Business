@@ -12,6 +12,6 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long>
 {
-    List<Customer> findAllByNameContainingIgnoreCaseAndStatusIsNotOrderByNameAsc(String s, EStatus status, PageRequest of);
+    List<Customer> findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(String s, EStatus status,Long memberId, PageRequest of);
     Optional<Customer> findCustomerByEmailIgnoreCase(String email);
 }

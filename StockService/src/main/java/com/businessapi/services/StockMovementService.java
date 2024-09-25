@@ -14,6 +14,7 @@ import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.StockMovementRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,26 @@ public class StockMovementService
         stockMovementRepository.save(StockMovement
                 .builder()
                 .productId(dto.productId())
+                .memberId(SessionManager.memberId)
+                .warehouseId(dto.warehouseId())
+                .quantity(dto.quantity())
+                .stockMovementType(dto.stockMovementType())
+                .build());
+        return null;
+    }
+
+    public Boolean saveForDemoData(StockMovementSaveDTO dto)
+    {
+        Product product = productService.findByIdForDemoData(dto.productId());
+        wareHouseService.findByIdForDemoData(dto.warehouseId());
+        if (product.getStockCount() < dto.quantity())
+        {
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+        }
+        stockMovementRepository.save(StockMovement
+                .builder()
+                .productId(dto.productId())
+                .memberId(1L)
                 .warehouseId(dto.warehouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())
@@ -52,6 +73,7 @@ public class StockMovementService
     public Boolean delete(Long id)
     {
         StockMovement stockMovement = stockMovementRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+        SessionManager.authorizationCheck(stockMovement.getMemberId());
         stockMovement.setStatus(EStatus.DELETED);
         stockMovementRepository.save(stockMovement);
         return true;
@@ -60,6 +82,7 @@ public class StockMovementService
     public Boolean update(StockMovementUpdateRequestDTO dto)
     {
         Product product = productService.findById(dto.productId());
+
         wareHouseService.findById(dto.warehouseId());
         if (product.getStockCount() < dto.quantity())
         {
@@ -67,6 +90,7 @@ public class StockMovementService
         }
         StockMovement stockMovement = stockMovementRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
 
+        SessionManager.authorizationCheck(stockMovement.getMemberId());
         stockMovement.setProductId(dto.productId());
         stockMovement.setWarehouseId(dto.warehouseId());
 
@@ -81,25 +105,28 @@ public class StockMovementService
 
         stockMovementRepository.save(stockMovement);
 
-            return true;
-        }
+        return true;
+    }
 
     public StockMovement findById(Long id)
     {
-        return stockMovementRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+        StockMovement stockMovement = stockMovementRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+        SessionManager.authorizationCheck(stockMovement.getMemberId());
+        return stockMovement;
     }
 
     /**
      * Finds products with name containing search text
      * Finds sell orders with respect to pagination
      * Converts orders to StockMovementResponseDTO
+     *
      * @param dto search text , page number , page size parameters
      * @return List of StockMovementResponseDTO
      */
     public List<StockMovementResponseDTO> findAll(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByProductNameContainingIgnoreCase(dto.searchText());
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.memberId, EStatus.DELETED);
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
@@ -110,7 +137,7 @@ public class StockMovementService
         {
             String productName = products.stream().filter(product -> product.getId() == stock.getProductId()).findFirst().get().getName();
             String wareHouseName = wareHouseService.findById(stock.getWarehouseId()).getName();
-            stockMovementDtoList.add(new StockMovementResponseDTO(stock.getId(), productName,wareHouseName,stock.getQuantity(),stock.getStatus(),stock.getStockMovementType(),stock.getCreatedAt()));
+            stockMovementDtoList.add(new StockMovementResponseDTO(stock.getId(), productName, wareHouseName, stock.getQuantity(), stock.getStatus(), stock.getStockMovementType(), stock.getCreatedAt()));
         });
         return stockMovementDtoList.stream()
                 .sorted(Comparator.comparing(StockMovementResponseDTO::productName))

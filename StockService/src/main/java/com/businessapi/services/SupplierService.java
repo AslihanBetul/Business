@@ -15,6 +15,7 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.SupplierRepository;
 import com.businessapi.util.PasswordGenerator;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.PageRequest;
@@ -38,15 +39,41 @@ public class SupplierService
     {
         String password = PasswordGenerator.generatePassword();
         //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(),password,"SUPPLIER"));
+        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "SUPPLIER"));
         //sending password to suppliers
-        EmailSendModal emailObject =  new EmailSendModal(dto.email(), "Supplier Registration","You can use your mail ("+dto.email()+") to login. Your password is: " + password+" You can check your orders in our panel.");
-        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail",emailObject);
+        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
 
         supplierRepository.save(Supplier
                 .builder()
                 .name(dto.name())
                 .surname(dto.surname())
+                .memberId(SessionManager.memberId)
+                .email(dto.email())
+                .contactInfo(dto.contactInfo())
+                .address(dto.address())
+                .notes(dto.notes())
+                .authId(authId)
+                .build());
+
+        return true;
+    }
+
+    @Transactional
+    public Boolean saveForDemoData(SupplierSaveRequestDTO dto)
+    {
+        String password = PasswordGenerator.generatePassword();
+        //saving supplier as auth and user
+        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "SUPPLIER"));
+        //sending password to suppliers
+        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+
+        supplierRepository.save(Supplier
+                .builder()
+                .name(dto.name())
+                .surname(dto.surname())
+                .memberId(1L)
                 .email(dto.email())
                 .contactInfo(dto.contactInfo())
                 .address(dto.address())
@@ -60,6 +87,7 @@ public class SupplierService
     public Boolean delete(Long id)
     {
         Supplier supplier = supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        SessionManager.authorizationCheck(supplier.getMemberId());
         supplier.setStatus(EStatus.DELETED);
         supplierRepository.save(supplier);
         return true;
@@ -68,6 +96,7 @@ public class SupplierService
     public Boolean update(SupplierUpdateRequestDTO dto)
     {
         Supplier supplier = supplierRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        SessionManager.authorizationCheck(supplier.getMemberId());
         if (dto.name() != null)
         {
             supplier.setName(dto.name());
@@ -90,17 +119,25 @@ public class SupplierService
 
     public List<Supplier> findAll(PageRequestDTO dto)
     {
-        return supplierRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return supplierRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
     public Supplier findById(Long id)
     {
-        return supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        Supplier supplier = supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        SessionManager.authorizationCheck(supplier.getMemberId());
+        return supplier;
     }
 
     public Boolean approveOrder(Long id)
     {
         Order order = orderService.findById(id);
+        //Authorization check.
+        Supplier supplier = supplierRepository.findByAuthId(SessionManager.memberId).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        if (!order.getSupplierId().equals(supplier.getId()))
+        {
+            throw new StockServiceException(ErrorType.UNAUTHORIZED);
+        }
         if (order.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.ORDER_NOT_ACTIVE);

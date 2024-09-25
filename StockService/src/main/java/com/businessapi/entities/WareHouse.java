@@ -19,6 +19,7 @@ public class WareHouse extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long memberId;
     String name;
     String location;
 }

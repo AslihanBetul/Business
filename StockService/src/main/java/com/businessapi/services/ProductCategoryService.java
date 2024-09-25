@@ -4,9 +4,11 @@ import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.ProductCategorySaveRequestDTO;
 import com.businessapi.dto.request.ProductCategoryUpdateRequestDTO;
 import com.businessapi.entities.ProductCategory;
+import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.ProductCategoryRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,19 +23,26 @@ public class ProductCategoryService
 
     public Boolean save(ProductCategorySaveRequestDTO dto)
     {
-        productCategoryRepository.save(ProductCategory.builder().name(dto.name()).build());
+        productCategoryRepository.save(ProductCategory.builder().memberId(SessionManager.memberId).name(dto.name()).build());
+        return true;
+    }
+    public Boolean saveForDemoData(ProductCategorySaveRequestDTO dto)
+    {
+        productCategoryRepository.save(ProductCategory.builder().memberId(1L).name(dto.name()).build());
         return true;
     }
 
     public Boolean delete(Long id)
     {
-        productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
+        ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
+        SessionManager.authorizationCheck(productCategory.getMemberId());
         return true;
     }
 
     public Boolean update(ProductCategoryUpdateRequestDTO dto)
     {
         ProductCategory productCategory = productCategoryRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
+        SessionManager.authorizationCheck(productCategory.getMemberId());
         if (dto.name() != null)
         {
             productCategory.setName(dto.name());
@@ -45,11 +54,18 @@ public class ProductCategoryService
 
     public List<ProductCategory> findAll(PageRequestDTO dto)
     {
-        return productCategoryRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productCategoryRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
     public ProductCategory findById(Long id)
     {
-        return   productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
+        ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
+        SessionManager.authorizationCheck(productCategory.getMemberId());
+        return   productCategory;
+    }
+
+    public ProductCategory findByIdForDemoData(Long id)
+    {
+        return productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
     }
 }

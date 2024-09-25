@@ -29,7 +29,9 @@ public enum ErrorType
     ORDER_NOT_ACTIVE(9013, "Order Not Active", HttpStatus.BAD_REQUEST),
     WRONG_ORDER_TYPE(9014, "Wrong Order Type", HttpStatus.BAD_REQUEST),
     CUSTOMER_NOT_FOUND(9015, "Customer Not Found", HttpStatus.BAD_REQUEST),
-    EMAIL_ALREADY_EXISTS( 9016, "Email Already Exists" ,  HttpStatus.BAD_REQUEST),;
+    EMAIL_ALREADY_EXISTS( 9016, "Email Already Exists" ,  HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED( 9017, "Unauthorized" ,  HttpStatus.UNAUTHORIZED)
+    ;
 
     private Integer code;
     private String message;

@@ -20,6 +20,7 @@ public class StockMovement extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long memberId;
     Long productId;
     Long warehouseId;
     Integer quantity;

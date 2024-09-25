@@ -14,6 +14,7 @@ import com.businessapi.services.StockMovementService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class CustomerController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new customer")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody CustomerSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -42,6 +44,7 @@ public class CustomerController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Stock customer")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -54,6 +57,7 @@ public class CustomerController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates customer")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody CustomerUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -66,6 +70,7 @@ public class CustomerController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all customers")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<Customer>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -78,6 +83,7 @@ public class CustomerController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds customer by Id")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Customer>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
