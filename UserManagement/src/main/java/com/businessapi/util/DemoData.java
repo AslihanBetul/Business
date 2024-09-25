@@ -48,30 +48,36 @@ public class DemoData {
                 .roleName("SUPER_ADMIN")
                 .roleDescription("God of The App")
                 .build();
-
-        Role unassignedRole = Role.builder()
-                .roleName("UNASSIGNED")
-                .roleDescription("Role that user who pending role from super admin or admin. They can update their user profile only!!").build();
-
-        Role customer = Role.builder().roleName("CUSTOMER").build();
+        Role member = Role.builder().roleName("MEMBER").build();
 
         Role adminRole = Role.builder()
                 .roleName("ADMIN")
                 .roleDescription("VP")
                 .build();
 
-        roleRepository.save(superAdminRole);
-        roleRepository.save(adminRole);
-        roleRepository.save(unassignedRole);
-        roleRepository.save(customer);
+        Role pym = Role.builder().roleName("PYM").roleDescription("Proje Yönetimi Modülü Satın Alan Kullanıcı").build();
+        Role crm = Role.builder().roleName("CRM").roleDescription("CRM Modülü Satın Alan Kullanıcı").build();
+        Role imm = Role.builder().roleName("IMM").roleDescription("Envanter Yönetimi Modülü Satın Alan Kullanıcı").build();
+        Role hrmm = Role.builder().roleName("HRMM").roleDescription("İK Yönetimi Modülü Satın Alan Kullanıcı").build();
+        Role fam = Role.builder().roleName("FAM").roleDescription("Finans ve Muhasebe Modülü Satın Alan Kullanıcı").build();
+        Role oam = Role.builder().roleName("OAM").roleDescription("Analiz Modülü Satın Alan Kullanıcı").build();
+
+
+        roleRepository.save(superAdminRole); //1
+        roleRepository.save(adminRole); //2
+        roleRepository.save(member);    //3
+        roleRepository.save(pym);   //4
+        roleRepository.save(crm);   //5
+        roleRepository.save(imm);   //6
+        roleRepository.save(hrmm);  //7
+        roleRepository.save(fam);   //8
+        roleRepository.save(oam);   //9
     }
 
 
     private void saveUsers(){
-        List<Long> roles = new ArrayList<>();
-        roles.add(4L);
-        roles.add(3L);
-        UserSaveRequestDTO user = new UserSaveRequestDTO("Salih","ER","ertugrulsaliher@gmail.com","123",roles);
+        List<Long> roles = new ArrayList<>(List.of(3L, 4L, 5L, 6L, 7L, 8L, 9L));
+        UserSaveRequestDTO user = new UserSaveRequestDTO("Super Member","USER","member@example.com","123",roles);
         userService.saveUser(user);
     }
 

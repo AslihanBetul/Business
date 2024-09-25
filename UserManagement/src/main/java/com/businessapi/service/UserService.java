@@ -104,7 +104,7 @@ public class UserService {
     @Transactional
     public void saveUserFromAuthService(SaveUserFromAuthModel saveUserFromAuthModel){
         List<Role> usersRoles = new ArrayList<>();
-        usersRoles.add(roleService.getRoleById(3L)); //Unassigned rol olarak kaydedilir.
+        usersRoles.add(roleService.getRoleById(3L)); //MEMBER rol olarak kaydedilir.
         User user = User.builder()
                 .authId(saveUserFromAuthModel.getAuthId())
                 .firstName(saveUserFromAuthModel.getFirstName())
