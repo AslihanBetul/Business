@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>
 
     List<Product> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String name, Long memberId, EStatus status);
 
-    List<Product> findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(String name, Long memberId);
+    List<Product> findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(String name, Long memberId);
 
 
     @Query("SELECT p FROM Product p WHERE p.stockCount < p.minimumStockLevel AND p.status = :status")

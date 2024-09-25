@@ -9,6 +9,7 @@ import com.businessapi.services.WareHouseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class WareHouseController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Ware House")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody WareHouseSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -39,7 +40,7 @@ public class WareHouseController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Ware House")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -52,7 +53,7 @@ public class WareHouseController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Ware House")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody WareHouseUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -65,7 +66,7 @@ public class WareHouseController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Ware House with respect to pagination")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<List<WareHouse>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -78,7 +79,7 @@ public class WareHouseController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Ware House by Id")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<WareHouse>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO

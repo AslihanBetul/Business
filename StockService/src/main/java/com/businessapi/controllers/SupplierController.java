@@ -7,6 +7,7 @@ import com.businessapi.services.SupplierService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class SupplierController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Supplier")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody SupplierSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -36,7 +37,7 @@ public class SupplierController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Supplier")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -49,7 +50,7 @@ public class SupplierController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Supplier")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody SupplierUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -62,7 +63,7 @@ public class SupplierController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Suppliers with respect to pagination")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<List<Supplier>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -75,7 +76,7 @@ public class SupplierController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Supplier by Id")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Supplier>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO

@@ -10,6 +10,7 @@ import com.businessapi.services.StockMovementService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class StockMovementController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Stock Movement")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody StockMovementSaveDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -39,7 +40,7 @@ public class StockMovementController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Stock Movement")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -52,7 +53,7 @@ public class StockMovementController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Stock Movement")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody StockMovementUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -65,7 +66,7 @@ public class StockMovementController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Stock Movements with respect to pagination")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<List<StockMovementResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -78,7 +79,7 @@ public class StockMovementController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Stock Movement by Id")
-    //@PreAuthorize("hasAnyAuthority('STOCK')")
+    @PreAuthorize("hasAnyAuthority('IMM')")
     public ResponseEntity<ResponseDTO<StockMovement>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO

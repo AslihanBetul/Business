@@ -206,7 +206,7 @@ public class OrderService
     public List<BuyOrderResponseDTO> findAllBuyOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
@@ -234,7 +234,7 @@ public class OrderService
     public List<SellOrderResponseDTO> findAllSellOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
