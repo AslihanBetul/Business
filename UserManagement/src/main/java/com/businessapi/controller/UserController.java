@@ -39,7 +39,7 @@ public class UserController {
 
 
     @PutMapping(EndPoints.UPDATE)
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','UNASSIGNED')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "AuthId'si verilen kullanıcıların bilgilerinin güncellenmesi",security = @SecurityRequirement(name = "bearerUser"))
     public ResponseEntity<ResponseDTO<Boolean>> updateUser(@RequestBody @Valid UserUpdateRequestDTO userUpdateRequestDTO){
         userService.updateUser(userUpdateRequestDTO);
