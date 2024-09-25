@@ -99,6 +99,22 @@ spring:
           uri: http://localhost:9095
           predicates:
             - Path=/api/notify/**
+        - id: projectManagement
+          uri: http://localhost:8095
+          predicates:
+            - Path=/dev/v1/project/**
+        - id: projectManagement
+          uri: http://localhost:8095
+          predicates:
+            - Path=/dev/v1/task/**
+        - id: userManagement
+          uri: http://localhost:9097
+          predicates:
+            - Path=/dev/v1/role/**
+        - id: userManagement
+          uri: http://localhost:9097
+          predicates:
+            - Path=/dev/v1/user/**
 
 
 
