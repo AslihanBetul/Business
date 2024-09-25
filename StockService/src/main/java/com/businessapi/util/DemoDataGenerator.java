@@ -1,6 +1,7 @@
 package com.businessapi.util;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.CustomerSaveRequestDTO;
 import com.businessapi.entities.enums.EStockMovementType;
 import com.businessapi.services.*;
 import jakarta.annotation.PostConstruct;
@@ -19,16 +20,19 @@ public class DemoDataGenerator
     private final SupplierService supplierService;
     private final StockMovementService stockMovementService;
     private final WareHouseService wareHouseService;
+    private final CustomerService customerService;
 
     @PostConstruct
     public void generateDemoData()
     {
         productCategoryDemoData();
         productDemoData();
+        customerDemoData();
         supplierDemoData();
         wareHouseDemoData();
         orderDemoData();
         stockMovementDemoData();
+
     }
 
     private void productCategoryDemoData()
@@ -108,6 +112,23 @@ public class DemoDataGenerator
 
     }
 
+    private void customerDemoData()
+    {
+
+        customerService.save(new CustomerSaveRequestDTO("John", "Doe", "johndoe@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Jane", "Doe", "janedoe@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Bob", "Smith", "bobsmith@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Alice", "Johnson", "alicejohnson@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Tom", "Lee", "tomlee@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Sarah", "Brown", "sarahbrown@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Michael", "Davis", "michaeldavis@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Emily", "Wilson", "emilywilson@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Olivia", "Martinez", "oliviamartinez@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("William", "Anderson", "williamanderson@gmail.com"));
+        customerService.save(new CustomerSaveRequestDTO("Ava", "Thomas", "avathomas@gmail.com"));
+
+    }
+
     private void orderDemoData()
     {
 
@@ -141,11 +162,6 @@ public class DemoDataGenerator
         stockMovementService.save(new StockMovementSaveDTO(8L, 7L, 5, EStockMovementType.OUT));
         stockMovementService.save(new StockMovementSaveDTO(9L, 10L, 15, EStockMovementType.IN));
         stockMovementService.save(new StockMovementSaveDTO(10L, 9L, 25, EStockMovementType.OUT));
-
-
-
-
-
 
     }
 

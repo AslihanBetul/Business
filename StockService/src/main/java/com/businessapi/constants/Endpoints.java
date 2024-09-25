@@ -21,6 +21,7 @@ public class Endpoints
     public static final String STOCKMOVEMENT = "/stock-movement";
     public static final String SUPPLIER = "/supplier";
     public static final String WAREHOUSE = "/ware-house";
+    public static final String CUSTOMER = "/customer";
 
     //methods
 
@@ -38,4 +39,5 @@ public class Endpoints
     public static final String FIND_ALL_BUY_ORDERS = "/find-all-buy-orders";
     public static final String FIND_ALL_SELL_ORDERS = "/find-all-sell-orders";
     public static final String FIND_ORDERS_OF_SUPPLIER = "/find-orders-of-supplier";
+
 }
