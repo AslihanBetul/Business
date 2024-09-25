@@ -6,6 +6,7 @@ import com.businessapi.RabbitMQ.Model.UserRoleListModel;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.util.JwtTokenManager;
+import com.businessapi.util.SessionManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter
             Long authId = jwtTokenManager.getIdFromToken(token).orElseThrow(() -> new StockServiceException(ErrorType.INVALID_TOKEN));
 
 
+
             UserRoleListModel modal = (UserRoleListModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyRolesByAuthId", authId);
             //EmailAndPasswordModel modal2 = (EmailAndPasswordModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailAndPasswordFromAuth", authId);
 
@@ -52,6 +54,9 @@ public class JwtTokenFilter extends OncePerRequestFilter
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authId, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            //It will add memberId to the session
+            SessionManager.getMemberIdFromAuthenticatedMember();
         }
 
         filterChain.doFilter(request, response);

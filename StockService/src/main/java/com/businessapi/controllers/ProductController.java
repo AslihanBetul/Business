@@ -23,6 +23,7 @@ public class ProductController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Product")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody ProductSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -35,6 +36,7 @@ public class ProductController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Product")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -47,6 +49,7 @@ public class ProductController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Product")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody ProductUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -59,6 +62,7 @@ public class ProductController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all products with respect to pagination")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<Product>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -71,6 +75,7 @@ public class ProductController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Product by Id")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Product>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -83,6 +88,7 @@ public class ProductController
 
     @PostMapping(FIND_ALL_BY_MINIMUM_STOCK_LEVEL)
     @Operation(summary = "Finds Product that have less stock than minimum stock level")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<Product>>> findAllByMinimumStockLevel(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -95,6 +101,7 @@ public class ProductController
 
     @PostMapping(CHANGE_AUTO_ORDER_MODE+"/{id}")
     @Operation(summary = "Changes auto order mode for product")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>>changeAutoOrderMode(@PathVariable Long id){
 
         return ResponseEntity.ok(ResponseDTO

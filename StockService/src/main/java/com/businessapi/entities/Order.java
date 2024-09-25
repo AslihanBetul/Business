@@ -21,6 +21,7 @@ public class Order extends BaseEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    Long memberId;
 
     // Customer id should be set for buy order
     Long customerId;

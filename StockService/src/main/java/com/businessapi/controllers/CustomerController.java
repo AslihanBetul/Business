@@ -1,12 +1,20 @@
 package com.businessapi.controllers;
 
-import com.businessapi.dto.request.*;
+import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.StockMovementSaveDTO;
+import com.businessapi.dto.request.StockMovementUpdateRequestDTO;
+import com.businessapi.dto.response.CustomerSaveRequestDTO;
+import com.businessapi.dto.response.CustomerUpdateRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
-import com.businessapi.entities.Supplier;
-import com.businessapi.services.SupplierService;
+import com.businessapi.dto.response.StockMovementResponseDTO;
+import com.businessapi.entities.Customer;
+import com.businessapi.entities.StockMovement;
+import com.businessapi.services.CustomerService;
+import com.businessapi.services.StockMovementService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,87 +22,73 @@ import java.util.List;
 import static com.businessapi.constants.Endpoints.*;
 
 @RestController
-@RequestMapping(ROOT + SUPPLIER)
+@RequestMapping(ROOT + CUSTOMER)
 @RequiredArgsConstructor
 @CrossOrigin("*")
-public class SupplierController
+public class CustomerController
 {
-    private final SupplierService supplierService;
+    private final CustomerService customerService;
 
     @PostMapping(SAVE)
-    @Operation(summary = "Creates new Supplier")
+    @Operation(summary = "Creates new customer")
     //@PreAuthorize("hasAnyAuthority('STOCK')")
-    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody SupplierSaveRequestDTO dto){
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody CustomerSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(supplierService.save(dto))
+                .data(customerService.save(dto))
                 .message("Success")
                 .code(200)
                 .build());
     }
 
     @DeleteMapping(DELETE)
-    @Operation(summary = "Soft deletes Supplier")
+    @Operation(summary = "Soft deletes Stock customer")
     //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(supplierService.delete(id))
+                .data(customerService.delete(id))
                 .message("Success")
                 .code(200)
                 .build());
     }
 
     @PutMapping(UPDATE)
-    @Operation(summary = "Updates Supplier")
+    @Operation(summary = "Updates customer")
     //@PreAuthorize("hasAnyAuthority('STOCK')")
-    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody SupplierUpdateRequestDTO dto){
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody CustomerUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(supplierService.update(dto))
+                .data(customerService.update(dto))
                 .message("Success")
                 .code(200)
                 .build());
     }
 
     @PostMapping(FIND_ALL)
-    @Operation(summary = "Finds all Suppliers with respect to pagination")
+    @Operation(summary = "Finds all customers")
     //@PreAuthorize("hasAnyAuthority('STOCK')")
-    public ResponseEntity<ResponseDTO<List<Supplier>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<Customer>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Supplier>>builder()
-                .data(supplierService.findAll(dto))
+                .<List<Customer>>builder()
+                .data(customerService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());
     }
 
     @PostMapping(FIND_BY_ID)
-    @Operation(summary = "Finds Supplier by Id")
+    @Operation(summary = "Finds customer by Id")
     //@PreAuthorize("hasAnyAuthority('STOCK')")
-    public ResponseEntity<ResponseDTO<Supplier>> findById(Long id){
+    public ResponseEntity<ResponseDTO<Customer>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
-                .<Supplier>builder()
-                .data(supplierService.findById(id))
-                .message("Success")
-                .code(200)
-                .build());
-    }
-
-
-    @PostMapping(APPROVE_ORDER)
-    @Operation(summary = "Approves buy orders")
-    //@PreAuthorize("hasAnyAuthority('SUPPLIER')")
-    public ResponseEntity<ResponseDTO<Boolean>> approveOrder(Long id){
-
-        return ResponseEntity.ok(ResponseDTO
-                .<Boolean>builder()
-                .data(supplierService.approveOrder(id))
+                .<Customer>builder()
+                .data(customerService.findById(id))
                 .message("Success")
                 .code(200)
                 .build());

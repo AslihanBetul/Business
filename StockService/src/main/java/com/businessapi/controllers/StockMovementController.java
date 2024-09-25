@@ -26,6 +26,7 @@ public class StockMovementController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Stock Movement")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody StockMovementSaveDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -38,6 +39,7 @@ public class StockMovementController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Stock Movement")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -50,6 +52,7 @@ public class StockMovementController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Stock Movement")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody StockMovementUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -62,6 +65,7 @@ public class StockMovementController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Stock Movements with respect to pagination")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<StockMovementResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -74,6 +78,7 @@ public class StockMovementController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Stock Movement by Id")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<StockMovement>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO

@@ -23,6 +23,7 @@ public class ProductCategoryController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new Product Category")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody ProductCategorySaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -35,6 +36,7 @@ public class ProductCategoryController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Product Category")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -47,6 +49,7 @@ public class ProductCategoryController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Product Category")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody ProductCategoryUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -59,6 +62,7 @@ public class ProductCategoryController
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Product Categories with respect to pagination")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<ProductCategory>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -71,6 +75,7 @@ public class ProductCategoryController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Product Category by Id")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<ProductCategory>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO

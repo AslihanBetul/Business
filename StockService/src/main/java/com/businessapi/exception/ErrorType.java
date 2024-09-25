@@ -27,7 +27,11 @@ public enum ErrorType
     INCORRECT_BUY_ORDER_TYPE(9011, "Incorrect Buy Order Type. Buy Orders Can Not Have Customer Id", HttpStatus.BAD_REQUEST),
     INCORRECT_SELL_ORDER_TYPE(9012, "Incorrect Sell Order Type. Sell Orders Can Not Have Supplier Id", HttpStatus.BAD_REQUEST),
     ORDER_NOT_ACTIVE(9013, "Order Not Active", HttpStatus.BAD_REQUEST),
-    WRONG_ORDER_TYPE(9014, "Wrong Order Type", HttpStatus.BAD_REQUEST);
+    WRONG_ORDER_TYPE(9014, "Wrong Order Type", HttpStatus.BAD_REQUEST),
+    CUSTOMER_NOT_FOUND(9015, "Customer Not Found", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS( 9016, "Email Already Exists" ,  HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED( 9017, "Unauthorized" ,  HttpStatus.UNAUTHORIZED)
+    ;
 
     private Integer code;
     private String message;

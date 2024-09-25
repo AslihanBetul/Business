@@ -26,6 +26,7 @@ public class OrderController
 
     @PostMapping(SAVE_SELL_ORDER)
     @Operation(summary = "Creates new sell Order")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> saveSellOrder(@RequestBody SellOrderSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -38,6 +39,7 @@ public class OrderController
 
     @PostMapping(SAVE_BUY_ORDER)
     @Operation(summary = "Creates new buy Order")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> saveBuyOrder(@RequestBody BuyOrderSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -50,6 +52,7 @@ public class OrderController
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Soft deletes Order")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -63,6 +66,7 @@ public class OrderController
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates Order")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody OrderUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -75,6 +79,7 @@ public class OrderController
 
     @PostMapping(FIND_ALL_BUY_ORDERS)
     @Operation(summary = "Finds all buy orders with respect to pagination")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<BuyOrderResponseDTO>>> findAllBuyOrders(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -87,6 +92,7 @@ public class OrderController
 
     @PostMapping(FIND_ALL_SELL_ORDERS)
     @Operation(summary = "Finds all sell orders with respect to pagination")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<List<SellOrderResponseDTO>>> findAllSellOrders(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
@@ -99,6 +105,7 @@ public class OrderController
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Order by Id")
+    //@PreAuthorize("hasAnyAuthority('STOCK')")
     public ResponseEntity<ResponseDTO<Order>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
@@ -111,6 +118,7 @@ public class OrderController
 
     @PostMapping(FIND_ORDERS_OF_SUPPLIER)
     @Operation(summary = "Find all of the supplier's orders")
+    //@PreAuthorize("hasAnyAuthority('SUPPLIER')")
     public ResponseEntity<ResponseDTO<List<SupplierOrderResponseDTO>>> findOrdersOfSupplier(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO

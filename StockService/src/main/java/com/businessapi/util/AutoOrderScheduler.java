@@ -42,7 +42,7 @@ public class AutoOrderScheduler
                 rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(supplier.getEmail(), "Auto Order", "Your product " + product.getName()+" is below minimum stock level. We would like to order " + product.getMinimumStockLevel()*2 + " of it."));
 
                 //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
-                orderService.saveBuyOrder(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2));
+                orderService.saveBuyOrderForAutoScheduler(new BuyOrderSaveRequestDTO(product.getSupplierId(), product.getId(), product.getMinimumStockLevel() * 2),product.getMemberId());
                 product.setIsProductAutoOrdered(true);
                 productService.save(product);
             }
