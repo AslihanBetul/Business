@@ -1,4 +1,5 @@
 package com.businessapi.controller;
+
 import static com.businessapi.constants.EndPoints.*;
 
 import com.businessapi.dto.request.NotificationRequestDto;
@@ -6,9 +7,12 @@ import com.businessapi.entity.Notification;
 import com.businessapi.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping(NOTIFICATIONS)
 @CrossOrigin(origins = "*")
@@ -21,7 +25,10 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
+    // Bildirim oluşturma işlemi için benzersiz bir yol
     @PostMapping(CREATE_NOTIFICATION)
+    @MessageMapping("/notifications/create")
+    @SendTo("/topic/create-notifications")
     public ResponseEntity<Void> createNotification(@RequestBody NotificationRequestDto dto) {
         notificationService.createNotification(dto.getUserId(), dto.getTitle(),  dto.getMessage());
         return ResponseEntity.ok().build();
@@ -42,17 +49,22 @@ public class NotificationController {
     @GetMapping(GET_ALL_UNREAD_NOTIFICATIONS)
     public ResponseEntity<List<Notification>> getAllUnReadNotifications() {
         List<Notification> notifications = notificationService.getAllUnReadNotifications();
-        return ResponseEntity.ok(notifications);}
+        return ResponseEntity.ok(notifications);
+    }
 
-
-
-        @PatchMapping(READ)
-    public ResponseEntity<Void> markAsRead(@PathVariable @RequestParam  Long notificationId) {
+    // Okundu olarak işaretlemek için benzersiz bir yol
+    @PatchMapping(READ)
+    @MessageMapping("/notifications/markasread")
+    @SendTo("/topic/markasread-notifications")
+    public ResponseEntity<Void> markAsRead(@RequestParam Long notificationId) {
         notificationService.markAsRead(notificationId);
         return ResponseEntity.noContent().build();
     }
 
+    // Bildirim silme işlemi için benzersiz bir yol
     @DeleteMapping(DELETE)
+    @MessageMapping("/notifications/delete")
+    @SendTo("/topic/delete-notifications")
     public ResponseEntity<Void> deleteNotifications(@RequestBody List<Long> notificationIds) {
         notificationService.deleteNotifications(notificationIds);
         return ResponseEntity.noContent().build();
@@ -63,9 +75,4 @@ public class NotificationController {
     public long getUnreadNotificationCount() {
         return notificationService.getUnreadNotificationCount();
     }
-
-
-
-
 }
-

@@ -28,43 +28,52 @@ public class NotificationService {
         notification.setDeleted(false); // Varsayılan olarak silinmemiş
         notificationRepository.save(notification);
 
-        // WebSocket ile kullanıcıya bildirimi gönder
-        messagingTemplate.convertAndSendToUser(userId.toString(), "/queue/notifications", notification);
+        messagingTemplate.convertAndSend("/topic/create-notifications", notification);
+
     }
 
-
+   //belirli bir kullanıcıya ait olan ve silinmemiş bildirimleri döndürür
     public List<Notification> getNotifications(Long userId) {
         return notificationRepository.findByUserIdAndIsDeletedFalse(userId);
     }
-
+    // Tüm silinmemiş bildirimleri getir
     public List<Notification> getAllNotifications() {
-        // Silinmemiş bildirimleri getir
+
         return notificationRepository.findByIsDeleted(false);
     }
     public List<Notification> getAllUnReadNotifications() {
-        return notificationRepository.findByIsReadFalse(); // Okunmayan bildirimleri döndürür
+        return notificationRepository.findByIsReadFalseAndIsDeletedFalse(); // Okunmayan bildirimleri döndürür
     }
-
+    // Okundu olarak işaretle
     public void markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/markasread-notifications", notification);
     }
 
     public void deleteNotifications(List<Long> notificationIds) {
+        // Veritabanından bildirimleri bul
         List<Notification> notifications = notificationRepository.findAllById(notificationIds);
+
+        // Eğer hiç bildirim bulunamazsa hata fırlat
         if (notifications.isEmpty()) {
             throw new RuntimeException("No notifications found with the given IDs");
         }
+
+        // Bildirimleri sil
+        notificationRepository.deleteAll(notifications); // Burada tam silme işlemi gerçekleştiriliyor
+
+        // İsteğe bağlı: Silinen bildirimleri istemcilere ilet
         for (Notification notification : notifications) {
-            notification.setDeleted(true);
+            messagingTemplate.convertAndSend("/topic/delete-notifications", notification); // Silindiğini bildirin
         }
-        notificationRepository.saveAll(notifications);
     }
+
 
     // Okunmamış bildirimlerin sayısını döndüren metot
     public long getUnreadNotificationCount() {
-        return notificationRepository.countByisReadFalse(); // "read" alanı false olan bildirimlerin sayısını döndürür
+        return notificationRepository.countByIsReadFalseAndIsDeletedFalse(); // "read" alanı false olan bildirimlerin sayısını döndürür
     }
 }
