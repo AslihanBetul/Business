@@ -34,7 +34,7 @@ public class CustomerController {
 
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
     public ResponseEntity<ResponseDTO<List<Customer>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
