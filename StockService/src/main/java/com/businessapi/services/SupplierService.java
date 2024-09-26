@@ -37,6 +37,9 @@ public class SupplierService
     @Transactional
     public Boolean save(SupplierSaveRequestDTO dto)
     {
+        supplierRepository.findByEmail(dto.email()).ifPresent(supplier -> {
+            throw new StockServiceException(ErrorType.SUPPLIER_EMAIL_ALREADY_EXISTS);
+        });
         String password = PasswordGenerator.generatePassword();
         //saving supplier as auth and user
         Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "SUPPLIER"));
