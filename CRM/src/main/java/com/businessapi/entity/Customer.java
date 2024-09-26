@@ -16,6 +16,7 @@ public class Customer extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private String firstName;
     private String lastName;
     private String email;
@@ -23,7 +24,7 @@ public class Customer extends BaseEntity{
     private String address;
     @Enumerated(EnumType.STRING)
     private EStatus status;
-    private Long userId;
+
 
 
 

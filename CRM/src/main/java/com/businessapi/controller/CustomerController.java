@@ -36,7 +36,7 @@ public class CustomerController {
 
     }
 
-    @PostMapping(FINDALL)
+    @GetMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
     public ResponseEntity<ResponseDTO<List<Customer>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
@@ -46,60 +46,27 @@ public class CustomerController {
                 .build());
     }
 
-    @PostMapping(FINDBYID)
-    @Operation(summary = "Find customer by id", description = "Find customer by id")
-    public ResponseEntity<ResponseDTO<CustomerResponseDTO>> findById(@RequestParam Long id) {
-        return ResponseEntity.ok(ResponseDTO.<CustomerResponseDTO>builder()
-                .data(customerService.findById(id))
+
+    @PutMapping(UPDATE)
+    @Operation(summary = "Update customer by token",description = "Update customer by token")
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+                .data(customerService.update(customerUpdateDTO))
                 .code(200)
-                .message("Customer found successfully").build());
+                .message("Customer updated successfully").build());
+
+    }
+
+    @DeleteMapping(DELETE)
+    @Operation(summary = "Delete customer by token",description = "Delete customer by token")
+    public ResponseEntity<ResponseDTO<Boolean>> deleteById(@RequestParam Long customerId) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+                .data(customerService.delete(customerId))
+                .code(200)
+                .message("Customer deleted successfully").build());
     }
 
 
-//    @PutMapping(UPDATE)
-//    @Operation(summary = "Update customer by token",description = "Update customer by token")
-//    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
-//        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
-//                .data(customerService.update(customerUpdateDTO))
-//                .code(200)
-//                .message("Customer updated successfully").build());
-//
-//    }
-
-//    @DeleteMapping(DELETE)
-//    @Operation(summary = "Delete customer by token",description = "Delete customer by token")
-//    public ResponseEntity<ResponseDTO<Boolean>> deleteById(@RequestParam String token) {
-//        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
-//                .data(customerService.delete(token))
-//                .code(200)
-//                .message("Customer deleted successfully").build());
-//    }
-
-    @GetMapping(FINDCUSTOMERBYUSERID)
-    @Operation(summary = "Find customer by user id", description = "Find customer by user id")
-    public ResponseEntity<ResponseDTO<List<Customer>>> findCustomerByUserId(@RequestParam Long userId) {
-        return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
-                .data(customerService.findCustomerByUserId(userId))
-                .code(200)
-                .message("Customer found successfully").build());
-
-    }
-    @PostMapping(FINDALLBYTOKEN)
-    @Operation(summary = "Find all customers by token", description = "Find all customers by token")
-    public ResponseEntity<ResponseDTO<List<Customer>>> findAllByToken(@RequestBody PageRequestTestDTO dto) {
-        return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
-                .data(customerService.findAllTest(dto))
-                .code(200)
-                .message("Customer found successfully").build());
-    }
-    @PostMapping(FINDALLBYTOKEN2)
-    @Operation(summary = "Find all customers by token", description = "Find all customers by token")
-    public ResponseEntity<ResponseDTO<List<Customer>>> findAllByToken(@RequestParam String token) {
-        return ResponseEntity.ok(ResponseDTO.<List<Customer>>builder()
-                .data(customerService.findAllTest2(token))
-                .code(200)
-                .message("Customer found successfully").build());
-    }
 
 
 

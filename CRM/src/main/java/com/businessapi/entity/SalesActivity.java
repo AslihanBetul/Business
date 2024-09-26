@@ -19,6 +19,7 @@ public class SalesActivity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private Long opportunityId;
     private String type;
     private LocalDate date;

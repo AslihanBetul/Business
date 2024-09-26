@@ -6,7 +6,6 @@ public record PageRequestTestDTO(
     String searchText,
     @NotNull
     int page,
-    int size,
-    String token)
+    int size)
 {
 }

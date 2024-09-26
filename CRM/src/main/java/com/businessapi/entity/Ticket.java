@@ -20,6 +20,7 @@ public class Ticket extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private Long customerId;
     private String subject;
     private String description;
