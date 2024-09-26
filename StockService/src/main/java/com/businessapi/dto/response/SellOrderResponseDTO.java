@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record SellOrderResponseDTO(
     Long id,
     String customerName,
+    String email,
     String productName,
     BigDecimal unitPrice,
     BigDecimal total,

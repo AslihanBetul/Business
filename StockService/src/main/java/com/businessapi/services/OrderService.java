@@ -1,10 +1,6 @@
 package com.businessapi.services;
 
-import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
-import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
-import com.businessapi.dto.request.SellOrderSaveRequestDTO;
-import com.businessapi.dto.request.OrderUpdateRequestDTO;
-import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
 import com.businessapi.dto.response.SupplierOrderResponseDTO;
@@ -19,12 +15,9 @@ import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.OrderRepository;
 import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -167,14 +160,38 @@ public class OrderService
 
 
 
-    public Boolean update(OrderUpdateRequestDTO dto)
+    public Boolean updateBuyOrder(BuyOrderUpdateRequestDTO dto)
     {
         Order order = orderRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
 
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
-
+        Product product = productService.findById(dto.productId());
+        if (product.getStockCount() <= dto.quantity())
+        {
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+        }
         order.setQuantity(dto.quantity());
+        order.setProductId(dto.productId());
+        order.setSupplierId(dto.supplierId());
+        orderRepository.save(order);
+        return true;
+    }
+
+    public Boolean updateSellOrder(SellOrderUpdateRequestDTO dto)
+    {
+        Order order = orderRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+
+        // Authorization check whether the member is authorized to do that or not
+        SessionManager.authorizationCheck(order.getMemberId());
+        Product product = productService.findById(dto.productId());
+        if (product.getStockCount() <= dto.quantity())
+        {
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+        }
+        order.setQuantity(dto.quantity());
+        order.setProductId(dto.productId());
+        order.setCustomerId(dto.customerId());
         orderRepository.save(order);
         return true;
     }
@@ -210,14 +227,14 @@ public class OrderService
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndOrderType(productIdList,EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList,SessionManager.memberId,EStatus.DELETED,EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
         List<BuyOrderResponseDTO> buyOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
         {
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
-            String supplierName = supplierService.findById(order.getSupplierId()).getName();
-            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(),order.getQuantity(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            Supplier supplier = supplierService.findById(order.getSupplierId());
+            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(),supplier.getName(), supplier.getEmail() , productName ,order.getUnitPrice(),order.getQuantity(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
         return buyOrderResponseDTOList.stream()
                 .sorted(Comparator.comparing(BuyOrderResponseDTO::productName))
@@ -238,7 +255,7 @@ public class OrderService
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndOrderType(productIdList,EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.memberId, EStatus.DELETED, EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
         List<SellOrderResponseDTO> sellOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
@@ -246,7 +263,7 @@ public class OrderService
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
             Customer customer = customerService.findById(order.getCustomerId());
 
-            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getName() + " " + customer.getSurname() , productName ,order.getUnitPrice(), order.getTotal(),order.getQuantity(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getName()+" " + customer.getSurname() ,customer.getEmail() , productName ,order.getUnitPrice(), order.getTotal(),order.getQuantity(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
         });
         return sellOrderResponseDTOList.stream()
                 .sorted(Comparator.comparing(SellOrderResponseDTO::productName))
