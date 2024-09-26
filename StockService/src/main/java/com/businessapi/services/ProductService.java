@@ -142,9 +142,9 @@ public class ProductService
         return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(name, memberId, status);
     }
 
-    public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(String name, Long memberId)
+    public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(String name, Long memberId)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdIsNotOrderByNameAsc(name, memberId);
+        return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(name, memberId);
     }
 
     public List<Product> findAllByMinimumStockLevelAndStatus(EStatus eStatus)
