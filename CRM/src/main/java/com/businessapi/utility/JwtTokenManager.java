@@ -89,7 +89,6 @@ public class JwtTokenManager {
             return ERole.valueOf(role.toUpperCase());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println("yoksa bura mıı????");
             throw new CustomerServiceException(ErrorType.INVALID_TOKEN);
         }
     }

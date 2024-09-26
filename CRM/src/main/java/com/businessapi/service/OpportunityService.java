@@ -2,7 +2,6 @@ package com.businessapi.service;
 
 import com.businessapi.dto.request.OpportunitySaveDTO;
 import com.businessapi.dto.request.OpportunityUpdateDTO;
-import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
 import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;

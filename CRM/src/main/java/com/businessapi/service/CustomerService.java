@@ -1,40 +1,24 @@
 package com.businessapi.service;
-
-import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
-import com.businessapi.RabbitMQ.Model.CustomerResponseWithIdModel;
-import com.businessapi.RabbitMQ.Model.CustomerReturnId;
-import com.businessapi.RabbitMQ.Model.EmailResponseModel;
 import com.businessapi.dto.request.*;
-import com.businessapi.dto.response.CustomerResponseDTO;
 import com.businessapi.entity.Customer;
-
 import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;
-import com.businessapi.mapper.CustomerMapper;
-
 import com.businessapi.repository.CustomerRepository;
-import com.businessapi.utility.JwtTokenManager;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private final JwtTokenManager jwtTokenManager;
-    private final RabbitTemplate rabbitTemplate;
+
 
 
     public Boolean save(CustomerSaveDTO dto) {
