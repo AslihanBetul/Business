@@ -65,14 +65,27 @@ public class OrderController
     }
 
 
-    @PutMapping(UPDATE)
-    @Operation(summary = "Updates Order")
+    @PutMapping(UPDATE_BUY_ORDER)
+    @Operation(summary = "Updates Buy Order")
     @PreAuthorize("hasAnyAuthority('IMM')")
-    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody OrderUpdateRequestDTO dto){
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody BuyOrderUpdateRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(orderService.update(dto))
+                .data(orderService.updateBuyOrder(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PutMapping(UPDATE_SELL_ORDER)
+    @Operation(summary = "Updates Sell Order")
+    @PreAuthorize("hasAnyAuthority('IMM')")
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody SellOrderUpdateRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(orderService.updateSellOrder(dto))
                 .message("Success")
                 .code(200)
                 .build());

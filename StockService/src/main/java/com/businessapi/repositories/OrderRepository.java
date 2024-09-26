@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long>
 {
-    List<Order> findAllByProductIdInAndOrderType(List<Long> ids, EOrderType orderType, PageRequest of);
+    List<Order> findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(List<Long> ids,Long memberId,EStatus status, EOrderType orderType, PageRequest of);
 
     @Query("SELECT new com.businessapi.dto.response.SupplierOrderResponseDTO(o.id, p.name, o.unitPrice, o.quantity, o.total, o.orderType, o.createdAt, o.status) FROM Order o " +
             "JOIN Product p ON o.supplierId = p.supplierId " +

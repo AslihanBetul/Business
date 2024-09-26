@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StockServiceException.class)
     @ResponseBody
     public ResponseEntity<ResponseDTO> handlerSatisException(StockServiceException satisException){
-        return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), satisException.getErrorType().getHttpStatus());
+        return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), HttpStatus.OK);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
