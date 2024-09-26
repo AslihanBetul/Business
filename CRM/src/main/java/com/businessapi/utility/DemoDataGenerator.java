@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Service
 public class DemoDataGenerator {
     private final CustomerService customerService;
-    private final UserService userService;
+//    private final UserService userService;
     private final MarketingCampeignService marketingCampeignService;
     private final TicketService ticketService;
     private final OpportunityService opportunityService;
@@ -22,7 +22,7 @@ public class DemoDataGenerator {
 
     @PostConstruct
     public void generateDemoData() {
-        userDemoData();
+//        userDemoData();
         customerDemoData();
         marketingCampaignDemoData();
         ticketDemoData();
@@ -32,21 +32,21 @@ public class DemoDataGenerator {
     }
 
     private void customerDemoData() {
-        customerService.save(new CustomerSaveDTO("John", "Doe", "johndoe@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Jane", "Doe", "janedoe@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Bob", "Smith", "bobsmith@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Alice", "Johnson", "alicejohnson@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Tom", "Lee", "tomlee@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Sarah", "Brown", "sarahbrown@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Michael", "Davis", "michaeldavis@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Emily", "Wilson", "emilywilson@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Olivia", "Martinez", "oliviamartinez@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("William", "Anderson", "williamanderson@gmail.com", "123456789", "123 Main St", 1L));
-        customerService.save(new CustomerSaveDTO("Ava", "Thomas", "avathomas@gmail.com", "123456789", "123 Main St", 1L));
+        customerService.save(new CustomerSaveDTO("John", "Doe", "johndoe@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Jane", "Doe", "janedoe@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Bob", "Smith", "bobsmith@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Alice", "Johnson", "alicejohnson@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Tom", "Lee", "tomlee@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Sarah", "Brown", "sarahbrown@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Michael", "Davis", "michaeldavis@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Emily", "Wilson", "emilywilson@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Olivia", "Martinez", "oliviamartinez@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("William", "Anderson", "williamanderson@gmail.com", "123456789", "123 Main St"));
+        customerService.save(new CustomerSaveDTO("Ava", "Thomas", "avathomas@gmail.com", "123456789", "123 Main St"));
     }
-    private void userDemoData() {
-        userService.saveUserTest(new UserSaveTestDTO(3L,1L,"serkan","guner","serkan.guner@yahoo.com"));
-    }
+//    private void userDemoData() {
+//        userService.saveUserTest(new UserSaveTestDTO(3L,1L,"serkan","guner","serkan.guner@yahoo.com"));
+//    }
     private void marketingCampaignDemoData() {
         marketingCampeignService.save(new MarketingCampaignSaveDTO("Summer Sales Boost",
                 "Increase sales through summer discounts",

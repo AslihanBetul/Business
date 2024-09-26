@@ -18,6 +18,7 @@ public class MarketingCampaign extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private String name;
     private String description;
     private LocalDateTime startDate;

@@ -16,13 +16,13 @@ public class Opportunity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private Long customerId;
     private String name;
     private String description;
     private Double value;
     private String stage;
     private Double probability;
-    private Long responsibleUserId;
     @Enumerated(EnumType.STRING)
     EStatus status;
 }
