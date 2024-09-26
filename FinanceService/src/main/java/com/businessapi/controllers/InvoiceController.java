@@ -24,7 +24,7 @@ public class InvoiceController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new invoice")
-    public ResponseEntity<ResponseDTO<Boolean>> save(InvoiceSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody InvoiceSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(invoiceService.save(dto))
@@ -35,7 +35,7 @@ public class InvoiceController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing invoice")
-    public ResponseEntity<ResponseDTO<Boolean>> update(InvoiceUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody InvoiceUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(invoiceService.update(dto))

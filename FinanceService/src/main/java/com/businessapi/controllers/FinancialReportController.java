@@ -24,7 +24,7 @@ public class FinancialReportController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new financial report")
-    public ResponseEntity<ResponseDTO<Boolean>> save(FinancialReportSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody FinancialReportSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(financialReportService.save(dto))
@@ -35,7 +35,7 @@ public class FinancialReportController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing financial report")
-    public ResponseEntity<ResponseDTO<Boolean>> update(FinancialReportUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody FinancialReportUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(financialReportService.update(dto))

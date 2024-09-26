@@ -23,7 +23,7 @@ public class IncomeController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new income")
-    public ResponseEntity<ResponseDTO<Boolean>> save(IncomeSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody IncomeSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(incomeService.saveIncome(dto))
@@ -34,7 +34,7 @@ public class IncomeController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing income")
-    public ResponseEntity<ResponseDTO<Boolean>> update(IncomeUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody IncomeUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(incomeService.updateIncome(dto))
@@ -56,7 +56,7 @@ public class IncomeController {
 
     @PostMapping(FIND_BY_DATE)
     @Operation(summary = "Lists all incomes with between the given dates")
-    public ResponseEntity<ResponseDTO<List<Income>>> findByDate(LocalDate startDate, LocalDate endDate) {
+    public ResponseEntity<ResponseDTO<List<Income>>> findByDate(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<Income>>builder()
                 .data(incomeService.findByDate(startDate, endDate))

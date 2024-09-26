@@ -25,7 +25,7 @@ public class ExpenseController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new expense")
-    public ResponseEntity<ResponseDTO<Boolean>> save(ExpenseSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody ExpenseSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(expenseService.save(dto))
@@ -36,7 +36,7 @@ public class ExpenseController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing expense")
-    public ResponseEntity<ResponseDTO<Boolean>> update(ExpenseUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody ExpenseUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(expenseService.update(dto))
