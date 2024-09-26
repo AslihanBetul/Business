@@ -17,7 +17,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(TICKET)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class TicketController {
 
     private final TicketService ticketService;
@@ -50,7 +50,7 @@ public class TicketController {
                 .message("Ticket deleted successfully")
                 .build());
     }
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all tickets", description = "Find all tickets")
     public ResponseEntity<ResponseDTO<List<Ticket>>> findAll() {
         return ResponseEntity.ok(ResponseDTO.<List<Ticket>>builder()

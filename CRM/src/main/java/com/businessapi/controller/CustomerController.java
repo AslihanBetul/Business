@@ -18,7 +18,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(CUSTOMER)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class CustomerController {
 
     private final CustomerService customerService;

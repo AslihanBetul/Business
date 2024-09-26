@@ -18,7 +18,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(OPPORTUNITY)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class OpportunityController {
     private final OpportunityService opportunityService;
 
@@ -32,7 +32,7 @@ public class OpportunityController {
                 .build());
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
     public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll() {
         return ResponseEntity.ok(ResponseDTO.<List<Opportunity>>builder()

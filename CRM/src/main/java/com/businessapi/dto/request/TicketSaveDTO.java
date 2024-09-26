@@ -1,5 +1,6 @@
 package com.businessapi.dto.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record TicketSaveDTO( Long customerId,
@@ -7,6 +8,6 @@ public record TicketSaveDTO( Long customerId,
          String description,
          String ticketStatus,
          String priority,
-         LocalDateTime createdDate,
-         LocalDateTime closedDate) {
+         LocalDate createdDate,
+         LocalDate closedDate) {
 }
