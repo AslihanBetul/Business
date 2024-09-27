@@ -65,6 +65,10 @@ public class RabbitConfig {
     public static final String queueAddRoleFromSubscription = "queueAddRoleFromSubscription";
     public static final String keyAddRoleFromSubscription = "keyAddRoleFromSubscription";
 
+    //Satın alımı bitmiş modülleri kullanıcıdan silme
+    public static final String queueDeleteRoleFromSubscription = "queueDeleteRoleFromSubscription";
+    public static final String keyDeleteRoleFromSubscription = "keyDeleteRoleFromSubscription";
+
 
     @Bean
     public Queue queue() {
@@ -141,6 +145,10 @@ public class RabbitConfig {
     public Queue queueAddRoleFromSubscription() {
         return new Queue(queueAddRoleFromSubscription);
     }
+    @Bean
+    public Queue queueDeleteRoleFromSubscription() {
+        return new Queue(queueDeleteRoleFromSubscription);
+    }
 
 
 
@@ -191,6 +199,10 @@ public class RabbitConfig {
     @Bean
     public Binding bindingAddRoleFromSubscription (Queue queueAddRoleFromSubscription, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueAddRoleFromSubscription).to(businessDirectExchange).with(keyAddRoleFromSubscription);
+    }
+    @Bean
+    public Binding bindingDeleteRoleFromSubscription (Queue queueDeleteRoleFromSubscription, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueDeleteRoleFromSubscription).to(businessDirectExchange).with(keyDeleteRoleFromSubscription);
     }
 
 

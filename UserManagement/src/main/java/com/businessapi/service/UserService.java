@@ -227,6 +227,20 @@ public class UserService {
         userRepository.save(user);
 
     }
+    @RabbitListener(queues = "queueDeleteRoleFromSubscription")
+    public void deleteRoleFromSubscription(DeleteRoleFromSubscriptionModel deleteRoleFromSubscriptionModel) {
+        User user = userRepository.findByAuthId(deleteRoleFromSubscriptionModel.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        if(deleteRoleFromSubscriptionModel.getRoles().isEmpty()){
+            throw new UserException(ErrorType.ROLE_LIST_IS_EMPTY);
+        }
+
+        deleteRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
+            Role role = roleService.findByRoleName(roleName);
+            user.getRole().remove(role);
+        });
+        userRepository.save(user);
+
+    }
 
 
 
