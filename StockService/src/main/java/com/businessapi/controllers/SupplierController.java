@@ -90,7 +90,7 @@ public class SupplierController
 
     @PostMapping(APPROVE_ORDER)
     @Operation(summary = "Approves buy orders")
-    //@PreAuthorize("hasAnyAuthority('SUPPLIER')")
+    @PreAuthorize("hasAnyAuthority('SUPPLIER')")
     public ResponseEntity<ResponseDTO<Boolean>> approveOrder(Long id){
 
         return ResponseEntity.ok(ResponseDTO

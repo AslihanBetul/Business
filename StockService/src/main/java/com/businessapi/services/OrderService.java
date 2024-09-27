@@ -122,7 +122,7 @@ public class OrderService
 
     public Boolean saveBuyOrderForAutoScheduler(BuyOrderSaveRequestDTO dto, Long memberId)
     {
-        Product product = productService.findById(dto.productId());
+        Product product = productService.findByIdForAutoScheduler(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
@@ -230,6 +230,13 @@ public class OrderService
 
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
+        return order;
+    }
+
+    public Order findByIdForSupplier(Long id)
+    {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+
         return order;
     }
 

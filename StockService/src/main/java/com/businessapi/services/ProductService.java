@@ -26,8 +26,16 @@ public class ProductService
     public Product findById(Long id)
     {
         Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        SessionManager.authorizationCheck(product.getMemberId());
         return product;
+    }
+
+    public Product findByIdForSupplier(Long id)
+    {
+        return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
+    }
+    public Product findByIdForAutoScheduler(Long id)
+    {
+        return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }
     public Product findByIdForDemoData(Long id)
     {

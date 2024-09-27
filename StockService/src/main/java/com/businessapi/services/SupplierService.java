@@ -136,9 +136,14 @@ public class SupplierService
         return supplier;
     }
 
+    public Supplier findByIdForAutoScheduler(Long id)
+    {
+        return supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+    }
+
     public Boolean approveOrder(Long id)
     {
-        Order order = orderService.findById(id);
+        Order order = orderService.findByIdForSupplier(id);
         //Authorization check.
         Supplier supplier = supplierRepository.findByAuthId(SessionManager.memberId).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
         if (!order.getSupplierId().equals(supplier.getId()))

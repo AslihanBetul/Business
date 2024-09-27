@@ -132,7 +132,7 @@ public class OrderController
 
     @PostMapping(FIND_ORDERS_OF_SUPPLIER)
     @Operation(summary = "Find all of the supplier's orders")
-    //@PreAuthorize("hasAnyAuthority('SUPPLIER')")
+    @PreAuthorize("hasAnyAuthority('SUPPLIER')")
     public ResponseEntity<ResponseDTO<List<SupplierOrderResponseDTO>>> findOrdersOfSupplier(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
