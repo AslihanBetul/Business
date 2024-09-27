@@ -86,6 +86,15 @@ public class StockMovementService
     {
         StockMovement stockMovement = stockMovementRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
         SessionManager.authorizationCheck(stockMovement.getMemberId());
+        Product product = productService.findById(stockMovement.getProductId());
+
+        if (stockMovement.getStockMovementType() == EStockMovementType.OUT)
+        {
+            product.setStockCount(product.getStockCount() + stockMovement.getQuantity());
+        }else
+        {
+            product.setStockCount(product.getStockCount() - stockMovement.getQuantity());
+        }
         stockMovement.setStatus(EStatus.DELETED);
         stockMovementRepository.save(stockMovement);
         return true;
