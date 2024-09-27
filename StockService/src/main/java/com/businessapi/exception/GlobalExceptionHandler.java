@@ -98,20 +98,12 @@ public class GlobalExceptionHandler {
 
     private ResponseDTO<String> createMessage(ErrorType errorType, Exception exception) {
         log.error("Tüm Hataların geçtiği ortak nokta: " + exception);
-
-        String additionalErrorMessage = SessionManager.additionalErrorMessage;
-        String fullMessage = exception.getMessage();
-        if (additionalErrorMessage != null && !additionalErrorMessage.isEmpty()) {
-            fullMessage += " -\n " + additionalErrorMessage;
-        }
-
         return ResponseDTO.<String>builder()
                 .data("")
-                .message(fullMessage)
+                .message(exception.getMessage())
                 .code(errorType.getCode())
                 .build();
     }
-
 
 
 }

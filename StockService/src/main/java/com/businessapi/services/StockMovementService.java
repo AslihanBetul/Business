@@ -41,8 +41,7 @@ public class StockMovementService
         {
             if (product.getStockCount() < dto.quantity())
             {
-                SessionManager.additionalErrorMessage = product.getName() +" Stock count is: " + product.getStockCount();
-                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
             }
             product.setStockCount(product.getStockCount() - dto.quantity());
             productService.save(product);
@@ -124,8 +123,7 @@ public class StockMovementService
             if (stockDifference > 0) {
                 // Daha fazla çıkış yapılmak isteniyor, stokta yeterli mi?
                 if (product.getStockCount() < stockDifference) {
-                    SessionManager.additionalErrorMessage = product.getName() + " Stock count is: " + product.getStockCount();
-                    throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+                    throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
                 }
                 // Stoktan fark kadar çıkış yap
                 product.setStockCount(product.getStockCount() - stockDifference);
