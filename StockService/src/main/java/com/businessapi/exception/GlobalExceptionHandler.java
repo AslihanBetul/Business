@@ -1,5 +1,6 @@
 package com.businessapi.exception;
 
+import com.businessapi.util.SessionManager;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StockServiceException.class)
     @ResponseBody
     public ResponseEntity<ResponseDTO> handlerSatisException(StockServiceException satisException){
+
         //TODO HTTP STATUS CHANGED TO OK. MAYBE WE CAN CHANGE IT LATER
         return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), HttpStatus.OK);
     }
