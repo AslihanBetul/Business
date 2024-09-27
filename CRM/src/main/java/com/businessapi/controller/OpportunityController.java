@@ -2,6 +2,7 @@ package com.businessapi.controller;
 
 import com.businessapi.dto.request.OpportunitySaveDTO;
 import com.businessapi.dto.request.OpportunityUpdateDTO;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
@@ -34,9 +35,9 @@ public class OpportunityController {
 
     @PostMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
-    public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll() {
+    public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Opportunity>>builder()
-                .data(opportunityService.findAll())
+                .data(opportunityService.findAll(dto))
                 .code(200)
                 .message("Customers found successfully")
                 .build());

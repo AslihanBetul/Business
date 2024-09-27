@@ -25,9 +25,9 @@ public class DemoDataGenerator {
     public void generateDemoData() {
         customerDemoData();
         marketingCampaignDemoData();
-//        ticketDemoData();
-//        opportunityDemoData();
-//        salesActivityDemoData();
+        ticketDemoData();
+        opportunityDemoData();
+        salesActivityDemoData();
 
     }
 
@@ -85,7 +85,7 @@ public class DemoDataGenerator {
                 "OPEN",
                 "HIGH",
                 LocalDate.of(2024, 9, 1),
-                null));
+                LocalDate.of(2024, 9, 15)));
 
         ticketService.saveForDemoData(new TicketSaveDemoDTO(2L,
                 "Payment Issue",
@@ -93,7 +93,7 @@ public class DemoDataGenerator {
                 "OPEN",
                 "MEDIUM",
                 LocalDate.of(2024, 9, 1),
-                null));
+                LocalDate.of(2024, 9, 15)));
 
         ticketService.saveForDemoData(new TicketSaveDemoDTO(5L,
                 "Order Issue",
@@ -101,7 +101,7 @@ public class DemoDataGenerator {
                 "OPEN",
                 "LOW",
                 LocalDate.of(2024, 9, 1),
-                null));
+                LocalDate.of(2024, 9, 15)));
 
         ticketService.saveForDemoData(new TicketSaveDemoDTO(104L,
                 "Shipping Issue",
@@ -109,7 +109,7 @@ public class DemoDataGenerator {
                 "OPEN",
                 "HIGH",
                 LocalDate.of(2024, 9, 1),
-                null));
+                LocalDate.of(2024, 9, 15)));
 
         ticketService.saveForDemoData(new TicketSaveDemoDTO(4L,
                 "Return Issue",
@@ -117,7 +117,7 @@ public class DemoDataGenerator {
                 "OPEN",
                 "MEDIUM",
                 LocalDate.of(2024, 9, 1),
-                null));
+                LocalDate.of(2024, 9, 15)));
 
     }
 

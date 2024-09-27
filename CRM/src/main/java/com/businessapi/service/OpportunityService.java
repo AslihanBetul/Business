@@ -1,9 +1,6 @@
 package com.businessapi.service;
 
-import com.businessapi.dto.request.OpportunitySaveDTO;
-import com.businessapi.dto.request.OpportunitySaveDemoDTO;
-import com.businessapi.dto.request.OpportunityUpdateDTO;
-import com.businessapi.dto.request.TicketSaveDemoDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.entity.Opportunity;
 import com.businessapi.entity.Ticket;
 import com.businessapi.exception.CustomerServiceException;
@@ -14,6 +11,7 @@ import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +37,7 @@ public class OpportunityService {
                 .probability(dto.probability())
                 .customerId(dto.customerId())
                 .memberId(SessionManager.memberId)
+                        .status(EStatus.ACTIVE)
                 .build());
 
         return true;
@@ -46,16 +45,17 @@ public class OpportunityService {
 
     public void saveForDemoData(OpportunitySaveDemoDTO dto)
     {
-        if (customerService.findById(dto.customerId()).isPresent()) {
-            throw new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER);
-        }
-        opportunityRepository.save(Opportunity.builder().memberId(2L).name(dto.name()).description(dto.description()).value(dto.value()).stage(dto.stage()).probability(dto.probability()).customerId(dto.customerId()).build());
+//        if (customerService.findById(dto.customerId()).isPresent()) {
+//            throw new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER);
+//        }
+        opportunityRepository.save(Opportunity.builder().memberId(2L).name(dto.name()).description(dto.description()).value(dto.value()).stage(dto.stage()).probability(dto.probability()).customerId(dto.customerId()).status(EStatus.ACTIVE).build());
 
     }
 
 
-    public List<Opportunity> findAll() {
-        return opportunityRepository.findAll();
+    public List<Opportunity> findAll(PageRequestDTO dto) {
+        return opportunityRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+
     }
 
     public Boolean update(OpportunityUpdateDTO dto) {
