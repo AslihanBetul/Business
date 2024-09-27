@@ -56,8 +56,8 @@ public class DemoData {
                 .roleDescription("VP")
                 .build();
 
-        Role pym = Role.builder().roleName("PYM").roleDescription("Proje Yönetimi Modülü Satın Alan Kullanıcı").build();
-        Role crm = Role.builder().roleName("CRM").roleDescription("CRM Modülü Satın Alan Kullanıcı").build();
+        Role pmm = Role.builder().roleName("PMM").roleDescription("Proje Yönetimi Modülü Satın Alan Kullanıcı").build();
+        Role crmm = Role.builder().roleName("CRMM").roleDescription("CRM Modülü Satın Alan Kullanıcı").build();
         Role imm = Role.builder().roleName("IMM").roleDescription("Envanter Yönetimi Modülü Satın Alan Kullanıcı").build();
         Role hrmm = Role.builder().roleName("HRMM").roleDescription("İK Yönetimi Modülü Satın Alan Kullanıcı").build();
         Role fam = Role.builder().roleName("FAM").roleDescription("Finans ve Muhasebe Modülü Satın Alan Kullanıcı").build();
@@ -67,8 +67,8 @@ public class DemoData {
         roleRepository.save(superAdminRole); //1
         roleRepository.save(adminRole); //2
         roleRepository.save(member);    //3
-        roleRepository.save(pym);   //4
-        roleRepository.save(crm);   //5
+        roleRepository.save(pmm);   //4
+        roleRepository.save(crmm);   //5
         roleRepository.save(imm);   //6
         roleRepository.save(hrmm);  //7
         roleRepository.save(fam);   //8
@@ -80,6 +80,10 @@ public class DemoData {
         List<Long> roles = new ArrayList<>(List.of(3L, 4L, 5L, 6L, 7L, 8L, 9L));
         UserSaveRequestDTO user = new UserSaveRequestDTO("Super Member","USER","member@example.com","123",roles);
         userService.saveUser(user);
+
+        List<Long> roles2 = new ArrayList<>(List.of(3L));
+        UserSaveRequestDTO user2 = new UserSaveRequestDTO("Lower Member","USER","member2@example.com","123",roles2);
+        userService.saveUser(user2);
     }
 
 }
