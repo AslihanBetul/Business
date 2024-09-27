@@ -11,4 +11,6 @@ import java.util.List;
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, Long>
 {
     List<ProductCategory> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String s, Long memberId, EStatus status,PageRequest of);
+
+    Boolean existsByMemberIdAndNameIgnoreCase(Long memberId, String name);
 }

@@ -96,16 +96,16 @@ public class DemoDataGenerator
     private void wareHouseDemoData()
     {
 
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kartal", "Main Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Pendik", "Pendik Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kadıköy", "Kadıköy Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ümraniye", "Ümraniye Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Maltepe", "Maltepe Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ataşehir", "Ataşehir Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Tuzla", "Tuzla Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Beşiktaş", "Beşiktaş Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Şişli", "Şişli Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Sarıyer", "Sarıyer Warehouse address"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kartal", "Main Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Pendik", "Pendik Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kadıköy", "Kadıköy Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ümraniye", "Ümraniye Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Maltepe", "Maltepe Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ataşehir", "Ataşehir Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Tuzla", "Tuzla Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Beşiktaş", "Beşiktaş Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Şişli", "Şişli Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Sarıyer", "Sarıyer Warehouse"));
 
 
 
