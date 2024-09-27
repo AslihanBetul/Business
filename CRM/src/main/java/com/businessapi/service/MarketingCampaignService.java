@@ -1,20 +1,22 @@
 package com.businessapi.service;
 
-import com.businessapi.dto.request.MarketingCampaignSaveDTO;
-import com.businessapi.dto.request.MarketingCampaignUpdateDTO;
+import com.businessapi.dto.request.*;
+import com.businessapi.entity.Customer;
 import com.businessapi.entity.MarketingCampaign;
 import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.MarketingCampeignRepository;
+import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class MarketingCampeignService {
+public class MarketingCampaignService {
     private final MarketingCampeignRepository marketingCampeignRepository;
 
     public Boolean save(MarketingCampaignSaveDTO dto) {
@@ -24,13 +26,21 @@ public class MarketingCampeignService {
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .budget(dto.budget())
+                .memberId(SessionManager.memberId)
+                .status(EStatus.ACTIVE)
                 .build());
         return true;
     }
 
-    public List<MarketingCampaign> findAll() {
-        return marketingCampeignRepository.findAll();
+    public void saveForDemoData(MarketingCampaignSaveDemoDTO dto) {
+        marketingCampeignRepository.save(MarketingCampaign.builder().memberId(2L).name(dto.name()).description(dto.description()).startDate(dto.startDate()).endDate(dto.endDate()).budget(dto.budget()).status(EStatus.ACTIVE).build());
     }
+
+    public List<MarketingCampaign> findAll(PageRequestDTO dto) {
+        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+
+    }
+
 
     public Boolean update(MarketingCampaignUpdateDTO dto) {
         MarketingCampaign marketingCampaign = marketingCampeignRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));

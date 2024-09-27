@@ -17,7 +17,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(SALESACTIVITY)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class SalesActivityController {
     private final SalesActivityService salesActivityService;
 
@@ -33,7 +33,7 @@ public class SalesActivityController {
                 .build());
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all sales activities")
     public ResponseEntity<ResponseDTO<List<SalesActivity>>> findAll() {
         return ResponseEntity.ok(ResponseDTO

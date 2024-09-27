@@ -65,7 +65,7 @@ public class JwtTokenManager {
                 throw new CustomerServiceException(ErrorType.INVALID_TOKEN);
             }
 
-            Long id = decodedJWT.getClaim("id").asLong();
+            Long id = decodedJWT.getClaim("authId").asLong();
             return Optional.of(id);
 
         } catch (Exception e) {

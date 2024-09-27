@@ -1,13 +1,14 @@
 package com.businessapi.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 public record TicketUpdateDTO(Long customerId,
                               String subject,
                               String description,
                               String ticketStatus,
                               String priority,
-                              LocalDateTime createdDate,
-                              LocalDateTime closedDate,
+                              LocalDate createdDate,
+                              LocalDate closedDate,
                               Long id) {
 }

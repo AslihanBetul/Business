@@ -1,4 +1,5 @@
 package com.businessapi.service;
+
 import com.businessapi.dto.request.*;
 import com.businessapi.entity.Customer;
 import com.businessapi.exception.CustomerServiceException;
@@ -7,18 +8,18 @@ import com.businessapi.repository.CustomerRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-
 
 
     public Boolean save(CustomerSaveDTO dto) {
@@ -38,9 +39,16 @@ public class CustomerService {
         return true;
     }
 
+    public void saveForDemoData(CustomerSaveDemoDTO dto) {
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
+            throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
+        }
+        customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(EStatus.ACTIVE).build());
+    }
+
     // This method will return members customers with paginable
     public List<Customer> findAll(PageRequestDTO dto) {
-        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.DELETED,SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
 
     }
 
@@ -71,8 +79,7 @@ public class CustomerService {
     }
 
 
-
-
-
-
+    public Optional<Customer> findById(Long id) {
+        return Optional.ofNullable(customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER)));
+    }
 }
