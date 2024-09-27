@@ -57,6 +57,7 @@ public class JwtTokenFilter extends OncePerRequestFilter
 
             //It will add memberId to the session
             SessionManager.getMemberIdFromAuthenticatedMember();
+            SessionManager.additionalErrorMessage = null;
         }
 
         filterChain.doFilter(request, response);
