@@ -20,7 +20,7 @@ public class DataSource {
     private String serviceType;  //CRM, HR, Finance, etc.
     private String endpointType;  //product, order, stock-movement, expense, etc.
 
-    @Column(length = 4000)
+    @Column(length = 10000)
     private String data;  //JSON data
 }
 

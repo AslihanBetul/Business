@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dev/v1/widgets")
+@RequestMapping("/dev/v1/analytics/widgets")
 public class WidgetController {
 
     private final WidgetService widgetService;

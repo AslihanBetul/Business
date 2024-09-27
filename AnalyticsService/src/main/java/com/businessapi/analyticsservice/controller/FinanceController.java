@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/dev/v1/finances")
+@RequestMapping("/dev/v1/analytics/finances")
 public class FinanceController {
 
     private final FinanceService financeService;
