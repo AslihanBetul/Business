@@ -11,6 +11,7 @@ import com.businessapi.entities.Product;
 import com.businessapi.entities.StockMovement;
 import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
+import com.businessapi.entities.enums.EStockMovementType;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.StockMovementRepository;
@@ -36,10 +37,21 @@ public class StockMovementService
     {
         Product product = productService.findById(dto.productId());
         wareHouseService.findById(dto.warehouseId());
-        if (product.getStockCount() < dto.quantity())
+        if (dto.stockMovementType() == EStockMovementType.OUT)
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            if (product.getStockCount() < dto.quantity())
+            {
+                SessionManager.additionalErrorMessage = product.getName() +" Stock count is: " + product.getStockCount();
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            }
+            product.setStockCount(product.getStockCount() - dto.quantity());
+            productService.save(product);
+        }else
+        {
+            product.setStockCount(product.getStockCount() + dto.quantity());
+            productService.save(product);
         }
+
         stockMovementRepository.save(StockMovement
                 .builder()
                 .productId(dto.productId())
@@ -79,34 +91,64 @@ public class StockMovementService
         return true;
     }
 
-    public Boolean update(StockMovementUpdateRequestDTO dto)
-    {
-        Product product = productService.findById(dto.productId());
+    public Boolean update(StockMovementUpdateRequestDTO dto) {
 
+        Product product = productService.findById(dto.productId());
         wareHouseService.findById(dto.warehouseId());
-        if (product.getStockCount() < dto.quantity())
-        {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
-        }
-        StockMovement stockMovement = stockMovementRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+
+
+        StockMovement stockMovement = stockMovementRepository.findById(dto.id())
+                .orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+
 
         SessionManager.authorizationCheck(stockMovement.getMemberId());
+
+        // Mevcut stok hareketindeki miktar ve DTO ile gelen yeni miktarı al
+        Integer currentQuantity = stockMovement.getQuantity();
+        Integer newQuantity = dto.quantity();
+        Integer stockDifference = newQuantity - currentQuantity;
+
+        // Stok farkı pozitif ise ekleme yapılacak, negatif ise çıkarma yapılacak
+        if (dto.stockMovementType() == EStockMovementType.OUT) {
+            // Çıkış işlemi (OUT)
+            if (stockDifference > 0) {
+                // Daha fazla çıkış yapılmak isteniyor, stokta yeterli mi?
+                if (product.getStockCount() < stockDifference) {
+                    SessionManager.additionalErrorMessage = product.getName() + " Stock count is: " + product.getStockCount();
+                    throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+                }
+                // Stoktan fark kadar çıkış yap
+                product.setStockCount(product.getStockCount() - stockDifference);
+            } else {
+                // Çıkış miktarı azaldıysa (stockDifference negatif), stoğa iade yapılır
+                product.setStockCount(product.getStockCount() + Math.abs(stockDifference));
+            }
+        } else if (dto.stockMovementType() == EStockMovementType.IN) {
+            // Giriş işlemi (IN)
+            if (stockDifference > 0) {
+                // Giriş miktarı arttıysa, fark kadar stoğa ekle
+                product.setStockCount(product.getStockCount() + stockDifference);
+            } else {
+                // Giriş miktarı azaldıysa, fark kadar stoktan çıkar
+                product.setStockCount(product.getStockCount() - Math.abs(stockDifference));
+            }
+        }
+
+
+        productService.save(product);
+
+
         stockMovement.setProductId(dto.productId());
         stockMovement.setWarehouseId(dto.warehouseId());
+        stockMovement.setQuantity(dto.quantity());
+        stockMovement.setStockMovementType(dto.stockMovementType());
 
-        if (dto.quantity() != null)
-        {
-            stockMovement.setQuantity(dto.quantity());
-        }
-        if (dto.stockMovementType() != null)
-        {
-            stockMovement.setStockMovementType(dto.stockMovementType());
-        }
-
+        // Stok hareketini kaydet
         stockMovementRepository.save(stockMovement);
 
         return true;
     }
+
 
     public StockMovement findById(Long id)
     {

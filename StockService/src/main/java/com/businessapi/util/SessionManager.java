@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SessionManager
 {
     public static Long memberId;
+    public static String additionalErrorMessage;
     public static Long getMemberIdFromAuthenticatedMember()
     {
         // Gets authId from authenticated member
