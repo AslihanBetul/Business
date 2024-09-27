@@ -48,7 +48,7 @@ public class CustomerService {
 
     // This method will return members customers with paginable
     public List<Customer> findAll(PageRequestDTO dto) {
-        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
 
     }
 

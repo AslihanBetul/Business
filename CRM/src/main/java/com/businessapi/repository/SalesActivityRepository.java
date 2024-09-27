@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface SalesActivityRepository extends JpaRepository<SalesActivity, Long> {
 
-    List<SalesActivity> findAllByTypeContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByTypeAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
+    List<SalesActivity> findAllByTypeContainingIgnoreCaseAndStatusAndMemberIdOrderByTypeAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
 }

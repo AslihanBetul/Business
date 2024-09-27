@@ -75,6 +75,6 @@ public class SalesActivityService {
     }
 
     public List<SalesActivity> findAll(PageRequestDTO dto) {
-        return salesActivityRepository.findAllByTypeContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByTypeAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return salesActivityRepository.findAllByTypeContainingIgnoreCaseAndStatusAndMemberIdOrderByTypeAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
     }
 }

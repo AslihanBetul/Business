@@ -54,7 +54,7 @@ public class OpportunityService {
 
 
     public List<Opportunity> findAll(PageRequestDTO dto) {
-        return opportunityRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return opportunityRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
 
     }
 

@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface OpportunityRepository extends JpaRepository<Opportunity, Long> {
-    List<Opportunity> findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
+    List<Opportunity> findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
 }

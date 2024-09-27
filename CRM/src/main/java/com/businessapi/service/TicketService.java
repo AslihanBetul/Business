@@ -75,7 +75,6 @@ public class TicketService {
     }
 
     public List<Ticket> findAll(PageRequestDTO dto) {
-        ticketRepository.findAllBySubjectContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderBySubjectAsc(dto.searchText(), EStatus.DELETED, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
-        return ticketRepository.findAll();
+       return ticketRepository.findAllBySubjectContainingIgnoreCaseAndStatusAndMemberIdOrderBySubjectAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
     }
 }

@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    List<Ticket> findAllBySubjectContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderBySubjectAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
+
+    List<Ticket> findAllBySubjectContainingIgnoreCaseAndStatusAndMemberIdOrderBySubjectAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
 }
