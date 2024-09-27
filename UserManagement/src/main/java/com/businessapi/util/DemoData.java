@@ -33,6 +33,7 @@ public class DemoData {
     private void saveSuperAdmin(){
         List<Role> roles = new ArrayList<>();
         roles.add(roleRepository.findById(1L).get());
+        roles.add(roleRepository.findById(2L).get());
         User superAdmin = User.builder()
                 .role(roles)
                 .authId(1L)

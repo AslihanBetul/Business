@@ -208,4 +208,26 @@ public class UserService {
 
         return user.getRole().stream().map(Role::getRoleName).toList();
     }
+
+    @RabbitListener(queues = "queueAddRoleFromSubscription")
+    public void addRoleFromSubscription(AddRoleFromSubscriptionModel addRoleFromSubscriptionModel) {
+        User user = userRepository.findByAuthId(addRoleFromSubscriptionModel.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setRole(new ArrayList<>()); //Kullanıcının rollerini sıfırlamak için yenmi bir liste tanımlanır.
+        user.getRole().add(roleService.findByRoleName("MEMBER")); //Kullanıcıya MEMBER rol tanımlanır.
+        if(addRoleFromSubscriptionModel.getRoles().isEmpty()){
+            throw new UserException(ErrorType.ROLE_LIST_IS_EMPTY);
+        }
+
+
+        addRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
+            Role role = roleService.findByRoleName(roleName);
+            user.getRole().add(role);
+        });
+
+        userRepository.save(user);
+
+    }
+
+
+
 }
