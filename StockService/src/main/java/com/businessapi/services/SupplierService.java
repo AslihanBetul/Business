@@ -116,6 +116,10 @@ public class SupplierService
         {
             supplier.setNotes(dto.notes());
         }
+        if (dto.surname() != null)
+        {
+            supplier.setSurname(dto.surname());
+        }
         supplierRepository.save(supplier);
         return true;
     }

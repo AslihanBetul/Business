@@ -23,6 +23,11 @@ public class ProductCategoryService
 
     public Boolean save(ProductCategorySaveRequestDTO dto)
     {
+        Boolean isProductExist = productCategoryRepository.existsByMemberIdAndNameIgnoreCase(SessionManager.memberId, dto.name());
+        if (isProductExist)
+        {
+            throw new StockServiceException(ErrorType.PRODUCT_CATEGORY_ALREADY_EXISTS);
+        }
         productCategoryRepository.save(ProductCategory.builder().memberId(SessionManager.memberId).name(dto.name()).build());
         return true;
     }
@@ -36,6 +41,8 @@ public class ProductCategoryService
     {
         ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
         SessionManager.authorizationCheck(productCategory.getMemberId());
+        productCategory.setStatus(EStatus.DELETED);
+        productCategoryRepository.save(productCategory);
         return true;
     }
 
