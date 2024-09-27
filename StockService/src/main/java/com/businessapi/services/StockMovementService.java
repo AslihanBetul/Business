@@ -36,7 +36,6 @@ public class StockMovementService
     public Boolean save(StockMovementSaveDTO dto)
     {
         Product product = productService.findById(dto.productId());
-        wareHouseService.findById(dto.warehouseId());
         if (dto.stockMovementType() == EStockMovementType.OUT)
         {
             if (product.getStockCount() < dto.quantity())
@@ -55,7 +54,7 @@ public class StockMovementService
                 .builder()
                 .productId(dto.productId())
                 .memberId(SessionManager.memberId)
-                .warehouseId(dto.warehouseId())
+                .warehouseId(product.getWareHouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())
                 .build());
@@ -65,7 +64,7 @@ public class StockMovementService
     public Boolean saveForDemoData(StockMovementSaveDTO dto)
     {
         Product product = productService.findByIdForDemoData(dto.productId());
-        wareHouseService.findByIdForDemoData(dto.warehouseId());
+
         if (product.getStockCount() < dto.quantity())
         {
             throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
@@ -74,7 +73,7 @@ public class StockMovementService
                 .builder()
                 .productId(dto.productId())
                 .memberId(2L)
-                .warehouseId(dto.warehouseId())
+                .warehouseId(product.getWareHouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())
                 .build());
@@ -103,7 +102,7 @@ public class StockMovementService
     public Boolean update(StockMovementUpdateRequestDTO dto) {
 
         Product product = productService.findById(dto.productId());
-        wareHouseService.findById(dto.warehouseId());
+
 
 
         StockMovement stockMovement = stockMovementRepository.findById(dto.id())
@@ -142,12 +141,9 @@ public class StockMovementService
             }
         }
 
-
         productService.save(product);
 
-
         stockMovement.setProductId(dto.productId());
-        stockMovement.setWarehouseId(dto.warehouseId());
         stockMovement.setQuantity(dto.quantity());
         stockMovement.setStockMovementType(dto.stockMovementType());
 
