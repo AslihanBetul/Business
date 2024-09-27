@@ -261,6 +261,12 @@ public class AuthService {
         return auth.getId();
     }
 
+    @RabbitListener(queues = "queueGetMailByAuthId")
+    public String getMailAdressByAuthId(Long authId) {
+        authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        return authRepository.findEmailById(authId);
+    }
+
 
 
 

@@ -7,6 +7,7 @@ import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
 import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
 import com.businessapi.dto.requestDTOs.UserUpdateRequestDTO;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
+import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
 import com.businessapi.dto.responseDTOs.ResponseDTO;
 import com.businessapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,6 +77,14 @@ public class UserController {
     public ResponseEntity<ResponseDTO<List<String>>> getAllUsersRoles(@RequestHeader("Authorization") String token){
         String jwtToken = token.replace("Bearer ", "");
         return ResponseEntity.ok(ResponseDTO.<List<String>>builder().code(200).message("User roles sent").data(userService.getUserRoles(jwtToken)).build());
+    }
+
+    @Operation(security = @SecurityRequirement(name = "bearerUser"))
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
+    @GetMapping("/get-users-profile-information")
+    public ResponseEntity<ResponseDTO<GetUserInformationDTO>> getUserProfileInformation(@RequestHeader("Authorization") String token){
+        String jwtToken = token.replace("Bearer ", "");
+        return ResponseEntity.ok(ResponseDTO.<GetUserInformationDTO>builder().code(200).message("User profile information sent").data(userService.getUserInformation(jwtToken)).build());
     }
 
 

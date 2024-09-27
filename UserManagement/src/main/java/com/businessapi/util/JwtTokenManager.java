@@ -45,7 +45,7 @@ public class JwtTokenManager {
         }
     }
 
-    public Optional<Long> getUserIdFromToken(String token){
+    public Optional<Long> getAuthIdFromToken(String token){
         DecodedJWT decodedJWT = null;
         try {
             Algorithm algorithm = Algorithm.HMAC512(secretKey);

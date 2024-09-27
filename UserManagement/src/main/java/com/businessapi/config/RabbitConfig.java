@@ -61,6 +61,9 @@ public class RabbitConfig {
     public static final String keySaveUserFromOtherServices = "keySaveUserFromOtherServices";
 
 
+    //authId ile auth servisten kullanıcının mail adresini almak için kullanılan kuyrul yapısı
+    public static final String queueGetMailByAuthId = "queueGetMailByAuthId";
+    public static final String keyGetMailByAuthId = "keyGetMailByAuthId";
 
 
     @Bean
@@ -134,6 +137,11 @@ public class RabbitConfig {
         return new Queue(queueSaveUserFromOtherServices);
     }
 
+    @Bean
+    public Queue queueGetMailByAuthId() {
+        return new Queue(queueGetMailByAuthId);
+    }
+
 
 
     @Bean
@@ -180,6 +188,10 @@ public class RabbitConfig {
         return BindingBuilder.bind(queueSaveUserFromOtherServices).to(businessDirectExchange).with(keySaveUserFromOtherServices);
     }
 
+    @Bean
+    public Binding bindingGetMailByAuthId(Queue queueGetMailByAuthId, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueGetMailByAuthId).to(businessDirectExchange).with(keyGetMailByAuthId);
+    }
 
 
     @Bean
