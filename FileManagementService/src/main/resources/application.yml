@@ -1,0 +1,33 @@
+server:
+  port: 9099
+
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fileDB
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+minio:
+  url: http://localhost:9001
+  access-key: java14-user
+  secret-key: java14-password
+  bucket: business-bucket
+  secure: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+
