@@ -95,6 +95,7 @@ public class StockMovementService
         {
             product.setStockCount(product.getStockCount() - stockMovement.getQuantity());
         }
+        productService.save(product);
         stockMovement.setStatus(EStatus.DELETED);
         stockMovementRepository.save(stockMovement);
         return true;

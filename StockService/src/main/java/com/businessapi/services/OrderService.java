@@ -156,6 +156,13 @@ public class OrderService
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
 
+        if (order.getOrderType() == EOrderType.SELL)
+        {
+            Product product = productService.findById(order.getProductId());
+            product.setStockCount(product.getStockCount() + order.getQuantity());
+            productService.save(product);
+        }
+
         order.setStatus(EStatus.DELETED);
         orderRepository.save(order);
         return true;
