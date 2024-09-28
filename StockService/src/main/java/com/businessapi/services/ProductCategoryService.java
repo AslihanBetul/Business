@@ -50,6 +50,11 @@ public class ProductCategoryService
     {
         ProductCategory productCategory = productCategoryRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
         SessionManager.authorizationCheck(productCategory.getMemberId());
+        Boolean isProductExist = productCategoryRepository.existsByMemberIdAndNameIgnoreCase(SessionManager.memberId, dto.name());
+        if (isProductExist)
+        {
+            throw new StockServiceException(ErrorType.PRODUCT_CATEGORY_ALREADY_EXISTS);
+        }
         if (dto.name() != null)
         {
             productCategory.setName(dto.name());

@@ -1,8 +1,7 @@
 package com.businessapi.exception;
 
-import com.businessapi.util.SessionManager;
+import com.businessapi.dto.response.ResponseDTO;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.JDBCConnectionException;
 import org.springframework.http.HttpStatus;
@@ -14,13 +13,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import com.businessapi.dto.response.ResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.businessapi.exception.ErrorType.*;
-
+import static com.businessapi.exception.ErrorType.BAD_REQUEST_ERROR;
 
 @ControllerAdvice
 @Slf4j
@@ -37,12 +34,10 @@ public class GlobalExceptionHandler {
      * ilgili sınıf hata fırlatırsa onu yakalar.
      *
      */
-    @ExceptionHandler(StockServiceException.class)
+    @ExceptionHandler(CalendarAndPlannigServiceException.class)
     @ResponseBody
-    public ResponseEntity<ResponseDTO> handlerSatisException(StockServiceException satisException){
-
-        //TODO HTTP STATUS CHANGED TO OK. MAYBE WE CAN CHANGE IT LATER
-        return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> handlerSatisException(CalendarAndPlannigServiceException satisException){
+        return  new ResponseEntity<>(createMessage(satisException.getErrorType(),satisException), satisException.getErrorType().getHttpStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -53,13 +48,13 @@ public class GlobalExceptionHandler {
                 .getBindingResult()
                 .getFieldErrors().forEach(x->fields.add(x.getField()+ ": "+ x.getDefaultMessage()));
 
-        return new ResponseEntity<>(createMessage(BAD_REQUEST_ERROR, exception), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(createMessage(ErrorType.BAD_REQUEST_ERROR, exception), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(JDBCConnectionException.class)
     public final ResponseEntity<ResponseDTO> handleJDBCConnectionException(
             HttpMessageNotReadableException exception) {
-        ErrorType errorType = BAD_REQUEST_ERROR;
+        ErrorType errorType = ErrorType.BAD_REQUEST_ERROR;
         return new ResponseEntity<>(createMessage(errorType, exception), errorType.getHttpStatus());
     }
 

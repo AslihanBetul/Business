@@ -46,7 +46,7 @@ public class OrderService
         Product product = productService.findById(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -75,7 +75,7 @@ public class OrderService
         Product product = productService.findByIdForDemoData(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -154,6 +154,13 @@ public class OrderService
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
 
+        if (order.getOrderType() == EOrderType.SELL)
+        {
+            Product product = productService.findById(order.getProductId());
+            product.setStockCount(product.getStockCount() + order.getQuantity());
+            productService.save(product);
+        }
+
         order.setStatus(EStatus.DELETED);
         orderRepository.save(order);
         return true;
@@ -193,7 +200,8 @@ public class OrderService
         } else if (stockDifference > 0) {
 
             if (product.getStockCount() < stockDifference) {
-                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
             }
             product.setStockCount(product.getStockCount() - stockDifference);
         }
