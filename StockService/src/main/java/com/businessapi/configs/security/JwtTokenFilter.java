@@ -54,9 +54,6 @@ public class JwtTokenFilter extends OncePerRequestFilter
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authId, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            //It will add memberId to the session
-            SessionManager.getMemberIdFromAuthenticatedMember();
         }
 
         filterChain.doFilter(request, response);

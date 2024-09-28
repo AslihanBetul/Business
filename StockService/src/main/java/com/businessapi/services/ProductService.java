@@ -52,7 +52,7 @@ public class ProductService
                 .name(dto.name())
                 .supplierId(dto.supplierId())
                 .wareHouseId(dto.wareHouseId())
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .description(dto.description())
                 .price(dto.price())
                 .stockCount(dto.stockCount())
@@ -128,12 +128,12 @@ public class ProductService
 
     public List<ProductResponseDTO> findAll(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto.searchText(), EStatus.ACTIVE,SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto.searchText(), EStatus.ACTIVE,SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
     {
-        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, SessionManager.memberId,dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(),dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Boolean changeAutoOrderMode(Long id)
