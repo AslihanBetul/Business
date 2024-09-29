@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import static com.businessapi.constants.EndPoints.*;
@@ -25,11 +26,12 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 @RequestMapping(FILE)
 @RestController
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT,RequestMethod.DELETE})
+
 public class FileController {
     private final FileService fileService;
 
     @PostMapping(SAVE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Upload a file")
     public ResponseEntity<ResponseDTO<String>> uploadFile (@ModelAttribute SaveFileRequestDTO dto) {
         try (InputStream inputStream = dto.file().getInputStream() ) {
@@ -56,6 +58,7 @@ public class FileController {
 
 
     @DeleteMapping(DELETE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Delete a file")
     public ResponseEntity<ResponseDTO<String>> deleteFile(@RequestBody DeleteFileRequestDTO fileDeleteDTO) {
         fileService.deleteFile(fileDeleteDTO);
@@ -71,6 +74,7 @@ public class FileController {
 
 
     @PostMapping(UPDATE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Update a file")
     public ResponseEntity<ResponseDTO<String>> updateFile(@ModelAttribute UpdateFileRequestDTO fileUpdateDTO) {
         try (InputStream inputStream = fileUpdateDTO.file().getInputStream()) {
@@ -95,6 +99,7 @@ public class FileController {
 
 
     @GetMapping(value = GET+"/{uuid}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     public ResponseEntity<Resource> getFile(@PathVariable String uuid) {
         try {
             File existingFile = fileService.getFileMetadata(uuid);
