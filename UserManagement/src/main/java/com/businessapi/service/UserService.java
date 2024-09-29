@@ -214,18 +214,16 @@ public class UserService {
         User user = userRepository.findByAuthId(addRoleFromSubscriptionModel.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
         user.setRole(new ArrayList<>()); //Kullanıcının rollerini sıfırlamak için yenmi bir liste tanımlanır.
         user.getRole().add(roleService.findByRoleName("MEMBER")); //Kullanıcıya MEMBER rol tanımlanır.
-        if(addRoleFromSubscriptionModel.getRoles().isEmpty()){
-            throw new UserException(ErrorType.ROLE_LIST_IS_EMPTY);
+
+        // if addRoleFromSubscriptionModel.roles is not empty then add roles
+        if(!addRoleFromSubscriptionModel.getRoles().isEmpty()){
+            addRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
+                Role role = roleService.findByRoleName(roleName);
+                user.getRole().add(role);
+            });
         }
-
-
-        addRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
-            Role role = roleService.findByRoleName(roleName);
-            user.getRole().add(role);
-        });
-
+        // if addRoleFromSubscriptionModel.roles is empty just save it empty
         userRepository.save(user);
-
     }
     @RabbitListener(queues = "queueDeleteRoleFromSubscription")
     public void deleteRoleFromSubscription(DeleteRoleFromSubscriptionModel deleteRoleFromSubscriptionModel) {
