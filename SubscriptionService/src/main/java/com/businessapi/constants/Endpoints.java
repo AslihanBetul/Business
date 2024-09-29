@@ -27,5 +27,10 @@ public class Endpoints
     public static final String UPDATE = "/update";
     public static final String FIND_ALL = "/find-all";
     public static final String FIND_BY_ID = "/find-by-id";
+    public static final String SUBSCRIBE = "/subscribe";
+    public static final String UNSUBSCRIBE = "/unsubscribe";
+    public static final String CHECK_SUBSCRIPTIONS = "/check-subscriptions";
+
+
 
 }

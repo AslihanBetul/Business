@@ -1,6 +1,7 @@
 package com.businessapi.service;
 
 import com.businessapi.entity.Plan;
+import com.businessapi.entity.enums.ERoles;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.SubscriptionServiceException;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +33,14 @@ public class PlanService {
         plan.setStatus(EStatus.DELETED);
         planRepository.save(plan);
         return true;
+    }
+
+    public List<ERoles> getRolesByPlanIds(List<Long> planIds) {
+        return planRepository
+                .findAllById(planIds)
+                .stream()
+                .map(Plan::getRoles)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 }

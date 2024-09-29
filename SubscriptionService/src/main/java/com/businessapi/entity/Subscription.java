@@ -1,13 +1,12 @@
 package com.businessapi.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @RequiredArgsConstructor
@@ -20,8 +19,8 @@ public class Subscription extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    private Long userId;
+    private Long authId;
     private Long planId;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 }
