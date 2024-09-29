@@ -29,7 +29,7 @@ public class CustomerService
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
             throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(SessionManager.memberId).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
+        customerRepository.save(Customer.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
         return true;
     }
 
@@ -69,7 +69,7 @@ public class CustomerService
 
     public List<Customer> findAll(PageRequestDTO dto)
     {
-        return customerRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return customerRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Customer findById(Long id)

@@ -5,21 +5,22 @@ import com.businessapi.exception.StockServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class SessionManager
-{
-    public static Long memberId;
-    public static Long getMemberIdFromAuthenticatedMember()
-    {
-        // Gets authId from authenticated member
+public class SessionManager {
+
+    public static Long getMemberIdFromAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        memberId = Long.parseLong(authentication.getName());
+
+        if (authentication == null || authentication.getName() == null) {
+            throw new StockServiceException(ErrorType.UNAUTHORIZED);
+        }
+
         return Long.parseLong(authentication.getName());
     }
 
-    public static void authorizationCheck(Long entityMemberId)
-    {
-        if (!entityMemberId.equals(memberId))
-        {
+    public static void authorizationCheck(Long entityMemberId) {
+        Long currentMemberId = getMemberIdFromAuthenticatedMember();
+
+        if (!entityMemberId.equals(currentMemberId)) {
             throw new StockServiceException(ErrorType.UNAUTHORIZED);
         }
     }

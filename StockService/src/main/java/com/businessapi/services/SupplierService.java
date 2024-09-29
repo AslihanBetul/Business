@@ -51,7 +51,7 @@ public class SupplierService
                 .builder()
                 .name(dto.name())
                 .surname(dto.surname())
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .email(dto.email())
                 .contactInfo(dto.contactInfo())
                 .address(dto.address())
@@ -126,7 +126,7 @@ public class SupplierService
 
     public List<Supplier> findAll(PageRequestDTO dto)
     {
-        return supplierRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        return supplierRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
     public Supplier findById(Long id)
@@ -136,11 +136,16 @@ public class SupplierService
         return supplier;
     }
 
+    public Supplier findByIdForAutoScheduler(Long id)
+    {
+        return supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+    }
+
     public Boolean approveOrder(Long id)
     {
-        Order order = orderService.findById(id);
+        Order order = orderService.findByIdForSupplier(id);
         //Authorization check.
-        Supplier supplier = supplierRepository.findByAuthId(SessionManager.memberId).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
+        Supplier supplier = supplierRepository.findByAuthId(SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
         if (!order.getSupplierId().equals(supplier.getId()))
         {
             throw new StockServiceException(ErrorType.UNAUTHORIZED);

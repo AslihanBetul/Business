@@ -36,7 +36,7 @@ public class OpportunityService {
                 .stage(dto.stage())
                 .probability(dto.probability())
                 .customerId(dto.customerId())
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                         .status(EStatus.ACTIVE)
                 .build());
 

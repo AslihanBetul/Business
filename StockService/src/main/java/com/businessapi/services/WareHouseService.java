@@ -26,7 +26,7 @@ public class WareHouseService
         wareHouseRepository.save(WareHouse
                 .builder()
                 .name(dto.name())
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .location(dto.location())
                 .build());
         return true;
@@ -71,7 +71,7 @@ public class WareHouseService
 
     public List<WareHouse> findAll(PageRequestDTO dto)
     {
-        return wareHouseRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        return wareHouseRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
     public WareHouse findById(Long id)

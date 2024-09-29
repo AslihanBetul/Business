@@ -26,7 +26,7 @@ public class MarketingCampaignService {
                 .startDate(dto.startDate())
                 .endDate(dto.endDate())
                 .budget(dto.budget())
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build());
         return true;
@@ -37,7 +37,7 @@ public class MarketingCampaignService {
     }
 
     public List<MarketingCampaign> findAll(PageRequestDTO dto) {
-        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
 
     }
 

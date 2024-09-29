@@ -57,7 +57,7 @@ public class OrderService
 
         Order order = Order
                 .builder()
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .customerId(dto.customerId())
                 .unitPrice(product.getPrice())
                 .quantity(dto.quantity())
@@ -108,7 +108,7 @@ public class OrderService
 
         Order order = Order
                 .builder()
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .supplierId(dto.supplierId())
                 .unitPrice(product.getPrice())
                 .quantity(dto.quantity())
@@ -122,7 +122,7 @@ public class OrderService
 
     public Boolean saveBuyOrderForAutoScheduler(BuyOrderSaveRequestDTO dto, Long memberId)
     {
-        Product product = productService.findById(dto.productId());
+        Product product = productService.findByIdForAutoScheduler(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
@@ -233,6 +233,13 @@ public class OrderService
         return order;
     }
 
+    public Order findByIdForSupplier(Long id)
+    {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+
+        return order;
+    }
+
 
     /**
      * Finds products with name containing search text
@@ -245,11 +252,11 @@ public class OrderService
     public List<BuyOrderResponseDTO> findAllBuyOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember());
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.memberId, EStatus.DELETED, EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
         List<BuyOrderResponseDTO> buyOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
@@ -274,11 +281,11 @@ public class OrderService
     public List<SellOrderResponseDTO> findAllSellOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember());
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.memberId, EStatus.DELETED, EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
         List<SellOrderResponseDTO> sellOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
@@ -297,7 +304,7 @@ public class OrderService
     public List<SupplierOrderResponseDTO> findOrdersOfSupplier(PageRequestDTO dto)
     {
         //TODO LOOK AT THIS LATER THERE MIGHT BE PROBLEM
-        Supplier supplier = supplierService.findByAuthId(SessionManager.memberId);
+        Supplier supplier = supplierService.findByAuthId(SessionManager.getMemberIdFromAuthenticatedMember());
 
         return orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
 

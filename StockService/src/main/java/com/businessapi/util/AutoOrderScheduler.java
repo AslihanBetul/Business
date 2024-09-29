@@ -38,7 +38,7 @@ public class AutoOrderScheduler
             if (!product.getIsProductAutoOrdered() && product.getIsAutoOrderEnabled())
             {
                 //Sending suppliers email to inform them.
-                Supplier supplier = supplierService.findById(product.getSupplierId());
+                Supplier supplier = supplierService.findByIdForAutoScheduler(product.getSupplierId());
                 rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", new EmailSendModal(supplier.getEmail(), "Auto Order", "Your product " + product.getName()+" is below minimum stock level. We would like to order " + product.getMinimumStockLevel()*2 + " of it."));
 
                 //TODO AUTO ORDER COUNT SET TO MINSTOCKLEVEL*2 MAYBE IT CAN BE CHANGED LATER
