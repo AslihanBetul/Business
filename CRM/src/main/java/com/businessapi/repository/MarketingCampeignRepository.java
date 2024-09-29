@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MarketingCampeignRepository extends JpaRepository<MarketingCampaign, Long> {
-    List<MarketingCampaign> findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
+    List<MarketingCampaign> findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(String s, EStatus eStatus, Long memberId, PageRequest of);
 }

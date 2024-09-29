@@ -9,7 +9,10 @@ import com.businessapi.analyticsservice.mapper.DataSourceMapper;
 import com.businessapi.analyticsservice.repository.DataSourceRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -42,36 +45,53 @@ public class DataSourceService {
 
         String jsonData;
 
-        // Used for GET request
-        if (serviceType.equalsIgnoreCase("hrm")) {
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                jsonData = response.getBody();
-            } else {
-                throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
-            }
-        } else {
-            // For Stock and Finance, used POST request with request body
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("searchText", "");
-            requestBody.put("page", 0);
-            requestBody.put("size", 100);
+        // Extract token
+        UsernamePasswordAuthenticationToken authentication =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
-
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                jsonData = response.getBody();
-            } else {
-                throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
-            }
+        if (authentication == null || authentication.getCredentials() == null) {
+            throw new RuntimeException("Authentication context is not available or token is missing");
         }
-        System.out.println(jsonData);
-        dataSourceRepository.deleteByEndpointType(endpointType); // delete old data
-        saveDataSource(endpointType, serviceType, jsonData);
+
+        String token = (String) authentication.getCredentials();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        //  For HRM, used GET request
+        try {
+            if (serviceType.equalsIgnoreCase("hrm")) {
+                HttpEntity<Void> entity = new HttpEntity<>(headers);
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    jsonData = response.getBody();
+                } else {
+                    throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
+                }
+            } else {
+                // For Stock and Finance, use POST request with body
+                Map<String, Object> requestBody = new HashMap<>();
+                requestBody.put("searchText", "");
+                requestBody.put("page", 0);
+                requestBody.put("size", 100);
+
+                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+                ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    jsonData = response.getBody();
+                } else {
+                    throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
+                }
+            }
+
+            // Save data after fetching
+            dataSourceRepository.deleteByEndpointType(endpointType); // delete old data
+            saveDataSource(endpointType, serviceType, jsonData);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch and save data: " + e.getMessage(), e);
+        }
     }
 
     private String getUrlByServiceTypeAndEndpoint(String serviceType, String endpointType) {
@@ -90,15 +110,15 @@ public class DataSourceService {
     private String getStockServiceUrl(String endpointType) {
         switch (endpointType.toLowerCase()) {
             case "product":
-                return "http://localhost:9099/dev/v1/product/find-all";
+                return "http://localhost:9099/dev/v1/stock/product/find-all";
             case "order":
-                return "http://localhost:9099/dev/v1/order/find-all";
+                return "http://localhost:9099/dev/v1/stock/order/find-all-sell-orders";
             case "stock-movement":
-                return "http://localhost:9099/dev/v1/stock-movement/find-all";
+                return "http://localhost:9099/dev/v1/stock/stock-movement/find-all";
             case "supplier":
-                return "http://localhost:9099/dev/v1/supplier/find-all";
+                return "http://localhost:9099/dev/v1/stock/supplier/find-all";
             case "ware-house":
-                return "http://localhost:9099/dev/v1/ware-house/find-all";
+                return "http://localhost:9099/dev/v1/stock/ware-house/find-all";
             default:
                 return null;
         }
@@ -107,15 +127,15 @@ public class DataSourceService {
     private String getFinanceServiceUrl(String endpointType) {
         switch (endpointType.toLowerCase()) {
             case "tax":
-                return "http://localhost:9089/tax/find-all";
+                return "http://localhost:9089/dev/v1/finance/tax/find-all";
             case "invoice":
-                return "http://localhost:9089/invoice/find-all";
+                return "http://localhost:9089/dev/v1/finance/invoice/find-all";
             case "financial-report":
-                return "http://localhost:9089/financial-report/find-all";
+                return "http://localhost:9089/dev/v1/finance/financial-report/find-all";
             case "expense":
-                return "http://localhost:9089/expense/find-all";
+                return "http://localhost:9089/dev/v1/finance/expense/find-all";
             case "budget":
-                return "http://localhost:9089/budget/find-all";
+                return "http://localhost:9089/dev/v1/finance/budget/find-all";
             default:
                 return null;
         }

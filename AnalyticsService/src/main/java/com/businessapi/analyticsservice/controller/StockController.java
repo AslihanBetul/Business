@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/dev/v1/stocks")
+@RequestMapping("/dev/v1/analytics/stocks")
 public class StockController {
 
     private final StockService stockService;

@@ -1,6 +1,7 @@
 package com.businessapi.controllers;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.ProductResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Product;
 import com.businessapi.services.ProductService;
@@ -64,10 +65,10 @@ public class ProductController
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all products with respect to pagination")
     @PreAuthorize("hasAnyAuthority('IMM')")
-    public ResponseEntity<ResponseDTO<List<Product>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<ProductResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Product>>builder()
+                .<List<ProductResponseDTO>>builder()
                 .data(productService.findAll(dto))
                 .message("Success")
                 .code(200)

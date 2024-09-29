@@ -3,6 +3,7 @@ package com.businessapi.services;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.ProductSaveRequestDTO;
 import com.businessapi.dto.request.ProductUpdateRequestDTO;
+import com.businessapi.dto.response.ProductResponseDTO;
 import com.businessapi.entities.Product;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -117,7 +118,7 @@ public class ProductService
         return true;
     }
 
-    public List<Product> findAll(PageRequestDTO dto)
+    public List<ProductResponseDTO> findAll(PageRequestDTO dto)
     {
         return productRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto.searchText(), EStatus.ACTIVE,SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
     }

@@ -15,4 +15,9 @@ public class StockServiceException extends RuntimeException{
         super(errorType.getMessage());
         this.errorType = errorType;
     }
+
+    public StockServiceException(ErrorType errorType, String additionalMessage){
+        super(errorType.getMessage() + " - " + additionalMessage);
+        this.errorType = errorType;
+    }
 }
