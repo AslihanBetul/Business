@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dev/v1/reports")
+@RequestMapping("/dev/v1/analytics/reports")
 public class ReportController {
 
     private final ReportService reportService;

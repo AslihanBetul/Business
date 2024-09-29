@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/dev/v1/hrm")
+@RequestMapping("/dev/v1/analytics/hrm")
 public class HRMController {
     private final HRMService hrmService;
 
