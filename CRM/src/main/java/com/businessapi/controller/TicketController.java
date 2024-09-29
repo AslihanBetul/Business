@@ -1,5 +1,6 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.TicketSaveDTO;
 import com.businessapi.dto.request.TicketUpdateDTO;
 import com.businessapi.dto.response.ResponseDTO;
@@ -52,9 +53,9 @@ public class TicketController {
     }
     @PostMapping(FINDALL)
     @Operation(summary = "Find all tickets", description = "Find all tickets")
-    public ResponseEntity<ResponseDTO<List<Ticket>>> findAll() {
+    public ResponseEntity<ResponseDTO<List<Ticket>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Ticket>>builder()
-                .data(ticketService.findAll())
+                .data(ticketService.findAll(dto))
                 .code(200)
                 .message("Tickets found successfully")
                 .build());

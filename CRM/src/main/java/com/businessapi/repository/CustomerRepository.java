@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    List<Customer> findAllByFirstNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByFirstNameAsc(String s, EStatus status,Long memberId, PageRequest of);
+    List<Customer> findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(String s, EStatus status,Long memberId, PageRequest of);
 
     Optional<Customer> findCustomerByEmailIgnoreCase(String email);
 }
