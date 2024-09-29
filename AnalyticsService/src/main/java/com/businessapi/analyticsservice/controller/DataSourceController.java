@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dev/v1/dataSources")
+@RequestMapping("/dev/v1/analytics/dataSources")
+@CrossOrigin("*")
 public class DataSourceController {
 
     private final DataSourceService dataSourceService;
