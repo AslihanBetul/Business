@@ -37,7 +37,7 @@ public class MarketingCampaignService {
     }
 
     public List<MarketingCampaign> findAll(PageRequestDTO dto) {
-        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
 
     }
 
