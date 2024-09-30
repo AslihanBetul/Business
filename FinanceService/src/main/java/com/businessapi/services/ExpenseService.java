@@ -56,7 +56,7 @@ public class ExpenseService {
     }
 
     public List<Expense> findAll(PageRequestDTO dto) {
-        return expenseRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
+        return expenseRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Expense findById(Long id) {
@@ -64,7 +64,7 @@ public class ExpenseService {
     }
 
     public List<Expense> findByCategory(EExpenseCategory expenseCategory) {
-        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategory(expenseCategory);
+        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategoryAndStatusNot(expenseCategory, EStatus.DELETED);
         if (expensesByCategory.isEmpty()) {
             throw new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND);
         }

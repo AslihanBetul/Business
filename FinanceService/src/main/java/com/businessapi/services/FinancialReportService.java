@@ -84,7 +84,7 @@ public class FinancialReportService {
     }
 
     public List<FinancialReport> findAll(PageRequestDTO dto) {
-        return financialRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
+        return financialRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public FinancialReport findById(Long id) {

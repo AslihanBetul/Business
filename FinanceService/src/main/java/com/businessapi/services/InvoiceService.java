@@ -55,7 +55,7 @@ public class InvoiceService {
     }
 
     public List<Invoice> findAll(PageRequestDTO dto) {
-        return invoiceRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
+        return invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Invoice findById(Long id) {

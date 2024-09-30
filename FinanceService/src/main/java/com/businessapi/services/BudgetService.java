@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,8 +53,16 @@ public class BudgetService {
         return true;
     }
 
+//    public List<Budget> findAll(PageRequestDTO dto) {
+//        return budgetRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+//    }
+
     public List<Budget> findAll(PageRequestDTO dto) {
-        return budgetRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
+        String department = dto.searchText(); // Assuming you have a method to get the department from the DTO
+        if (department != null && !department.isEmpty()) {
+            return budgetRepository.findByDepartmentContainingIgnoreCaseAndStatusNot(department, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        }
+        return budgetRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Budget findById(Long id) {
