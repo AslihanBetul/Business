@@ -25,6 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>
 
     List<Product> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String name, Long memberId, EStatus status);
 
+
     List<Product> findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(String name, Long memberId);
 
 

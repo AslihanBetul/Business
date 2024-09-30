@@ -146,10 +146,6 @@ public class ProductService
         return true;
     }
 
-    public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String name, Long memberId, EStatus status)
-    {
-        return productRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(name, memberId, status);
-    }
 
     public List<Product> findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(String name, Long memberId)
     {

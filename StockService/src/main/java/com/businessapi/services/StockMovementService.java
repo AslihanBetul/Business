@@ -172,11 +172,11 @@ public class StockMovementService
     public List<StockMovementResponseDTO> findAll(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember());
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<StockMovement> stockList = stockMovementRepository.findAllByProductIdIn(productIdList, PageRequest.of(dto.page(), dto.size()));
+        List<StockMovement> stockList = stockMovementRepository.findAllByProductIdInAndStatusIsNot(productIdList,EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
         List<StockMovementResponseDTO> stockMovementDtoList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         stockList.stream().forEach(stock ->
