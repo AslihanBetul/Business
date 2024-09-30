@@ -1,5 +1,6 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.SalesActivitySaveDTO;
 import com.businessapi.dto.request.SalesActivityUpdateDTO;
 import com.businessapi.dto.response.ResponseDTO;
@@ -17,7 +18,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(SALESACTIVITY)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class SalesActivityController {
     private final SalesActivityService salesActivityService;
 
@@ -33,12 +34,12 @@ public class SalesActivityController {
                 .build());
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all sales activities")
-    public ResponseEntity<ResponseDTO<List<SalesActivity>>> findAll() {
+    public ResponseEntity<ResponseDTO<List<SalesActivity>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<SalesActivity>>builder()
-                .data(salesActivityService.findAll())
+                .data(salesActivityService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());

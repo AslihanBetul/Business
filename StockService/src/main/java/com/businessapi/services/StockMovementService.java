@@ -11,6 +11,7 @@ import com.businessapi.entities.Product;
 import com.businessapi.entities.StockMovement;
 import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
+import com.businessapi.entities.enums.EStockMovementType;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.StockMovementRepository;
@@ -35,16 +36,25 @@ public class StockMovementService
     public Boolean save(StockMovementSaveDTO dto)
     {
         Product product = productService.findById(dto.productId());
-        wareHouseService.findById(dto.warehouseId());
-        if (product.getStockCount() < dto.quantity())
+        if (dto.stockMovementType() == EStockMovementType.OUT)
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            if (product.getStockCount() < dto.quantity())
+            {
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+            }
+            product.setStockCount(product.getStockCount() - dto.quantity());
+            productService.save(product);
+        }else
+        {
+            product.setStockCount(product.getStockCount() + dto.quantity());
+            productService.save(product);
         }
+
         stockMovementRepository.save(StockMovement
                 .builder()
                 .productId(dto.productId())
-                .memberId(SessionManager.memberId)
-                .warehouseId(dto.warehouseId())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .warehouseId(product.getWareHouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())
                 .build());
@@ -54,7 +64,7 @@ public class StockMovementService
     public Boolean saveForDemoData(StockMovementSaveDTO dto)
     {
         Product product = productService.findByIdForDemoData(dto.productId());
-        wareHouseService.findByIdForDemoData(dto.warehouseId());
+
         if (product.getStockCount() < dto.quantity())
         {
             throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
@@ -63,7 +73,7 @@ public class StockMovementService
                 .builder()
                 .productId(dto.productId())
                 .memberId(2L)
-                .warehouseId(dto.warehouseId())
+                .warehouseId(product.getWareHouseId())
                 .quantity(dto.quantity())
                 .stockMovementType(dto.stockMovementType())
                 .build());
@@ -74,39 +84,75 @@ public class StockMovementService
     {
         StockMovement stockMovement = stockMovementRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
         SessionManager.authorizationCheck(stockMovement.getMemberId());
+        Product product = productService.findById(stockMovement.getProductId());
+
+        if (stockMovement.getStockMovementType() == EStockMovementType.OUT)
+        {
+            product.setStockCount(product.getStockCount() + stockMovement.getQuantity());
+        }else
+        {
+            product.setStockCount(product.getStockCount() - stockMovement.getQuantity());
+        }
+        productService.save(product);
         stockMovement.setStatus(EStatus.DELETED);
         stockMovementRepository.save(stockMovement);
         return true;
     }
 
-    public Boolean update(StockMovementUpdateRequestDTO dto)
-    {
+    public Boolean update(StockMovementUpdateRequestDTO dto) {
+
         Product product = productService.findById(dto.productId());
 
-        wareHouseService.findById(dto.warehouseId());
-        if (product.getStockCount() < dto.quantity())
-        {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
-        }
-        StockMovement stockMovement = stockMovementRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+
+
+        StockMovement stockMovement = stockMovementRepository.findById(dto.id())
+                .orElseThrow(() -> new StockServiceException(ErrorType.STOCK_MOVEMENT_NOT_FOUND));
+
 
         SessionManager.authorizationCheck(stockMovement.getMemberId());
+
+        // Mevcut stok hareketindeki miktar ve DTO ile gelen yeni miktarı al
+        Integer currentQuantity = stockMovement.getQuantity();
+        Integer newQuantity = dto.quantity();
+        Integer stockDifference = newQuantity - currentQuantity;
+
+        // Stok farkı pozitif ise ekleme yapılacak, negatif ise çıkarma yapılacak
+        if (dto.stockMovementType() == EStockMovementType.OUT) {
+            // Çıkış işlemi (OUT)
+            if (stockDifference > 0) {
+                // Daha fazla çıkış yapılmak isteniyor, stokta yeterli mi?
+                if (product.getStockCount() < stockDifference) {
+                    throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+                }
+                // Stoktan fark kadar çıkış yap
+                product.setStockCount(product.getStockCount() - stockDifference);
+            } else {
+                // Çıkış miktarı azaldıysa (stockDifference negatif), stoğa iade yapılır
+                product.setStockCount(product.getStockCount() + Math.abs(stockDifference));
+            }
+        } else if (dto.stockMovementType() == EStockMovementType.IN) {
+            // Giriş işlemi (IN)
+            if (stockDifference > 0) {
+                // Giriş miktarı arttıysa, fark kadar stoğa ekle
+                product.setStockCount(product.getStockCount() + stockDifference);
+            } else {
+                // Giriş miktarı azaldıysa, fark kadar stoktan çıkar
+                product.setStockCount(product.getStockCount() - Math.abs(stockDifference));
+            }
+        }
+
+        productService.save(product);
+
         stockMovement.setProductId(dto.productId());
-        stockMovement.setWarehouseId(dto.warehouseId());
+        stockMovement.setQuantity(dto.quantity());
+        stockMovement.setStockMovementType(dto.stockMovementType());
 
-        if (dto.quantity() != null)
-        {
-            stockMovement.setQuantity(dto.quantity());
-        }
-        if (dto.stockMovementType() != null)
-        {
-            stockMovement.setStockMovementType(dto.stockMovementType());
-        }
-
+        // Stok hareketini kaydet
         stockMovementRepository.save(stockMovement);
 
         return true;
     }
+
 
     public StockMovement findById(Long id)
     {
@@ -126,7 +172,7 @@ public class StockMovementService
     public List<StockMovementResponseDTO> findAll(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.memberId, EStatus.DELETED);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED);
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids

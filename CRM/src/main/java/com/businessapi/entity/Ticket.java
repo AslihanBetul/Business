@@ -20,13 +20,14 @@ public class Ticket extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    private Long memberId;
     private Long customerId;
     private String subject;
     private String description;
     private String ticketStatus;
     private String priority;
-    private LocalDateTime createdDate;
-    private LocalDateTime closedDate;
+    private LocalDate createdDate;
+    private LocalDate closedDate;
     @Enumerated(EnumType.STRING)
     EStatus status;
 }

@@ -29,7 +29,7 @@ public class CustomerService
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
             throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(SessionManager.memberId).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
+        customerRepository.save(Customer.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
         return true;
     }
 
@@ -57,7 +57,9 @@ public class CustomerService
         Customer customer = customerRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.CUSTOMER_NOT_FOUND));
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(customer.getMemberId());
-
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
+            throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
+        }
         customer.setName(dto.name());
         customer.setSurname(dto.surname());
         customer.setEmail(dto.email());
@@ -67,7 +69,7 @@ public class CustomerService
 
     public List<Customer> findAll(PageRequestDTO dto)
     {
-        return customerRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return customerRepository.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.DELETED,SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Customer findById(Long id)

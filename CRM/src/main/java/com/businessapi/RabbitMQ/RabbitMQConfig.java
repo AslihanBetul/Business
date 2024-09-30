@@ -16,26 +16,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     private final String businessDirectExchange = "businessDirectExchange";
 
-
-    //userdan customer oluştuma
-    private final String queueSaveCustomerFromUser = "queueSaveCustomerFromUser";
-    private final String keySaveCustomerFromUser = "keySaveCustomerFromUser";
-
-    //customer user'dan bilgileri istemesi icin kuyruk
-    private final String queueRequestCustomerFromUser = "queueRequestCustomerFromUser";
-    private final String keyRequestCustomerFromUser = "keyRequestCustomerFromUser";
-
-    //customer auth'dan email bilgilerini istedigi kuyruk
-    private final String queueRequestCustomerFromAuth = "queueRequestCustomerFromAuth";
-    private final String keyRequestCustomerFromAuth = "keyRequestCustomerFromAuth";
-
-    // auth'dan user'a gelen email bilgisi kuyrugu
-    private final String queueEmailFromAuth = "queueEmailFromCustomer";
-    private final String keyEmailFromAuth = "keyEmailFromCustomer";
-
-    // stock service'e giden kuyruk
-    private final String queueResponseStock = "queueFindNameAndLastNameById";
-    private final String keyResponseStock = "keyFindNameAndLastNameById";
+    String queueFindAuthByToken = "find.auth.by.token";
+    String keyFindAuthByToken = "key.find.auth.by.token";
 
 
     @Bean
@@ -44,64 +26,15 @@ public class RabbitMQConfig {
     }
 
 
-    @Bean
-    public Queue queueSaveCustomerFromUser() {
-        return new Queue(queueSaveCustomerFromUser);
-    }
-    @Bean
-    public Queue queueRequestCustomerFromUser() {
-        return new Queue(queueRequestCustomerFromUser);
-    }
-    @Bean
-    public Queue queueRequestCustomerFromAuth() {
-        return new Queue(queueRequestCustomerFromAuth);
-    }
-    @Bean
-    public Queue queueEmailFromAuth() {
-        return new Queue(queueEmailFromAuth);
-    }
-    @Bean
-    public Queue queueResponseStock() {
-        return new Queue(queueResponseStock);
-    }
-    @Bean
-    public Queue queueSaveCustomerByEmail() {
-        return new Queue("queueSaveCustomerByEmail");
-    }
-    @Bean
-    public Queue queueFindCustomerByFirstName() {
-        return new Queue("queueFindCustomerByFirstName");
-    }
-
-
 
     @Bean
-    public Binding bindingCustomerSaveFromUser(Queue queueSaveCustomerFromUser, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueSaveCustomerFromUser).to(businessDirectExchange).with(keySaveCustomerFromUser);
+    public Queue queueFindAuthByToken(){
+        return new Queue(queueFindAuthByToken);
     }
+
     @Bean
-    public Binding bindingCustomerRequestFromUser(Queue queueRequestCustomerFromUser, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueRequestCustomerFromUser).to(businessDirectExchange).with(keyRequestCustomerFromUser);
-    }
-    @Bean
-    public Binding bindingCustomerRequestFromAuth(Queue queueRequestCustomerFromAuth, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueRequestCustomerFromAuth).to(businessDirectExchange).with(keyRequestCustomerFromAuth);
-    }
-    @Bean
-    public Binding bindingEmailFromAuth(Queue queueEmailFromAuth, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueEmailFromAuth).to(businessDirectExchange).with(keyEmailFromAuth);
-    }
-    @Bean
-    public Binding bindingResponseStock(Queue queueResponseStock, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueResponseStock).to(businessDirectExchange).with(keyResponseStock);
-    }
-    @Bean
-    public Binding bindingSaveCustomerByEmail(Queue queueSaveCustomerByEmail, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueSaveCustomerByEmail).to(businessDirectExchange).with("keySaveCustomerByEmail");
-    }
-    @Bean
-    public Binding bindingFindCustomerByFirstName(Queue queueFindCustomerByFirstName, DirectExchange businessDirectExchange) {
-        return BindingBuilder.bind(queueFindCustomerByFirstName).to(businessDirectExchange).with("keyFindCustomerByFirstName");
+    public Binding bindingSaveDirectExchange(Queue queueFindAuthByToken, DirectExchange directExchange){
+        return BindingBuilder.bind(queueFindAuthByToken).to(directExchange).with(keyFindAuthByToken);
     }
 
     @Bean
@@ -110,6 +43,7 @@ public class RabbitMQConfig {
     }
 
 
+    @Bean
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter());

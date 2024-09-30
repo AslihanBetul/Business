@@ -2,6 +2,7 @@ package com.businessapi.controllers;
 
 import static com.businessapi.constants.Endpoints.*;
 
+import com.businessapi.dto.request.CalculateTaxRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.TaxSaveRequestDTO;
 import com.businessapi.dto.request.TaxUpdateRequestDTO;
@@ -25,7 +26,7 @@ public class TaxController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new tax")
-    public ResponseEntity<ResponseDTO<Boolean>> save(TaxSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody TaxSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(taxService.save(dto))
@@ -36,7 +37,7 @@ public class TaxController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing tax")
-    public ResponseEntity<ResponseDTO<Boolean>> update(TaxUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody TaxUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(taxService.update(dto))
@@ -80,10 +81,10 @@ public class TaxController {
 
     @PostMapping(CALCULATE)
     @Operation(summary = "Calculates the tax amount with respect to the given tax id and amount")
-    public ResponseEntity<ResponseDTO<Boolean>> calculateTax(Long id, BigDecimal amount) {
+    public ResponseEntity<ResponseDTO<Boolean>> calculateTax(@RequestBody CalculateTaxRequestDto dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
-                .data(taxService.calculateTax(id, amount))
+                .data(taxService.calculateTax(dto))
                 .message("Success")
                 .code(200)
                 .build());

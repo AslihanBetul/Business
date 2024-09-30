@@ -24,7 +24,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF korumasını devre dışı bırakıyoruz
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/v2/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/swagger-ui/**",
@@ -35,9 +34,10 @@ public class SecurityConfig {
                                 "/dev/v1/reports/**",
                                 "/dev/v1/widgets/**",
                                 "/dev/v1/kpis/**",
-                                "/dev/v1/stocks/**",
-                                "/dev/v1/finances/**,",
-                                "/dev/v1/hrm/**"
+                                "/dev/v1/stock/**",
+                                "/dev/v1/finances/**",
+                                "/dev/v1/hrm/**",
+                                "/dev/v1/analytics/**"
 
                         ).permitAll()
                         .anyRequest().authenticated()

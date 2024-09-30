@@ -219,4 +219,38 @@ public class UserService {
 
         return GetUserInformationDTO.builder().id(user.getId()).authId(user.getAuthId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(usersMail).build();
     }
+
+    @RabbitListener(queues = "queueAddRoleFromSubscription")
+    public void addRoleFromSubscription(AddRoleFromSubscriptionModel addRoleFromSubscriptionModel) {
+        User user = userRepository.findByAuthId(addRoleFromSubscriptionModel.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setRole(new ArrayList<>()); //Kullanıcının rollerini sıfırlamak için yenmi bir liste tanımlanır.
+        user.getRole().add(roleService.findByRoleName("MEMBER")); //Kullanıcıya MEMBER rol tanımlanır.
+
+        // if addRoleFromSubscriptionModel.roles is not empty then add roles
+        if(!addRoleFromSubscriptionModel.getRoles().isEmpty()){
+            addRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
+                Role role = roleService.findByRoleName(roleName);
+                user.getRole().add(role);
+            });
+        }
+        // if addRoleFromSubscriptionModel.roles is empty just save it empty
+        userRepository.save(user);
+    }
+    @RabbitListener(queues = "queueDeleteRoleFromSubscription")
+    public void deleteRoleFromSubscription(DeleteRoleFromSubscriptionModel deleteRoleFromSubscriptionModel) {
+        User user = userRepository.findByAuthId(deleteRoleFromSubscriptionModel.getAuthId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        if(deleteRoleFromSubscriptionModel.getRoles().isEmpty()){
+            throw new UserException(ErrorType.ROLE_LIST_IS_EMPTY);
+        }
+
+        deleteRoleFromSubscriptionModel.getRoles().forEach(roleName -> {
+            Role role = roleService.findByRoleName(roleName);
+            user.getRole().remove(role);
+        });
+        userRepository.save(user);
+
+    }
+
+
+
 }

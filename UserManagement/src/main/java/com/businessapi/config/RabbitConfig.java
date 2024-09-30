@@ -64,6 +64,13 @@ public class RabbitConfig {
     //authId ile auth servisten kullanıcının mail adresini almak için kullanılan kuyrul yapısı
     public static final String queueGetMailByAuthId = "queueGetMailByAuthId";
     public static final String keyGetMailByAuthId = "keyGetMailByAuthId";
+    //Satın alma işlemi sonrası rol ataması için kullanılacak bağlantıda gerekli kuyruk yapısı
+    public static final String queueAddRoleFromSubscription = "queueAddRoleFromSubscription";
+    public static final String keyAddRoleFromSubscription = "keyAddRoleFromSubscription";
+
+    //Satın alımı bitmiş modülleri kullanıcıdan silme
+    public static final String queueDeleteRoleFromSubscription = "queueDeleteRoleFromSubscription";
+    public static final String keyDeleteRoleFromSubscription = "keyDeleteRoleFromSubscription";
 
 
     @Bean
@@ -142,6 +149,15 @@ public class RabbitConfig {
         return new Queue(queueGetMailByAuthId);
     }
 
+    @Bean
+    public Queue queueAddRoleFromSubscription() {
+        return new Queue(queueAddRoleFromSubscription);
+    }
+    @Bean
+    public Queue queueDeleteRoleFromSubscription() {
+        return new Queue(queueDeleteRoleFromSubscription);
+    }
+
 
 
     @Bean
@@ -192,6 +208,15 @@ public class RabbitConfig {
     public Binding bindingGetMailByAuthId(Queue queueGetMailByAuthId, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueGetMailByAuthId).to(businessDirectExchange).with(keyGetMailByAuthId);
     }
+    @Bean
+    public Binding bindingAddRoleFromSubscription (Queue queueAddRoleFromSubscription, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueAddRoleFromSubscription).to(businessDirectExchange).with(keyAddRoleFromSubscription);
+    }
+    @Bean
+    public Binding bindingDeleteRoleFromSubscription (Queue queueDeleteRoleFromSubscription, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueDeleteRoleFromSubscription).to(businessDirectExchange).with(keyDeleteRoleFromSubscription);
+    }
+
 
 
     @Bean

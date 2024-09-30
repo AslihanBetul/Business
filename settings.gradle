@@ -13,4 +13,7 @@ include 'ProjectManagement'
 include 'YeniNotificationService'
 include 'WebSocket'
 include 'ProjectManagement'
+include 'FileManagementService'
+include 'CalendarAndPlanningService'
+include 'LiveSupportService'
 

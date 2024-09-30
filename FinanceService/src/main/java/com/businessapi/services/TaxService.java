@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.dto.request.CalculateTaxRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.TaxSaveRequestDTO;
 import com.businessapi.dto.request.TaxUpdateRequestDTO;
@@ -82,9 +83,9 @@ public class TaxService {
         return amount.multiply(BigDecimal.valueOf(0.25));
     }
 
-    public Boolean calculateTax(Long id, BigDecimal amount) {
-        Tax tax = taxRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.TAX_NOT_FOUND));
-        BigDecimal taxedAmount = amount.multiply(tax.getTaxRate());
+    public Boolean calculateTax(CalculateTaxRequestDto dto) {
+        Tax tax = taxRepository.findById(dto.id()).orElseThrow(() -> new FinanceServiceException(ErrorType.TAX_NOT_FOUND));
+        BigDecimal taxedAmount = dto.amount().multiply(tax.getTaxRate());
         return true;
     }
 }

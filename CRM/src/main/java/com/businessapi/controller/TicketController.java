@@ -1,5 +1,6 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.TicketSaveDTO;
 import com.businessapi.dto.request.TicketUpdateDTO;
 import com.businessapi.dto.response.ResponseDTO;
@@ -17,7 +18,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(TICKET)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class TicketController {
 
     private final TicketService ticketService;
@@ -50,11 +51,11 @@ public class TicketController {
                 .message("Ticket deleted successfully")
                 .build());
     }
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all tickets", description = "Find all tickets")
-    public ResponseEntity<ResponseDTO<List<Ticket>>> findAll() {
+    public ResponseEntity<ResponseDTO<List<Ticket>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Ticket>>builder()
-                .data(ticketService.findAll())
+                .data(ticketService.findAll(dto))
                 .code(200)
                 .message("Tickets found successfully")
                 .build());

@@ -23,7 +23,12 @@ public class ProductCategoryService
 
     public Boolean save(ProductCategorySaveRequestDTO dto)
     {
-        productCategoryRepository.save(ProductCategory.builder().memberId(SessionManager.memberId).name(dto.name()).build());
+        Boolean isProductExist = productCategoryRepository.existsByMemberIdAndNameIgnoreCase(SessionManager.getMemberIdFromAuthenticatedMember(), dto.name());
+        if (isProductExist)
+        {
+            throw new StockServiceException(ErrorType.PRODUCT_CATEGORY_ALREADY_EXISTS);
+        }
+        productCategoryRepository.save(ProductCategory.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).build());
         return true;
     }
     public Boolean saveForDemoData(ProductCategorySaveRequestDTO dto)
@@ -36,6 +41,8 @@ public class ProductCategoryService
     {
         ProductCategory productCategory = productCategoryRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
         SessionManager.authorizationCheck(productCategory.getMemberId());
+        productCategory.setStatus(EStatus.DELETED);
+        productCategoryRepository.save(productCategory);
         return true;
     }
 
@@ -43,6 +50,11 @@ public class ProductCategoryService
     {
         ProductCategory productCategory = productCategoryRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_CATEGORY_NOT_FOUND));
         SessionManager.authorizationCheck(productCategory.getMemberId());
+        Boolean isProductExist = productCategoryRepository.existsByMemberIdAndNameIgnoreCase(SessionManager.getMemberIdFromAuthenticatedMember(), dto.name());
+        if (isProductExist)
+        {
+            throw new StockServiceException(ErrorType.PRODUCT_CATEGORY_ALREADY_EXISTS);
+        }
         if (dto.name() != null)
         {
             productCategory.setName(dto.name());
@@ -54,7 +66,7 @@ public class ProductCategoryService
 
     public List<ProductCategory> findAll(PageRequestDTO dto)
     {
-        return productCategoryRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        return productCategoryRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
     public ProductCategory findById(Long id)

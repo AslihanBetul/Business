@@ -14,10 +14,9 @@ import java.time.LocalDateTime;
 @Data
 @SuperBuilder
 @MappedSuperclass
-public class BaseEntity {
+public abstract class BaseEntity {
     @CreationTimestamp
     private LocalDateTime createdAt ;
     @UpdateTimestamp
     private LocalDateTime updateAt ;
-    private boolean state;
 }

@@ -40,4 +40,6 @@ public class Endpoints
     public static final String FIND_ALL_SELL_ORDERS = "/find-all-sell-orders";
     public static final String FIND_ORDERS_OF_SUPPLIER = "/find-orders-of-supplier";
 
+    public static final String UPDATE_BUY_ORDER = "/update-buy-order";
+    public static final String UPDATE_SELL_ORDER = "/update-sell-order";
 }

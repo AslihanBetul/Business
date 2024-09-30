@@ -2,6 +2,7 @@ package com.businessapi.controller;
 
 import com.businessapi.dto.request.OpportunitySaveDTO;
 import com.businessapi.dto.request.OpportunityUpdateDTO;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
@@ -18,7 +19,7 @@ import static com.businessapi.constants.EndPoints.*;
 @RestController
 @RequestMapping(OPPORTUNITY)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin("*")
 public class OpportunityController {
     private final OpportunityService opportunityService;
 
@@ -32,11 +33,11 @@ public class OpportunityController {
                 .build());
     }
 
-    @GetMapping(FINDALL)
+    @PostMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
-    public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll() {
+    public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<Opportunity>>builder()
-                .data(opportunityService.findAll())
+                .data(opportunityService.findAll(dto))
                 .code(200)
                 .message("Customers found successfully")
                 .build());

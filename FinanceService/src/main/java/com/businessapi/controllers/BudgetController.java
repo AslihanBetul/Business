@@ -24,7 +24,7 @@ public class BudgetController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new budget")
-    public ResponseEntity<ResponseDTO<Boolean>> save(BudgetSaveRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody BudgetSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(budgetService.save(dto))
@@ -35,7 +35,7 @@ public class BudgetController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing budget")
-    public ResponseEntity<ResponseDTO<Boolean>> update(BudgetUpdateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody BudgetUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(budgetService.update(dto))

@@ -20,11 +20,12 @@ public enum ErrorType {
     ROLE_DATA_IS_EMPTY(2002,"Role data is empty", HttpStatus.NOT_FOUND),
 
     ROLE_NOT_FOUND(2003,"Role not found", HttpStatus.NOT_FOUND),
-
+    ROLE_LIST_IS_EMPTY(2004,"Role list is empty", HttpStatus.BAD_REQUEST),
 
     TOKEN_CREATION_FAILED(5001,"token creation failed", HttpStatus.SERVICE_UNAVAILABLE),
     TOKEN_VERIFY_FAILED(5002,"token verify failed", HttpStatus.SERVICE_UNAVAILABLE),
     TOKEN_FORMAT_NOT_ACCEPTABLE(5003,"token format not acceptable", HttpStatus.BAD_REQUEST),
+
     ;
 
 

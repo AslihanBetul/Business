@@ -14,4 +14,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>
     List<Supplier> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String s, Long memberId, EStatus status, PageRequest of);
 
     Optional<Supplier> findByAuthId(Long authId);
+
+    Optional<Supplier> findByEmail(String email);
 }

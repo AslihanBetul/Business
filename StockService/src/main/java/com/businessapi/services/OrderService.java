@@ -1,10 +1,6 @@
 package com.businessapi.services;
 
-import com.businessapi.RabbitMQ.Model.CustomerNameLastNameResponseModel;
-import com.businessapi.dto.request.BuyOrderSaveRequestDTO;
-import com.businessapi.dto.request.SellOrderSaveRequestDTO;
-import com.businessapi.dto.request.OrderUpdateRequestDTO;
-import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
 import com.businessapi.dto.response.SupplierOrderResponseDTO;
@@ -19,12 +15,9 @@ import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.OrderRepository;
 import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,10 +32,11 @@ public class OrderService
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final CustomerService customerService;
-    private  SupplierService supplierService;
+    private SupplierService supplierService;
 
     @Autowired
-    private void setService (@Lazy SupplierService supplierService){
+    private void setService(@Lazy SupplierService supplierService)
+    {
         this.supplierService = supplierService;
     }
 
@@ -52,7 +46,7 @@ public class OrderService
         Product product = productService.findById(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -63,7 +57,7 @@ public class OrderService
 
         Order order = Order
                 .builder()
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .customerId(dto.customerId())
                 .unitPrice(product.getPrice())
                 .quantity(dto.quantity())
@@ -81,7 +75,7 @@ public class OrderService
         Product product = productService.findByIdForDemoData(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK);
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -114,7 +108,7 @@ public class OrderService
 
         Order order = Order
                 .builder()
-                .memberId(SessionManager.memberId)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .supplierId(dto.supplierId())
                 .unitPrice(product.getPrice())
                 .quantity(dto.quantity())
@@ -126,9 +120,9 @@ public class OrderService
         return true;
     }
 
-    public Boolean saveBuyOrderForAutoScheduler(BuyOrderSaveRequestDTO dto,Long memberId)
+    public Boolean saveBuyOrderForAutoScheduler(BuyOrderSaveRequestDTO dto, Long memberId)
     {
-        Product product = productService.findById(dto.productId());
+        Product product = productService.findByIdForAutoScheduler(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
@@ -160,22 +154,66 @@ public class OrderService
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
 
+        if (order.getOrderType() == EOrderType.SELL)
+        {
+            Product product = productService.findById(order.getProductId());
+            product.setStockCount(product.getStockCount() + order.getQuantity());
+            productService.save(product);
+        }
+
         order.setStatus(EStatus.DELETED);
         orderRepository.save(order);
         return true;
     }
 
 
-
-    public Boolean update(OrderUpdateRequestDTO dto)
+    public Boolean updateBuyOrder(BuyOrderUpdateRequestDTO dto)
     {
         Order order = orderRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
 
         // Authorization check whether the member is authorized to do that or not
         SessionManager.authorizationCheck(order.getMemberId());
+        order.setQuantity(dto.quantity());
+        order.setProductId(dto.productId());
+        order.setSupplierId(dto.supplierId());
+        orderRepository.save(order);
+        return true;
+    }
+
+    public Boolean updateSellOrder(SellOrderUpdateRequestDTO dto) {
+
+        Order order = orderRepository.findById(dto.id())
+                .orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+
+
+        SessionManager.authorizationCheck(order.getMemberId());
+
+
+        Product product = productService.findById(dto.productId());
+
+
+        Integer stockDifference = dto.quantity() - order.getQuantity();
+
+
+        if (stockDifference < 0) {
+            product.setStockCount(product.getStockCount() + Math.abs(stockDifference));
+        } else if (stockDifference > 0) {
+
+            if (product.getStockCount() < stockDifference) {
+
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+            }
+            product.setStockCount(product.getStockCount() - stockDifference);
+        }
 
         order.setQuantity(dto.quantity());
+        order.setProductId(dto.productId());
+        order.setCustomerId(dto.customerId());
+
+
         orderRepository.save(order);
+        productService.save(product);
+
         return true;
     }
 
@@ -195,29 +233,37 @@ public class OrderService
         return order;
     }
 
+    public Order findByIdForSupplier(Long id)
+    {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+
+        return order;
+    }
+
 
     /**
      * Finds products with name containing search text
      * Finds buy orders with respect to pagination
      * Converts orders to BuyOrderResponseDTO
+     *
      * @param dto search text , page number , page size parameters
      * @return List of BuyOrderResponseDTO
      */
     public List<BuyOrderResponseDTO> findAllBuyOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember());
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndOrderType(productIdList,EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, EOrderType.BUY, PageRequest.of(dto.page(), dto.size()));
         List<BuyOrderResponseDTO> buyOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
         {
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
-            String supplierName = supplierService.findById(order.getSupplierId()).getName();
-            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplierName , productName ,order.getUnitPrice(),order.getQuantity(), order.getTotal(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            Supplier supplier = supplierService.findById(order.getSupplierId());
+            buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplier.getName(), supplier.getEmail(), productName, order.getUnitPrice(), order.getQuantity(), order.getTotal(), order.getOrderType(), order.getCreatedAt(), order.getStatus()));
         });
         return buyOrderResponseDTOList.stream()
                 .sorted(Comparator.comparing(BuyOrderResponseDTO::productName))
@@ -228,17 +274,18 @@ public class OrderService
      * Finds products with name containing search text
      * Finds sell orders with respect to pagination
      * Converts orders to SellOrderResponseDTO
+     *
      * @param dto search text , page number , page size parameters
      * @return List of SellOrderResponseDTO
      */
     public List<SellOrderResponseDTO> findAllSellOrders(PageRequestDTO dto)
     {
         //Finds products with name containing search text
-        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.memberId);
+        List<Product> products = productService.findAllByNameContainingIgnoreCaseAndMemberIdOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember());
         //Mapping products to their ids
         List<Long> productIdList = products.stream().map(Product::getId).collect(Collectors.toList());
         //Finds buy orders with respect to pagination, order type and product ids
-        List<Order> orderList = orderRepository.findAllByProductIdInAndOrderType(productIdList,EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
+        List<Order> orderList = orderRepository.findAllByProductIdInAndMemberIdAndStatusIsNotAndOrderType(productIdList, SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, EOrderType.SELL, PageRequest.of(dto.page(), dto.size()));
         List<SellOrderResponseDTO> sellOrderResponseDTOList = new ArrayList<>();
         //Converting orders to BuyOrderResponseDTO and finding productName + supplierName
         orderList.stream().forEach(order ->
@@ -246,7 +293,7 @@ public class OrderService
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
             Customer customer = customerService.findById(order.getCustomerId());
 
-            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getName() + " " + customer.getSurname() , productName ,order.getUnitPrice(), order.getTotal(),order.getQuantity(), order.getOrderType(),order.getCreatedAt(),order.getStatus()));
+            sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getName() + " " + customer.getSurname(), customer.getEmail(), productName, order.getUnitPrice(), order.getTotal(), order.getQuantity(), order.getOrderType(), order.getCreatedAt(), order.getStatus()));
         });
         return sellOrderResponseDTOList.stream()
                 .sorted(Comparator.comparing(SellOrderResponseDTO::productName))
@@ -257,9 +304,9 @@ public class OrderService
     public List<SupplierOrderResponseDTO> findOrdersOfSupplier(PageRequestDTO dto)
     {
         //TODO LOOK AT THIS LATER THERE MIGHT BE PROBLEM
-        Supplier supplier = supplierService.findByAuthId(SessionManager.memberId);
+        Supplier supplier = supplierService.findByAuthId(SessionManager.getMemberIdFromAuthenticatedMember());
 
-        return  orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        return orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
 
     }
 }

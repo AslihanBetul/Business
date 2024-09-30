@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dev/v1/dashboards")
+@RequestMapping("/dev/v1/analytics/dashboards")
 public class DashboardController {
 
     private final DashboardService dashboardService;

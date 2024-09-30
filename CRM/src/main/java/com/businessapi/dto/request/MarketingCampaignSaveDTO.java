@@ -1,10 +1,12 @@
 package com.businessapi.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 public record MarketingCampaignSaveDTO(String name,
                                        String description,
-                                       LocalDateTime startDate,
-                                       LocalDateTime endDate,
-                                       Double budget) {
+                                       LocalDate startDate,
+                                       LocalDate endDate,
+                                       Double budget
+                                       ) {
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dev/v1/kpis")
+@RequestMapping("/dev/v1/analytics/kpis")
 public class KPIController {
 
     private final KPIService kpiService;

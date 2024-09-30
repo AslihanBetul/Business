@@ -96,16 +96,16 @@ public class DemoDataGenerator
     private void wareHouseDemoData()
     {
 
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kartal", "Main Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Pendik", "Pendik Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kadıköy", "Kadıköy Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ümraniye", "Ümraniye Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Maltepe", "Maltepe Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ataşehir", "Ataşehir Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Tuzla", "Tuzla Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Beşiktaş", "Beşiktaş Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Şişli", "Şişli Warehouse address"));
-        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Sarıyer", "Sarıyer Warehouse address"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kartal", "Main Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Pendik", "Pendik Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Kadıköy", "Kadıköy Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ümraniye", "Ümraniye Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Maltepe", "Maltepe Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Ataşehir", "Ataşehir Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Tuzla", "Tuzla Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Beşiktaş", "Beşiktaş Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Şişli", "Şişli Warehouse"));
+        wareHouseService.saveForDemoData(new WareHouseSaveRequestDTO("Sarıyer", "Sarıyer Warehouse"));
 
 
 
@@ -152,16 +152,16 @@ public class DemoDataGenerator
     private void stockMovementDemoData()
     {
 
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(1L, 2L, 10, EStockMovementType.IN));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(2L, 1L, 15, EStockMovementType.OUT));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(3L, 4L, 20, EStockMovementType.IN));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(4L, 3L, 22, EStockMovementType.OUT));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(5L, 6L, 2, EStockMovementType.IN));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(6L, 5L, 7, EStockMovementType.OUT));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(7L, 8L, 3, EStockMovementType.IN));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(8L, 7L, 5, EStockMovementType.OUT));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(9L, 10L, 15, EStockMovementType.IN));
-        stockMovementService.saveForDemoData(new StockMovementSaveDTO(10L, 9L, 25, EStockMovementType.OUT));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(1L,  10, EStockMovementType.IN));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(2L,  15, EStockMovementType.OUT));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(3L,  20, EStockMovementType.IN));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(4L,  22, EStockMovementType.OUT));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(5L,  2, EStockMovementType.IN));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(6L,  7, EStockMovementType.OUT));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(7L,  3, EStockMovementType.IN));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(8L,  5, EStockMovementType.OUT));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(9L,  15, EStockMovementType.IN));
+        stockMovementService.saveForDemoData(new StockMovementSaveDTO(10L, 25, EStockMovementType.OUT));
 
     }
 
