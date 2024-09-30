@@ -101,4 +101,8 @@ public class SubscriptionService {
         Set<ERoles> uniqueRoles = new HashSet<>(planService.getRolesByPlanIds(planIds));
         return uniqueRoles.stream().map(ERoles::name).collect(Collectors.toList());
     }
+
+    public void subscribeToPlanForDemoData (Long authId, Long planId, int year) {
+        subscriptionRepository.save(Subscription.builder().authId(authId).planId(planId).startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusYears(year)).build());
+    }
 }
