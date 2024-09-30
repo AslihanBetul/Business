@@ -6,6 +6,8 @@ import com.businessapi.dto.request.DeleteFileRequestDTO;
 import com.businessapi.dto.request.SaveFileRequestDTO;
 import com.businessapi.dto.request.UpdateFileRequestDTO;
 import com.businessapi.entity.File;
+import static com.businessapi.exception.ErrorType.*;
+import com.businessapi.exception.FileManagementServiceException;
 import com.businessapi.repository.FileRepository;
 import com.businessapi.utilty.enums.EContentType;
 import com.businessapi.utilty.enums.EStatus;
@@ -80,7 +82,7 @@ public class FileService {
                     .object(dto.uuid())
                     .build());
 
-            File file = fileRepository.findByUuid(dto.uuid()).orElseThrow(() -> new RuntimeException("File not found"));
+            File file = fileRepository.findByUuid(dto.uuid()).orElseThrow(() ->new FileManagementServiceException(FILE_NOT_FOUND));
             file.setStatus(EStatus.DELETED);
             fileRepository.save(file);
 
@@ -97,7 +99,7 @@ public class FileService {
             File fileMetadata = getFileMetadata(dto.uuid());
 
             if (fileMetadata.getStatus() == EStatus.DELETED) {
-                throw new RuntimeException("Silinmiş dosya güncellenemez.");
+                throw new FileManagementServiceException(FILE_ALREADY_DELETED);
             }
 
 
@@ -128,11 +130,10 @@ public class FileService {
 
     public InputStream getFile(String uuid)  {
 
-        File existingFile = fileRepository.findByUuid(uuid)
-                .orElseThrow(() -> new RuntimeException("Dosya bulunamadı"));
+        File file = getFileMetadata(uuid);
 
-        if (existingFile.getStatus() == EStatus.DELETED) {
-            throw new RuntimeException("Bu dosya silinmiştir.");
+        if (file.getStatus() == EStatus.DELETED) {
+            throw new FileManagementServiceException(FILE_ALREADY_DELETED);
         }
         try {
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
@@ -148,7 +149,7 @@ public class FileService {
     }
     public File getFileMetadata(String uuid) {
         return fileRepository.findByUuid(uuid)
-                .orElseThrow(() -> new RuntimeException("Dosya bulunamadı, uuid: " + uuid));
+                .orElseThrow(() -> new FileManagementServiceException(FILE_NOT_FOUND));
     }
 
 

@@ -82,7 +82,7 @@ public class FileController {
             return ResponseEntity.ok(
                     ResponseDTO.<String>builder()
                             .code(200)
-                            .message("Dosya başarıyla güncellendi.")
+                            .message("File updated successfully.")
                             .data(fileUpdateDTO.uuid())
                             .build()
             );
@@ -90,7 +90,7 @@ public class FileController {
             return ResponseEntity.status(500).body(
                     ResponseDTO.<String>builder()
                             .code(500)
-                            .message("Dosya güncellenemedi: " + e.getMessage())
+                            .message("File update failed: " + e.getMessage())
                             .data(null)
                             .build()
             );
