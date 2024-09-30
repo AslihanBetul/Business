@@ -1,15 +1,15 @@
 server:
-  port: 9093
+  port: 9088
 spring:
   rabbitmq:
-    host: localhost
+    host: ${RABBITMQ_URL:localhost}
     port: 5672
-    username: java14user
-    password: root
+    username: ${RABBITMQ_USERNAME:java14user}
+    password: ${RABBITMQ_PASSWORD:root}
   datasource:
-    url: jdbc:postgresql://localhost:5432/livesupportDB
-    username: postgres
-    password: 1234
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/livesupportDB}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASS:1234}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
