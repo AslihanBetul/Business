@@ -16,4 +16,5 @@ include 'ProjectManagement'
 include 'FileManagementService'
 include 'CalendarAndPlanningService'
 include 'LiveSupportService'
+include 'SubscriptionService'
 

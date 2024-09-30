@@ -3,6 +3,7 @@ package com.businessapi.service;
 
 
 import com.businessapi.RabbitMQ.Model.*;
+import com.businessapi.dto.request.LoginProfileManagementDTO;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
 import com.businessapi.dto.request.ResetPasswordRequestDTO;
@@ -268,7 +269,15 @@ public class AuthService {
     }
 
 
+    public Boolean loginProfileManagement(LoginProfileManagementDTO dto,String token) {
+        String jwtToken = token.replace("Bearer ", "");
+        Long authId = jwtTokenManager.getIdFromToken(jwtToken).orElseThrow(() -> new AuthServiceException(INVALID_TOKEN));
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
 
+        if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
+            throw new AuthServiceException(PASSWORD_WRONG);
+        }
 
-
+        return true;
+    }
 }

@@ -28,7 +28,9 @@ public enum ErrorType {
     INVALID_LOGIN_PARAMETER(1015, "Incorrect username or password. Please correct them and try again.", HttpStatus.BAD_REQUEST),
     USER_IS_ACTIVE( 1016, "User is active." ,   HttpStatus.BAD_REQUEST),
     USER_ALREADY_DELETED( 1017, "User already deleted.", HttpStatus.BAD_REQUEST),
-    EMAIL_OR_PASSWORD_WRONG( 1018, "Email or password wrong.", HttpStatus.BAD_REQUEST );
+    EMAIL_OR_PASSWORD_WRONG( 1018, "Email or password wrong.", HttpStatus.BAD_REQUEST ),
+    PASSWORD_WRONG(1019,"Password Wrong",HttpStatus.BAD_REQUEST)
+    ;
 
 
 

@@ -2,6 +2,7 @@ package com.businessapi.controller;
 
 import static com.businessapi.constants.EndPoints.*;
 
+import com.businessapi.dto.request.LoginProfileManagementDTO;
 import com.businessapi.dto.request.LoginRequestDTO;
 import com.businessapi.dto.request.RegisterRequestDTO;
 import com.businessapi.dto.request.ResetPasswordRequestDTO;
@@ -92,6 +93,13 @@ public class AuthController {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                .data(authService.resetPassword(dto)).code(200).message("Password reset successfully").build());
     }
+
+
+    @PostMapping("/login-profile-management")
+    public ResponseEntity<ResponseDTO<Boolean>> loginProfileManagement(@RequestBody LoginProfileManagementDTO dto, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(authService.loginProfileManagement(dto,token)).message("Login Profile Management Approved").build());
+    }
+
 
 
 }

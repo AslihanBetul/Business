@@ -20,3 +20,4 @@ public interface AuthRepository  extends JpaRepository<Auth,Long> {
     String findEmailById(@Param("authId") Long authId);
 
 }
+
