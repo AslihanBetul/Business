@@ -50,7 +50,7 @@ public class TaxService {
     }
 
     public List<Tax> findAll(PageRequestDTO dto) {
-        return taxRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
+        return taxRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Tax findById(Long id) {
