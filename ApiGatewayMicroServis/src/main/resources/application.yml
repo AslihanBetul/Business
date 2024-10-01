@@ -115,6 +115,22 @@ spring:
           uri: http://localhost:9097
           predicates:
             - Path=/dev/v1/user/**
+        - id: calendarAndPlanning
+          uri: http://localhost:9093
+          predicates:
+            - Path=/dev/v1/event/**
+        - id: fileManagement
+          uri: http://localhost:9099
+          predicates:
+            - Path=/dev/v1/file/**
+        - id: subscription
+          uri: http://localhost:9091
+          predicates:
+            - Path=/dev/v1/subscription/plan/**
+        - id: subscription
+          uri: http://localhost:9091
+          predicates:
+            - Path=/dev/v1/subscription/**
 
 
 
