@@ -55,6 +55,7 @@ public class CustomerService {
     // This method will update customer by token //TEST
     public Boolean update(CustomerUpdateDTO customerUpdateDTO) {
         Customer customer = customerRepository.findById(customerUpdateDTO.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        SessionManager.authorizationCheck(customer.getMemberId());
         if (customer.getStatus() != EStatus.DELETED && customer.getStatus() != EStatus.PENDING) {
             customer.setFirstName(customerUpdateDTO.firstName() != null ? customerUpdateDTO.firstName() : customer.getFirstName());
             customer.setLastName(customerUpdateDTO.lastName() != null ? customerUpdateDTO.lastName() : customer.getLastName());
@@ -71,15 +72,17 @@ public class CustomerService {
     // This method will delete customer by token
     public Boolean delete(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        SessionManager.authorizationCheck(customer.getMemberId());
         if (customer.getStatus() == EStatus.DELETED) {
             throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_DELETED);
         }
         customer.setStatus(EStatus.DELETED);
+        customerRepository.save(customer);
         return true;
     }
 
 
-    public Optional<Customer> findById(Long id) {
-        return Optional.ofNullable(customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER)));
+    public Customer findById(Long id) {
+        return customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
     }
 }

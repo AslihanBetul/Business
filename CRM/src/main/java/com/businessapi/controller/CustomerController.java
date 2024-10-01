@@ -57,11 +57,19 @@ public class CustomerController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Delete customer by token",description = "Delete customer by token")
-    public ResponseEntity<ResponseDTO<Boolean>> deleteById(@RequestParam Long customerId) {
+    public ResponseEntity<ResponseDTO<Boolean>> deleteById(@RequestParam Long id) {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
-                .data(customerService.delete(customerId))
+                .data(customerService.delete(id))
                 .code(200)
                 .message("Customer deleted successfully").build());
+    }
+    @PostMapping(FINDBYID)
+    @Operation(summary = "Find customer by id",description = "Find customer by id")
+    public ResponseEntity<ResponseDTO<Customer>> findById(@RequestParam Long id) {
+        return ResponseEntity.ok(ResponseDTO.<Customer>builder()
+                .data(customerService.findById(id))
+                .code(200)
+                .message("Customer found successfully").build());
     }
 
 
