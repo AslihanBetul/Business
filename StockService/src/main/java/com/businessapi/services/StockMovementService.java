@@ -69,6 +69,10 @@ public class StockMovementService
         {
             throw new StockServiceException(ErrorType.ORDER_NOT_BUY);
         }
+        if (order.getStatus() == EStatus.ARRIVED)
+        {
+            throw new StockServiceException(ErrorType.ORDER_ALREADY_ARRIVED);
+        }
         Product product = productService.findById(order.getProductId());
         stockMovementRepository.save(StockMovement
                 .builder()
