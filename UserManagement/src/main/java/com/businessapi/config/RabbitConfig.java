@@ -61,6 +61,9 @@ public class RabbitConfig {
     public static final String keySaveUserFromOtherServices = "keySaveUserFromOtherServices";
 
 
+    //authId ile auth servisten kullanıcının mail adresini almak için kullanılan kuyrul yapısı
+    public static final String queueGetMailByAuthId = "queueGetMailByAuthId";
+    public static final String keyGetMailByAuthId = "keyGetMailByAuthId";
     //Satın alma işlemi sonrası rol ataması için kullanılacak bağlantıda gerekli kuyruk yapısı
     public static final String queueAddRoleFromSubscription = "queueAddRoleFromSubscription";
     public static final String keyAddRoleFromSubscription = "keyAddRoleFromSubscription";
@@ -142,6 +145,11 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue queueGetMailByAuthId() {
+        return new Queue(queueGetMailByAuthId);
+    }
+
+    @Bean
     public Queue queueAddRoleFromSubscription() {
         return new Queue(queueAddRoleFromSubscription);
     }
@@ -196,6 +204,10 @@ public class RabbitConfig {
         return BindingBuilder.bind(queueSaveUserFromOtherServices).to(businessDirectExchange).with(keySaveUserFromOtherServices);
     }
 
+    @Bean
+    public Binding bindingGetMailByAuthId(Queue queueGetMailByAuthId, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueGetMailByAuthId).to(businessDirectExchange).with(keyGetMailByAuthId);
+    }
     @Bean
     public Binding bindingAddRoleFromSubscription (Queue queueAddRoleFromSubscription, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueAddRoleFromSubscription).to(businessDirectExchange).with(keyAddRoleFromSubscription);

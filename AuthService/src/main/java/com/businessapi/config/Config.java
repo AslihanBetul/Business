@@ -36,7 +36,9 @@ public class Config {
     private final String queueSaveAuthFromUser = "queueSaveAuthFromUser";
     private final String keySaveAuthFromUser = "keySaveAuthFromUser";
 
-
+    //authId ile auth servisten kullanıcının mail adresini almak için kullanılan kuyrul yapısı
+    public static final String queueGetMailByAuthId = "queueGetMailByAuthId";
+    public static final String keyGetMailByAuthId = "keyGetMailByAuthId";
 
     @Bean
    public DirectExchange directExchange(){
@@ -76,6 +78,10 @@ public class Config {
     public Queue queueSaveAuthFromUser() {
         return new Queue(queueSaveAuthFromUser);
 }
+    @Bean
+    public Queue queueGetMailByAuthId() {
+        return new Queue(queueGetMailByAuthId);
+    }
 
 
     @Bean
@@ -120,6 +126,10 @@ public class Config {
     @Bean
     public Binding bindingSaveAuthFromUser(Queue queueSaveAuthFromUser, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueSaveAuthFromUser).to(businessDirectExchange).with(keySaveAuthFromUser);
+    }
+    @Bean
+    public Binding bindingGetMailByAuthId(Queue queueGetMailByAuthId, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueGetMailByAuthId).to(businessDirectExchange).with(keyGetMailByAuthId);
     }
 
     @Bean

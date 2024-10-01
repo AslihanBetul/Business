@@ -31,9 +31,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if(bearerToken !=null){
             String token = bearerToken.substring(7);
 
-            Long userId = jwtTokenManager.getUserIdFromToken(token).orElseThrow(() -> new UserException(ErrorType.INVALID_TOKEN));
+            Long authId = jwtTokenManager.getAuthIdFromToken(token).orElseThrow(() -> new UserException(ErrorType.INVALID_TOKEN));
 
-            UserDetails userDetails=jwtUserDetails.loadByTokenId(userId);
+            UserDetails userDetails=jwtUserDetails.loadByTokenId(authId);
 
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

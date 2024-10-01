@@ -64,6 +64,9 @@ public class DemoData {
         Role oam = Role.builder().roleName("OAM").roleDescription("Analiz Modülü Satın Alan Kullanıcı").build();
 
 
+        Role supporter = Role.builder().roleName("SUPPORTER").roleDescription("Uygulamamızı satın alan kullanıcılara destek verecek kişilerin rolü").build();
+
+
         roleRepository.save(superAdminRole); //1
         roleRepository.save(adminRole); //2
         roleRepository.save(member);    //3
@@ -73,6 +76,7 @@ public class DemoData {
         roleRepository.save(hrmm);  //7
         roleRepository.save(fam);   //8
         roleRepository.save(oam);   //9
+        roleRepository.save(supporter);//10
     }
 
 
@@ -84,6 +88,13 @@ public class DemoData {
         List<Long> roles2 = new ArrayList<>(List.of(3L));
         UserSaveRequestDTO user2 = new UserSaveRequestDTO("Lower Member","USER","member2@example.com","123",roles2);
         userService.saveUser(user2);
+
+        List<Long> roles3 = new ArrayList<>(List.of(4L,10L));
+        UserSaveRequestDTO user3 = new UserSaveRequestDTO("supporter Member","USER","supporter@example.com","123",roles3);
+        userService.saveUser(user3);
+
+
+
     }
 
 }

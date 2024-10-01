@@ -6,6 +6,7 @@ import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
 import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
 import com.businessapi.dto.requestDTOs.UserUpdateRequestDTO;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
+import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
 import com.businessapi.entity.Role;
 import com.businessapi.entity.User;
 import com.businessapi.entity.enums.EStatus;
@@ -90,8 +91,14 @@ public class UserService {
     @Transactional
     public void updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = userRepository.findByAuthId(userUpdateRequestDTO.authId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
-        user.setFirstName(userUpdateRequestDTO.firstName());
-        user.setLastName(userUpdateRequestDTO.lastName());
+
+        if(!user.getFirstName().equals(userUpdateRequestDTO.firstName())){
+            user.setFirstName(userUpdateRequestDTO.firstName());
+        }
+        if(!user.getLastName().equals(userUpdateRequestDTO.lastName())){
+            user.setLastName(userUpdateRequestDTO.lastName());
+        }
+
         sendUserMailToAuthService(AuthMailUpdateFromUser.builder().authId(user.getAuthId()).email(userUpdateRequestDTO.email()).build());
         userRepository.save(user);
     }
@@ -202,11 +209,21 @@ public class UserService {
 
 
     public List<String> getUserRoles(String jwtToken) {
-        Long authId = jwtTokenManager.getUserIdFromToken(jwtToken).orElseThrow(()-> new UserException(ErrorType.INVALID_TOKEN));
+        Long authId = jwtTokenManager.getAuthIdFromToken(jwtToken).orElseThrow(()-> new UserException(ErrorType.INVALID_TOKEN));
 
         User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
 
         return user.getRole().stream().map(Role::getRoleName).toList();
+    }
+
+    public GetUserInformationDTO getUserInformation(String jwtToken) {
+        Long authId = jwtTokenManager.getAuthIdFromToken(jwtToken).orElseThrow(()-> new UserException(ErrorType.INVALID_TOKEN));
+        User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange","keyGetMailByAuthId", user.getAuthId());
+
+
+        return GetUserInformationDTO.builder().id(user.getId()).authId(user.getAuthId()).firstName(user.getFirstName()).lastName(user.getLastName()).email(usersMail).build();
     }
 
     @RabbitListener(queues = "queueAddRoleFromSubscription")
