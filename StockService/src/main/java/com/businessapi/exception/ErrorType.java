@@ -32,7 +32,8 @@ public enum ErrorType
     EMAIL_ALREADY_EXISTS( 9016, "Email Already Exists" ,  HttpStatus.BAD_REQUEST),
     UNAUTHORIZED( 9017, "Unauthorized" ,  HttpStatus.UNAUTHORIZED),
     SUPPLIER_EMAIL_ALREADY_EXISTS(9018, "Supplier Email Already Exists" , HttpStatus.BAD_REQUEST),
-    PRODUCT_CATEGORY_ALREADY_EXISTS( 9019, "Product Category Already Exists" , HttpStatus.BAD_REQUEST);
+    PRODUCT_CATEGORY_ALREADY_EXISTS( 9019, "Product Category Already Exists" , HttpStatus.BAD_REQUEST),
+    ORDER_NOT_BUY( 9020, "Order Type Should Be Buy" , HttpStatus.BAD_REQUEST),;
 
     private Integer code;
     private String message;

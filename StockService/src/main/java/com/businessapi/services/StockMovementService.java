@@ -32,6 +32,7 @@ public class StockMovementService
     private final StockMovementRepository stockMovementRepository;
     private final ProductService productService;
     private final WareHouseService wareHouseService;
+    private final OrderService orderService;
 
     public Boolean save(StockMovementSaveDTO dto)
     {
@@ -59,6 +60,36 @@ public class StockMovementService
                 .stockMovementType(dto.stockMovementType())
                 .build());
         return null;
+    }
+
+    public Boolean saveFromOrderId(Long id)
+    {
+        Order order = orderService.findById(id);
+        if (order.getOrderType() != EOrderType.BUY)
+        {
+            throw new StockServiceException(ErrorType.ORDER_NOT_BUY);
+        }
+        Product product = productService.findById(order.getProductId());
+        stockMovementRepository.save(StockMovement
+                .builder()
+                .productId(order.getProductId())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .warehouseId(product.getWareHouseId())
+                .quantity(order.getQuantity())
+                .stockMovementType(EStockMovementType.IN)
+                .build());
+
+        //Adding stock to product
+        product.setStockCount(product.getStockCount() + order.getQuantity());
+
+        //Setting status of product and order
+        order.setStatus(EStatus.ARRIVED);
+        product.setIsProductAutoOrdered(false);
+
+
+        orderService.save(order);
+        productService.save(product);
+        return true;
     }
 
     public Boolean saveForDemoData(StockMovementSaveDTO dto)
@@ -189,5 +220,7 @@ public class StockMovementService
                 .sorted(Comparator.comparing(StockMovementResponseDTO::productName))
                 .collect(Collectors.toList());
     }
+
+
 }
 

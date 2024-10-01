@@ -87,8 +87,7 @@ public class ProductService
 
     public Boolean delete(Long id)
     {
-        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        SessionManager.authorizationCheck(product.getMemberId());
+        Product product = productRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         product.setStatus(EStatus.DELETED);
         productRepository.save(product);
         return true;
@@ -96,8 +95,7 @@ public class ProductService
 
     public Boolean update(ProductUpdateRequestDTO dto)
     {
-        Product product = productRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        SessionManager.authorizationCheck(product.getMemberId());
+        Product product = productRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         if (dto.productCategoryId() != null)
         {
             product.setProductCategoryId(dto.productCategoryId());
@@ -139,7 +137,7 @@ public class ProductService
     public Boolean changeAutoOrderMode(Long id)
     {
 
-        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findByIdAndMemberId(id,SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         SessionManager.authorizationCheck(product.getMemberId());
         product.setIsAutoOrderEnabled(!product.getIsAutoOrderEnabled());
         productRepository.save(product);
