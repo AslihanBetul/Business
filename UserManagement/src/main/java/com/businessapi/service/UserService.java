@@ -91,8 +91,14 @@ public class UserService {
     @Transactional
     public void updateUser(UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = userRepository.findByAuthId(userUpdateRequestDTO.authId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
-        user.setFirstName(userUpdateRequestDTO.firstName());
-        user.setLastName(userUpdateRequestDTO.lastName());
+
+        if(!user.getFirstName().equals(userUpdateRequestDTO.firstName())){
+            user.setFirstName(userUpdateRequestDTO.firstName());
+        }
+        if(!user.getLastName().equals(userUpdateRequestDTO.lastName())){
+            user.setLastName(userUpdateRequestDTO.lastName());
+        }
+
         sendUserMailToAuthService(AuthMailUpdateFromUser.builder().authId(user.getAuthId()).email(userUpdateRequestDTO.email()).build());
         userRepository.save(user);
     }

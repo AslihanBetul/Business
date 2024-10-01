@@ -3,10 +3,7 @@ package com.businessapi.service;
 
 
 import com.businessapi.RabbitMQ.Model.*;
-import com.businessapi.dto.request.LoginProfileManagementDTO;
-import com.businessapi.dto.request.LoginRequestDTO;
-import com.businessapi.dto.request.RegisterRequestDTO;
-import com.businessapi.dto.request.ResetPasswordRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.entity.Auth;
 
 
@@ -194,11 +191,15 @@ public class AuthService {
    public void updateEmail(AuthMailUpdateFromUser authMailUpdateFromUser) {
      Auth auth = authRepository.findById(authMailUpdateFromUser.getAuthId())
                .orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
-      if (authRepository.existsByEmail(authMailUpdateFromUser.getEmail())) {
-           throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
-       }
-     auth.setEmail(authMailUpdateFromUser.getEmail());
-       authRepository.save(auth);
+     if(!authMailUpdateFromUser.getEmail().equals(auth.getEmail())) {
+         if (authRepository.existsByEmail(authMailUpdateFromUser.getEmail())) {
+             throw new AuthServiceException(EMAIL_ALREADY_TAKEN);
+         }
+         auth.setEmail(authMailUpdateFromUser.getEmail());
+         authRepository.save(auth);
+     }
+
+
   }
 
     /**
@@ -277,6 +278,23 @@ public class AuthService {
         if (!passwordEncoder.bCryptPasswordEncoder().matches(dto.password(), auth.getPassword())) {
             throw new AuthServiceException(PASSWORD_WRONG);
         }
+
+        return true;
+    }
+
+    public Boolean changeMyPassword(ChangeMyPasswordRequestDTO dto, String token) {
+        String jwtToken = token.replace("Bearer ", "");
+        Long authId = jwtTokenManager.getIdFromToken(jwtToken).orElseThrow(() -> new AuthServiceException(INVALID_TOKEN));
+        if(!authId.equals(dto.authId())){
+            throw new AuthServiceException(INVALID_TOKEN);
+        }
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        if(!dto.newPassword().equals(dto.newConfirmPassword())){
+            throw new AuthServiceException(PASSWORD_MISMATCH);
+        }
+
+        auth.setPassword(passwordEncoder.bCryptPasswordEncoder().encode(dto.newPassword()));
+        authRepository.save(auth);
 
         return true;
     }

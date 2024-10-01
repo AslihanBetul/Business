@@ -23,7 +23,7 @@ import java.util.List;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenManager jwtTokenManager;
-    private final AuthService authService;;
+    private final AuthService authService;
 
 
 

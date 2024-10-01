@@ -2,10 +2,7 @@ package com.businessapi.controller;
 
 import static com.businessapi.constants.EndPoints.*;
 
-import com.businessapi.dto.request.LoginProfileManagementDTO;
-import com.businessapi.dto.request.LoginRequestDTO;
-import com.businessapi.dto.request.RegisterRequestDTO;
-import com.businessapi.dto.request.ResetPasswordRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +95,11 @@ public class AuthController {
     @PostMapping("/login-profile-management")
     public ResponseEntity<ResponseDTO<Boolean>> loginProfileManagement(@RequestBody LoginProfileManagementDTO dto, @RequestHeader("Authorization") String token){
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(authService.loginProfileManagement(dto,token)).message("Login Profile Management Approved").build());
+    }
+
+    @PutMapping("/change-my-password")
+    public ResponseEntity<ResponseDTO<Boolean>> changeMyPassword(@RequestBody ChangeMyPasswordRequestDTO dto, @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("Password changed").data(authService.changeMyPassword(dto,token)).build());
     }
 
 
