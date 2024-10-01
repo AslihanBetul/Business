@@ -158,12 +158,8 @@ public class SupplierService
         {
             throw new StockServiceException(ErrorType.WRONG_ORDER_TYPE);
         }
-        //TODO THERE SHOULD BE A CHECK FOR IF SUPPLIER ID = REQUEST'S SUPPLIER ID
         //TODO MONEY MECHANISM CAN BE IMPLEMENTED LATER
-        Product product = productService.findById(order.getProductId());
         order.setStatus(EStatus.APPROVED);
-        product.setIsProductAutoOrdered(false);
-        product.setStockCount(product.getStockCount() + order.getQuantity());
         orderService.save(order);
         return true;
     }

@@ -89,4 +89,17 @@ public class StockMovementController
                 .code(200)
                 .build());
     }
+
+    @PostMapping(SAVE_FROM_ORDER_ID)
+    @Operation(summary = "Saves Stock Movement from Order Id")
+    @PreAuthorize("hasAnyAuthority('IMM')")
+    public ResponseEntity<ResponseDTO<Boolean>> saveFromOrderId(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(stockMovementService.saveFromOrderId(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
 }
