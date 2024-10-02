@@ -20,7 +20,6 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    // Create a new notification
     public void createNotification(Long userId, String title, String message) {
         Notification notification = new Notification();
         notification.setUserId(userId);
@@ -48,7 +47,6 @@ public class NotificationService {
         updateUnreadCount();
     }
 
-    // Delete notifications by their IDs
     public void deleteNotifications(List<Long> notificationIds) {
         List<Notification> notifications = notificationRepository.findAllById(notificationIds);
         if (notifications.isEmpty()) {
