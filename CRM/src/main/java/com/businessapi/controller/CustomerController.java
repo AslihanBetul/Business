@@ -3,6 +3,7 @@ package com.businessapi.controller;
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.service.CustomerService;
@@ -70,6 +71,16 @@ public class CustomerController {
                 .data(customerService.findById(id))
                 .code(200)
                 .message("Customer found successfully").build());
+    }
+
+    @PostMapping(FOR_OPPORTUNITY)
+    @Operation(summary = "Find customer by id",description = "Find customer by id")
+    public ResponseEntity<ResponseDTO<List<CustomerResponseForOpportunityDTO>>> getCustomersForOpportunity() {
+        return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseForOpportunityDTO>>builder()
+                .data(customerService.getAllCustomersForOpportunity())
+                .code(200)
+                .message("Customer found successfully").build());
+
     }
 
 
