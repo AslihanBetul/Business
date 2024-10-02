@@ -1,10 +1,7 @@
 package com.businessapi.service;
 
 import com.businessapi.RabbitMQ.Model.*;
-import com.businessapi.dto.requestDTOs.AddRoleToUserRequestDTO;
-import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
-import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
-import com.businessapi.dto.requestDTOs.UserUpdateRequestDTO;
+import com.businessapi.dto.requestDTOs.*;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
 import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
 import com.businessapi.entity.Role;
@@ -134,11 +131,15 @@ public class UserService {
         List<GetAllUsersResponseDTO> allUsersResponseDTOList = new ArrayList<>();
 
        allUsersList.forEach(user -> {
+           List<String> userRolesString = user.getRole().stream().map(Role::getRoleName).toList();
+           String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange","keyGetMailByAuthId", user.getAuthId());
            allUsersResponseDTOList.add(GetAllUsersResponseDTO.builder()
-                   .userId(user.getId())
+                   .id(user.getId())
                    .firstName(user.getFirstName())
                    .lastName(user.getLastName())
-                   .userRoles(RoleMapper.INSTANCE.rolesToRoleResponseDTOList(user.getRole()))
+                   .email(usersMail)
+                   .status(user.getStatus())
+                   .userRoles(userRolesString)
                    .build());
        });
 
@@ -258,5 +259,20 @@ public class UserService {
     }
 
 
+    @Transactional
+    public Boolean changeUserEmail(ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
 
+        User user = userRepository.findById(changeUserEmailRequestDTO.id()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        sendUserMailToAuthService(AuthMailUpdateFromUser.builder().authId(user.getAuthId()).email(changeUserEmailRequestDTO.email()).build());
+
+
+        return true;
+    }
+
+    public Boolean changeUserPassword(ChangeUserPassword changeUserPassword) {
+        User user = userRepository.findById(changeUserPassword.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(changeUserPassword.password()).build());
+        return true;
+    }
 }

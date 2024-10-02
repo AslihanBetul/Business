@@ -28,7 +28,6 @@ public class AuthService {
     private final AuthRepository authRepository;
     private final JwtTokenManager jwtTokenManager;
     private final PasswordEncoder passwordEncoder;
-    private final RabbitTemplate RabbitTemplate;
     private final RabbitTemplate rabbitTemplate;
 
 
@@ -297,5 +296,12 @@ public class AuthService {
         authRepository.save(auth);
 
         return true;
+    }
+
+    @RabbitListener(queues = "queueChangePasswordFromUser")
+    public void changePasswordByAdmin(ChangePasswordFromUserModel changePasswordFromUserModel){
+        Auth auth = authRepository.findById(changePasswordFromUserModel.getAuthId()).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        auth.setPassword(passwordEncoder.bCryptPasswordEncoder().encode(changePasswordFromUserModel.getNewPassword()));
+        authRepository.save(auth);
     }
 }

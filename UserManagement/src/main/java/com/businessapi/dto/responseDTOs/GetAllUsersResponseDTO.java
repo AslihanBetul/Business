@@ -1,5 +1,6 @@
 package com.businessapi.dto.responseDTOs;
 
+import com.businessapi.entity.enums.EStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,10 @@ import java.util.List;
 @Builder
 @Data
 public class GetAllUsersResponseDTO {
-    private Long userId;
+    private Long id;
     private String firstName;
     private String lastName;
-    private List<RoleResponseDTO> userRoles;
+    private EStatus status;
+    private String email;
+    private List<String> userRoles;
 }

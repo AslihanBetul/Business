@@ -39,6 +39,9 @@ public class Config {
     //authId ile auth servisten kullanıcının mail adresini almak için kullanılan kuyrul yapısı
     public static final String queueGetMailByAuthId = "queueGetMailByAuthId";
     public static final String keyGetMailByAuthId = "keyGetMailByAuthId";
+    //Admin tarafından kullanıcının şifresinin yenilenmesi
+    private static final String queueChangePasswordFromUser = "queueChangePasswordFromUser";
+    private static final String keyChangePasswordFromUser = "keyChangePasswordFromUser";
 
     @Bean
    public DirectExchange directExchange(){
@@ -82,7 +85,10 @@ public class Config {
     public Queue queueGetMailByAuthId() {
         return new Queue(queueGetMailByAuthId);
     }
-
+    @Bean
+    public Queue queueChangePasswordFromUser() {
+        return new Queue(queueChangePasswordFromUser);
+    }
 
     @Bean
     public Queue queueEmailAndPasswordFromAuth() {
@@ -130,6 +136,10 @@ public class Config {
     @Bean
     public Binding bindingGetMailByAuthId(Queue queueGetMailByAuthId, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueGetMailByAuthId).to(businessDirectExchange).with(keyGetMailByAuthId);
+    }
+    @Bean
+    public Binding bindingChangePasswordFromUser(Queue queueChangePasswordFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueChangePasswordFromUser).to(businessDirectExchange).with(keyChangePasswordFromUser);
     }
 
     @Bean

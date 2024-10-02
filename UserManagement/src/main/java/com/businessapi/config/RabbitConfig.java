@@ -72,6 +72,10 @@ public class RabbitConfig {
     public static final String queueDeleteRoleFromSubscription = "queueDeleteRoleFromSubscription";
     public static final String keyDeleteRoleFromSubscription = "keyDeleteRoleFromSubscription";
 
+    //Admin tarafından kullanıcının şifresinin yenilenmesi
+    private static final String queueChangePasswordFromUser = "queueChangePasswordFromUser";
+    private static final String keyChangePasswordFromUser = "keyChangePasswordFromUser";
+
 
     @Bean
     public Queue queue() {
@@ -157,6 +161,10 @@ public class RabbitConfig {
     public Queue queueDeleteRoleFromSubscription() {
         return new Queue(queueDeleteRoleFromSubscription);
     }
+    @Bean
+    public Queue queueChangePasswordFromUser() {
+        return new Queue(queueChangePasswordFromUser);
+    }
 
 
 
@@ -216,7 +224,10 @@ public class RabbitConfig {
     public Binding bindingDeleteRoleFromSubscription (Queue queueDeleteRoleFromSubscription, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueDeleteRoleFromSubscription).to(businessDirectExchange).with(keyDeleteRoleFromSubscription);
     }
-
+    @Bean
+    public Binding bindingChangePasswordFromUser(Queue queueChangePasswordFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueChangePasswordFromUser).to(businessDirectExchange).with(keyChangePasswordFromUser);
+    }
 
 
     @Bean
