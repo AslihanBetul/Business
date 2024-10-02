@@ -1,9 +1,9 @@
 package com.businessapi.services;
 
-import com.businessapi.dto.request.ExpenseSaveRequestDTO;
-import com.businessapi.dto.request.ExpenseUpdateRequestDTO;
-import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
 import com.businessapi.entity.Expense;
+import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -43,6 +44,7 @@ public class ExpenseService {
         expense.setExpenseDate(dto.expenseDate());
         expense.setAmount(dto.amount());
         expense.setDescription(dto.description());
+        expense.setExpenseCategory(dto.expenseCategory());
 
         expenseRepository.save(expense);
         return true;
@@ -56,7 +58,8 @@ public class ExpenseService {
     }
 
     public List<Expense> findAll(PageRequestDTO dto) {
-        return expenseRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        return expenseRepository.findAllByStatusNotAndExpenseCategoryNot(
+                EStatus.DELETED, EExpenseCategory.TAX, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Expense findById(Long id) {
@@ -86,21 +89,46 @@ public class ExpenseService {
     }
 
     public List<Expense> findByDate(LocalDate startDate, LocalDate endDate) {
-        return expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
+        return expenseRepository.findAllByExpenseDateBetweenAndStatusNot(startDate, endDate, EStatus.DELETED);
     }
 
     public BigDecimal calculateTotalExpenseBetweenDates(LocalDate startDate, LocalDate endDate) {
         List<Expense> allExpenseList = expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
         BigDecimal totalExpense = BigDecimal.ZERO;
-        List<Expense> approvedExpenseList = new ArrayList<>();
         for (Expense expense : allExpenseList) {
-            if (expense.getStatus().equals(EStatus.APPROVED)) {
-                approvedExpenseList.add(expense);
-            }
-        }
-        for (Expense expense : approvedExpenseList) {
             totalExpense = totalExpense.add(expense.getAmount());
         }
         return totalExpense;
+    }
+
+
+    public List<ExpenseCategoryResponseDTO> getAllExpenseCategories() {
+        List<EExpenseCategory> categories = new ArrayList<>(Arrays.asList(EExpenseCategory.values()));
+        categories.removeIf(category -> category.equals(EExpenseCategory.TAX));
+        List<ExpenseCategoryResponseDTO> expenseCategoriesWithIdAndName = new ArrayList<>();
+        for (long l = 1; l < categories.size(); l++) {
+            expenseCategoriesWithIdAndName.add(new ExpenseCategoryResponseDTO(l, categories.get((int) l).name()));
+        }
+        return expenseCategoriesWithIdAndName;
+    }
+
+    public List<BigDecimal> getForMonths(ExpenseFindByDateRequestDTO dto) {
+        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+
+        expenseList.sort((o1, o2) -> o1.getExpenseDate().getMonthValue() - o2.getExpenseDate().getMonthValue());
+
+        List<BigDecimal> expenseAmountsOfMonths = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            expenseAmountsOfMonths.add(BigDecimal.ZERO);
+        }
+
+        for (Expense expense : expenseList) {
+            int monthIndex = expense.getExpenseDate().getMonthValue() - 1;
+            BigDecimal currentAmount = expenseAmountsOfMonths.get(monthIndex);
+            expenseAmountsOfMonths.set(monthIndex, currentAmount.add(expense.getAmount()));
+        }
+        System.out.println(expenseAmountsOfMonths);
+        return expenseAmountsOfMonths;
     }
 }

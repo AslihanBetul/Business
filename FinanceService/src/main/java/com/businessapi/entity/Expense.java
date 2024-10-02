@@ -26,7 +26,4 @@ public class Expense extends BaseEntity {
     LocalDate expenseDate;
     BigDecimal amount;
     String description;
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    EStatus status = EStatus.PENDING;
 }

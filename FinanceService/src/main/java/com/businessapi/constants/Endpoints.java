@@ -39,5 +39,8 @@ public class Endpoints {
     public static final String CREATE_FOR_INCOME_TAX = "/create-for-income-tax";
     public static final String CREATE_FOR_VAT = "/create-for-vat";
     public static final String CREATE_FOR_CORPORATE_TAX = "/create-for-corporate-tax";
+    public static final String CREATE = "/create";
     public static final String COMPARE = "/compare";
+    public static final String GET_ALL_CATEGORIES = "/get-all-categories";
+    public static final String GET_FOR_MONTHS = "/get-for-months";
 }

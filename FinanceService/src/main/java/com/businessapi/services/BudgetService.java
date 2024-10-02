@@ -53,12 +53,8 @@ public class BudgetService {
         return true;
     }
 
-//    public List<Budget> findAll(PageRequestDTO dto) {
-//        return budgetRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
-//    }
-
     public List<Budget> findAll(PageRequestDTO dto) {
-        String department = dto.searchText(); // Assuming you have a method to get the department from the DTO
+        String department = dto.searchText();
         if (department != null && !department.isEmpty()) {
             return budgetRepository.findByDepartmentContainingIgnoreCaseAndStatusNot(department, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
         }

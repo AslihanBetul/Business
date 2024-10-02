@@ -1,21 +1,23 @@
 package com.businessapi.controllers;
 
 import com.businessapi.dto.request.DeclarationSaveRequestDTO;
+import com.businessapi.dto.request.GenerateDeclarationRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Declaration;
 import com.businessapi.services.DeclarationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+
 import static com.businessapi.constants.Endpoints.*;
 
 @RestController
 @RequestMapping(ROOT + DECLARATION)
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class DeclarationController {
     private final DeclarationService declarationService;
 
@@ -47,6 +49,17 @@ public class DeclarationController {
         return ResponseEntity.ok(ResponseDTO
                 .<Declaration>builder()
                 .data(declarationService.createDeclarationForCorporateTax(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(CREATE)
+    @Operation(summary = "Generates a declaration")
+    public ResponseEntity<ResponseDTO<BigDecimal>> create(@RequestBody GenerateDeclarationRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<BigDecimal>builder()
+                .data(declarationService.createDeclaration(dto))
                 .message("Success")
                 .code(200)
                 .build());
