@@ -69,7 +69,7 @@ public class ProductController
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<ProductResponseDTO>>builder()
-                .data(productService.findAll(dto))
+                .data(productService.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -82,7 +82,7 @@ public class ProductController
 
         return ResponseEntity.ok(ResponseDTO
                 .<Product>builder()
-                .data(productService.findById(id))
+                .data(productService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());

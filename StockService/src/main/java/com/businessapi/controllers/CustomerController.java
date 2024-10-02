@@ -1,16 +1,11 @@
 package com.businessapi.controllers;
 
 import com.businessapi.dto.request.PageRequestDTO;
-import com.businessapi.dto.request.StockMovementSaveDTO;
-import com.businessapi.dto.request.StockMovementUpdateRequestDTO;
 import com.businessapi.dto.response.CustomerSaveRequestDTO;
 import com.businessapi.dto.response.CustomerUpdateRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
-import com.businessapi.dto.response.StockMovementResponseDTO;
 import com.businessapi.entities.Customer;
-import com.businessapi.entities.StockMovement;
 import com.businessapi.services.CustomerService;
-import com.businessapi.services.StockMovementService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +70,7 @@ public class CustomerController
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<Customer>>builder()
-                .data(customerService.findAll(dto))
+                .data(customerService.findAllByNameContainingIgnoreCaseAndStatusIsNotAndMemberIdOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -88,7 +83,7 @@ public class CustomerController
 
         return ResponseEntity.ok(ResponseDTO
                 .<Customer>builder()
-                .data(customerService.findById(id))
+                .data(customerService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());

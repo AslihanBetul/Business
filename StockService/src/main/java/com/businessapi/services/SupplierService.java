@@ -7,7 +7,6 @@ import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.SupplierSaveRequestDTO;
 import com.businessapi.dto.request.SupplierUpdateRequestDTO;
 import com.businessapi.entities.Order;
-import com.businessapi.entities.Product;
 import com.businessapi.entities.Supplier;
 import com.businessapi.entities.enums.EOrderType;
 import com.businessapi.entities.enums.EStatus;
@@ -89,8 +88,7 @@ public class SupplierService
 
     public Boolean delete(Long id)
     {
-        Supplier supplier = supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
-        SessionManager.authorizationCheck(supplier.getMemberId());
+        Supplier supplier = supplierRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
         supplier.setStatus(EStatus.DELETED);
         supplierRepository.save(supplier);
         return true;
@@ -98,8 +96,7 @@ public class SupplierService
 
     public Boolean update(SupplierUpdateRequestDTO dto)
     {
-        Supplier supplier = supplierRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
-        SessionManager.authorizationCheck(supplier.getMemberId());
+        Supplier supplier = supplierRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
         if (dto.name() != null)
         {
             supplier.setName(dto.name());
@@ -124,26 +121,24 @@ public class SupplierService
         return true;
     }
 
-    public List<Supplier> findAll(PageRequestDTO dto)
+    public List<Supplier> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
     {
         return supplierRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
-    public Supplier findById(Long id)
+    public Supplier findByIdAndMemberId(Long id)
     {
-        Supplier supplier = supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
-        SessionManager.authorizationCheck(supplier.getMemberId());
-        return supplier;
+        return supplierRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
     }
 
-    public Supplier findByIdForAutoScheduler(Long id)
+    public Supplier findById(Long id)
     {
         return supplierRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
     }
 
     public Boolean approveOrder(Long id)
     {
-        Order order = orderService.findByIdForSupplier(id);
+        Order order = orderService.findById(id);
         //Authorization check.
         Supplier supplier = supplierRepository.findByAuthId(SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.SUPPLIER_NOT_FOUND));
         if (!order.getSupplierId().equals(supplier.getId()))

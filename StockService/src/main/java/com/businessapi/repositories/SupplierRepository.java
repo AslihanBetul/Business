@@ -16,4 +16,6 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long>
     Optional<Supplier> findByAuthId(Long authId);
 
     Optional<Supplier> findByEmail(String email);
+
+    Optional<Supplier> findByIdAndMemberId(Long id,Long memberId);
 }
