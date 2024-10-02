@@ -9,8 +9,10 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByUserIdAndIsDeletedFalse(Long userId);
-    List<Notification> findByIsReadFalseAndIsDeletedFalse(); // Okunmayan bildirimleri bulur
 
-    long countByIsReadFalseAndIsDeletedFalse(); // Okunmamış bildirimlerin sayısını döndüren metot
-    List<Notification> findByIsDeleted(boolean isDeleted); // Silinmemiş bildirimleri getiren yöntem
+    List<Notification> findAllByIsDeletedFalse();
+
+    List<Notification> findByIsReadFalseAndIsDeletedFalse();
+
+    long countByIsReadFalseAndIsDeletedFalse();
 }
