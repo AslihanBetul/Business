@@ -42,6 +42,9 @@ public class Config {
     //Admin tarafından kullanıcının şifresinin yenilenmesi
     private static final String queueChangePasswordFromUser = "queueChangePasswordFromUser";
     private static final String keyChangePasswordFromUser = "keyChangePasswordFromUser";
+    //Admin tarafından kullanıcı status update'i
+    private static final String queueUpdateStatus = "queueUpdateStatus";
+    private static final String keyUpdateStatus = "keyUpdateStatus";
 
     @Bean
    public DirectExchange directExchange(){
@@ -95,6 +98,10 @@ public class Config {
         return new Queue(queueEmailAndPasswordFromAuth);
 }
     @Bean
+    public Queue queueUpdateStatus() {
+        return new Queue(queueUpdateStatus);
+    }
+    @Bean
     public Binding bindingSaveUserFromAuth(){
         return BindingBuilder.bind(queueSaveUserFromAuth()).to(directExchange()).with(keySaveUserFromAuth);
     }
@@ -140,6 +147,10 @@ public class Config {
     @Bean
     public Binding bindingChangePasswordFromUser(Queue queueChangePasswordFromUser, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueChangePasswordFromUser).to(businessDirectExchange).with(keyChangePasswordFromUser);
+    }
+    @Bean
+    public Binding bindingUpdateStatus(Queue queueUpdateStatus, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueUpdateStatus).to(businessDirectExchange).with(keyUpdateStatus);
     }
 
     @Bean

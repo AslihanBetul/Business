@@ -99,7 +99,7 @@ public class AuthService {
         Auth auth = authRepository.findOptionalByEmail(dto.email())
                 .orElseThrow(() -> new AuthServiceException(EMAIL_OR_PASSWORD_WRONG));
 
-        if (auth.getStatus().equals(EStatus.PENDING) || auth.getStatus().equals(EStatus.DELETED))  {
+        if (!auth.getStatus().equals(EStatus.ACTIVE))  {
 
             throw new AuthServiceException(USER_IS_NOT_ACTIVE);
 
@@ -302,6 +302,13 @@ public class AuthService {
     public void changePasswordByAdmin(ChangePasswordFromUserModel changePasswordFromUserModel){
         Auth auth = authRepository.findById(changePasswordFromUserModel.getAuthId()).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
         auth.setPassword(passwordEncoder.bCryptPasswordEncoder().encode(changePasswordFromUserModel.getNewPassword()));
+        authRepository.save(auth);
+    }
+
+    @RabbitListener(queues = "queueUpdateStatus")
+    public void updateAuthStatus(UpdateStatusModel updateStatusModel){
+        Auth auth = authRepository.findById(updateStatusModel.getAuthId()).orElseThrow(() -> new AuthServiceException(USER_NOT_FOUND));
+        auth.setStatus(updateStatusModel.getStatus());
         authRepository.save(auth);
     }
 }

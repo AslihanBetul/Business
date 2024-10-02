@@ -97,5 +97,11 @@ public class UserController {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(userService.changeUserPassword(changeUserPassword)).message("Password Changed").build());
     }
 
+    @PutMapping("/update-user-status")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> updateUserStatus(@RequestBody UpdateUserStatusRequestDTO updateUserStatusRequestDTO){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("User status updated").data(userService.updateUserStatus(updateUserStatusRequestDTO)).build());
+    }
+
 
 }

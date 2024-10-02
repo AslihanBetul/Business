@@ -275,4 +275,14 @@ public class UserService {
         rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(changeUserPassword.password()).build());
         return true;
     }
+
+    @Transactional
+    public Boolean updateUserStatus(UpdateUserStatusRequestDTO updateUserStatusRequestDTO) {
+        User user = userRepository.findById(updateUserStatusRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setStatus(updateUserStatusRequestDTO.status());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyUpdateStatus",UpdateStatusModel.builder().authId(user.getAuthId()).status(user.getStatus()).build());
+        userRepository.save(user);
+
+        return null;
+    }
 }

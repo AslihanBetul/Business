@@ -76,6 +76,10 @@ public class RabbitConfig {
     private static final String queueChangePasswordFromUser = "queueChangePasswordFromUser";
     private static final String keyChangePasswordFromUser = "keyChangePasswordFromUser";
 
+    //Admin tarafından kullanıcı status update'i
+    private static final String queueUpdateStatus = "queueUpdateStatus";
+    private static final String keyUpdateStatus = "keyUpdateStatus";
+
 
     @Bean
     public Queue queue() {
@@ -165,6 +169,10 @@ public class RabbitConfig {
     public Queue queueChangePasswordFromUser() {
         return new Queue(queueChangePasswordFromUser);
     }
+    @Bean
+    public Queue queueUpdateStatus() {
+        return new Queue(queueUpdateStatus);
+    }
 
 
 
@@ -227,6 +235,10 @@ public class RabbitConfig {
     @Bean
     public Binding bindingChangePasswordFromUser(Queue queueChangePasswordFromUser, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueChangePasswordFromUser).to(businessDirectExchange).with(keyChangePasswordFromUser);
+    }
+    @Bean
+    public Binding bindingUpdateStatus(Queue queueUpdateStatus, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueUpdateStatus).to(businessDirectExchange).with(keyUpdateStatus);
     }
 
 
