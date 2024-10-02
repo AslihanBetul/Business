@@ -2,6 +2,7 @@ package com.businessapi.service;
 
 import com.businessapi.dto.requestDTOs.RoleCreateDTO;
 import com.businessapi.dto.requestDTOs.RoleUpdateRequestDTO;
+import com.businessapi.dto.requestDTOs.UpdateUserRoleStatusDTO;
 import com.businessapi.dto.responseDTOs.RoleResponseDTO;
 import com.businessapi.entity.Role;
 import com.businessapi.entity.User;
@@ -50,7 +51,7 @@ public class RoleService {
     }
 
     public List<RoleResponseDTO> getAllUserRoles() {
-        List<GetAllRoleView> allroles = roleRepository.getAllRoles(EStatus.ACTIVE);
+        List<GetAllRoleView> allroles = roleRepository.getAllRoles();
 
         List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
 
@@ -90,5 +91,13 @@ public class RoleService {
 
     public Role findByRoleName(String roleName) {
         return roleRepository.findByRoleNameIgnoreCase(roleName).orElseThrow(()-> new UserException(ErrorType.ROLE_NOT_FOUND));
+    }
+
+    public Boolean updateUserRoleStatus(UpdateUserRoleStatusDTO updateUserRoleStatusDTO) {
+        Role role = roleRepository.findById(updateUserRoleStatusDTO.roleId()).orElseThrow(() -> new UserException(ErrorType.ROLE_NOT_FOUND));
+        role.setStatus(updateUserRoleStatusDTO.status());
+        roleRepository.save(role);
+
+        return null;
     }
 }
