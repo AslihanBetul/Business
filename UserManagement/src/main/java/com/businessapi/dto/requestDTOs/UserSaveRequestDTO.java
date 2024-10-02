@@ -24,7 +24,7 @@ public record UserSaveRequestDTO (
         @NotBlank(message = ErrorMessages.PASSWORD_NOT_BLANK)
         String password,
 
-        @NotEmpty(message = ErrorMessages.ROLE_LIST_CANT_BE_EMPTY)
+
         List<Long> roleIds
 ) {
 

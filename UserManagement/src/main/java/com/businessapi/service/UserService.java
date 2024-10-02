@@ -40,8 +40,13 @@ public class UserService {
     @Transactional
     public void saveUser(UserSaveRequestDTO userSaveRequestDTO) {
         User user = UserMapper.INSTANCE.userSaveRequestDTOToUser(userSaveRequestDTO);
-        List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
-        user.setRole(usersRoles);
+        if(!userSaveRequestDTO.roleIds().isEmpty()){
+            List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
+            user.setRole(usersRoles);
+        }else {
+            user.setRole(new ArrayList<>());
+        }
+
         user.setStatus(EStatus.ACTIVE);
 
         Long authId =(Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveAuthFromUser", SaveAuthFromUserModel.builder().email(userSaveRequestDTO.email()).password(userSaveRequestDTO.password()).build());
