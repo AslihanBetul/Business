@@ -4,12 +4,15 @@ package com.businessapi.service;
 import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.entity.Employee;
 import com.businessapi.exception.HRMException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.EmployeeRepository;
+import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,9 +34,26 @@ public class EmployeeService {
                 .department(dto.department())
                 .hireDate(dto.hireDate())
                 .status(EStatus.ACTIVE)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
         employeeRepository.save(employee);
         return true;
+    }
+    public void saveForDemoData(EmployeeSaveRequestDTO dto) {
+        Employee employee=Employee.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .phone(dto.phone())
+                .email(dto.email())
+                .position(dto.position())
+                .salary(dto.salary())
+                .department(dto.department())
+                .hireDate(dto.hireDate())
+                .status(EStatus.ACTIVE)
+                .memberId(2L)
+                .build();
+        employeeRepository.save(employee);
+
     }
 
     public Boolean update(EmployeeUpdateRequestDTO dto) {
@@ -66,23 +86,28 @@ public class EmployeeService {
 
     }
 
-    public List<EmployeeResponseDTO> findAll() {
-        List<Employee> employeeList = employeeRepository.findAll();
-        List<EmployeeResponseDTO> employeeResponseDTOList= new ArrayList<>();
-        employeeList.forEach(employee ->
-                employeeResponseDTOList.add(EmployeeResponseDTO.builder()
+//    public List<EmployeeResponseDTO> findAll() {
+//        List<Employee> employeeList = employeeRepository.findAll();
+//        List<EmployeeResponseDTO> employeeResponseDTOList= new ArrayList<>();
+//        employeeList.forEach(employee ->
+//                employeeResponseDTOList.add(EmployeeResponseDTO.builder()
+//
+//                       .firstName(employee.getFirstName())
+//                       .lastName(employee.getLastName())
+//                       .phone(employee.getPhone())
+//                       .email(employee.getEmail())
+//                       .position(employee.getPosition())
+//                       .salary(employee.getSalary())
+//                       .department(employee.getDepartment())
+//                       .hireDate(employee.getHireDate())
+//                       .build())
+//        );
+//        return employeeResponseDTOList;
+//    }
 
-                       .firstName(employee.getFirstName())
-                       .lastName(employee.getLastName())
-                       .phone(employee.getPhone())
-                       .email(employee.getEmail())
-                       .position(employee.getPosition())
-                       .salary(employee.getSalary())
-                       .department(employee.getDepartment())
-                       .hireDate(employee.getHireDate())
-                       .build())
-        );
-        return employeeResponseDTOList;
+    public List<Employee> searchByName(PageRequestDTO dto) {
+        return employeeRepository.findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+
     }
 
     public Boolean delete(Long id) {
