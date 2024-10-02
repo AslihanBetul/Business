@@ -45,8 +45,7 @@ public class WareHouseService
 
     public Boolean delete(Long id)
     {
-        WareHouse wareHouse = wareHouseRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
-        SessionManager.authorizationCheck(wareHouse.getMemberId());
+        WareHouse wareHouse = wareHouseRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
         wareHouse.setStatus(EStatus.DELETED);
         wareHouseRepository.save(wareHouse);
         return true;
@@ -54,8 +53,7 @@ public class WareHouseService
 
     public Boolean update(WareHouseUpdateRequestDTO dto)
     {
-        WareHouse wareHouse = wareHouseRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
-        SessionManager.authorizationCheck(wareHouse.getMemberId());
+        WareHouse wareHouse = wareHouseRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
         if (dto.location() != null)
         {
             wareHouse.setLocation(dto.location());
@@ -69,20 +67,15 @@ public class WareHouseService
     }
 
 
-    public List<WareHouse> findAll(PageRequestDTO dto)
+    public List<WareHouse> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
     {
         return wareHouseRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(),SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
     }
 
-    public WareHouse findById(Long id)
+    public WareHouse findByIdAndMemberId(Long id)
     {
-        WareHouse wareHouse = wareHouseRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
-        SessionManager.authorizationCheck(wareHouse.getMemberId());
-        return wareHouse;
+
+        return wareHouseRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
     }
-    public WareHouse findByIdForDemoData(Long id)
-    {
-        WareHouse wareHouse = wareHouseRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.WAREHOUSE_NOT_FOUND));
-        return wareHouse;
-    }
+
 }

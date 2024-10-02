@@ -84,7 +84,7 @@ public class StockMovementController
 
         return ResponseEntity.ok(ResponseDTO
                 .<StockMovement>builder()
-                .data(stockMovementService.findById(id))
+                .data(stockMovementService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());
@@ -102,4 +102,5 @@ public class StockMovementController
                 .code(200)
                 .build());
     }
+
 }
