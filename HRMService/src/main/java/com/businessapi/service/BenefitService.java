@@ -5,9 +5,11 @@ import com.businessapi.dto.request.BenefitSaveRequestDTO;
 import com.businessapi.dto.request.BenefitUpdateRequestDTO;
 import com.businessapi.dto.response.BenefitResponseDTO;
 import com.businessapi.entity.Benefit;
+import com.businessapi.entity.Employee;
 import com.businessapi.exception.HRMException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.BenefitRepository;
+import com.businessapi.repository.EmployeeRepository;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BenefitService {
     private final BenefitRepository benefitRepository;
+    private final EmployeeRepository employeeRepository;
 
     public Boolean save(BenefitSaveRequestDTO dto) {
         Benefit benefit=Benefit.builder()
@@ -58,14 +61,17 @@ public class BenefitService {
     public List<BenefitResponseDTO> findAll() {
         List<Benefit> benefits = benefitRepository.findAll();
         List<BenefitResponseDTO> benefitResponseDTOList=new ArrayList<>();
-        benefits.forEach(benefit ->
+        benefits.forEach(benefit ->{
+                Employee employee = employeeRepository.findById(benefit.getEmployeeId()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
                 benefitResponseDTOList.add(BenefitResponseDTO.builder()
+                        .firstName(employee.getFirstName())
+                        .lastName(employee.getLastName())
                        .amount(benefit.getAmount())
                        .endDate(benefit.getEndDate())
                        .employeeId(benefit.getEmployeeId())
                        .startDate(benefit.getStartDate())
                        .type(benefit.getType())
-                       .build())
+                       .build());}
         );
         return benefitResponseDTOList;
 

@@ -4,9 +4,11 @@ import com.businessapi.dto.request.AttendanceSaveRequestDTO;
 import com.businessapi.dto.request.AttendanceUpdateRequestDTO;
 import com.businessapi.dto.response.AttendanceResponseDTO;
 import com.businessapi.entity.Attendance;
+import com.businessapi.entity.Employee;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.HRMException;
 import com.businessapi.repository.AttendanceRepository;
+import com.businessapi.repository.EmployeeRepository;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
+    private final EmployeeRepository employeeRepository;
 
     public Boolean save(AttendanceSaveRequestDTO dto) {
         Attendance attendance=Attendance.builder()
@@ -52,12 +55,15 @@ public class AttendanceService {
     public List<AttendanceResponseDTO> findAll() {
         List<Attendance> attendanceList = attendanceRepository.findAll();
         List<AttendanceResponseDTO> attendanceResponseDTOList=new ArrayList<>();
-        attendanceList.forEach(attendance ->
+        attendanceList.forEach(attendance ->{
+            Employee employee = employeeRepository.findById(attendance.getEmployeeId()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
                 attendanceResponseDTOList.add(AttendanceResponseDTO.builder()
                        .employeeId(attendance.getEmployeeId())
+                        .firstName(employee.getFirstName())
+                        .lastName(employee.getLastName())
                        .checkInDateTime(attendance.getCheckInDateTime())
                        .checkOutDateTime(attendance.getCheckOutDateTime())
-                       .build())
+                       .build());}
         );
         return attendanceResponseDTOList;
 
