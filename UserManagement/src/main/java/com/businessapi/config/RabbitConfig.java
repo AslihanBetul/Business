@@ -80,6 +80,10 @@ public class RabbitConfig {
     private static final String queueUpdateStatus = "queueUpdateStatus";
     private static final String keyUpdateStatus = "keyUpdateStatus";
 
+    //Token karşığılığında userId gönderilmesi
+    private static final String queueGetUserIdByToken = "queueGetUserIdByToken";
+    private static final String keyGetUserIdByToken = "keyGetUserIdByToken";
+
 
     @Bean
     public Queue queue() {
@@ -173,7 +177,10 @@ public class RabbitConfig {
     public Queue queueUpdateStatus() {
         return new Queue(queueUpdateStatus);
     }
-
+    @Bean
+    public Queue queueGetUserIdByToken() {
+        return new Queue(queueGetUserIdByToken);
+    }
 
 
     @Bean
@@ -239,6 +246,10 @@ public class RabbitConfig {
     @Bean
     public Binding bindingUpdateStatus(Queue queueUpdateStatus, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueUpdateStatus).to(businessDirectExchange).with(keyUpdateStatus);
+    }
+    @Bean
+    public Binding bindingGetUserIdByToken (Queue queueGetUserIdByToken, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueGetUserIdByToken).to(businessDirectExchange).with(keyGetUserIdByToken);
     }
 
 

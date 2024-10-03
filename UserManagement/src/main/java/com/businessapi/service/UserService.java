@@ -290,4 +290,18 @@ public class UserService {
 
         return null;
     }
+
+    @RabbitListener(queues = "queueGetUserIdByToken")
+    public Long getUserIdByToken(String token) {
+
+        //String jwtToken = token.replace("Bearer ", ""); eğer token Normal gelmezse yalın hale getirmek için bunu yorum satırından kaldırın daha sonra jwtToken değişkenini token değişkeni yerine bir alt satırdaki Long authId = jwtTokenManager.getAuthIdFromToken(token).orElseThrow(()->new UserException(ErrorType.INVALID_TOKEN)); metodunda kullanın
+
+        Long authId = jwtTokenManager.getAuthIdFromToken(token).orElseThrow(()->new UserException(ErrorType.INVALID_TOKEN));
+
+        User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        return user.getId();
+    }
+
+
 }
