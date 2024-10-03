@@ -78,6 +78,7 @@ public class InvoiceService {
                 .productId(model.getProductId())
                 .productName(model.getProductName())
                 .quantity(model.getQuantity())
+                .price(model.getPrice())
                 .invoiceDate(model.getInvoiceDate())
                 .totalAmount(model.getTotalAmount())
                 .build();

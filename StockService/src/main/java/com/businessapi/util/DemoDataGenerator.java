@@ -115,17 +115,17 @@ public class DemoDataGenerator
     private void customerDemoData()
     {
 
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("John", "Doe", "johndoe@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Jane", "Doe", "janedoe@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Bob", "Smith", "bobsmith@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Alice", "Johnson", "alicejohnson@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Tom", "Lee", "tomlee@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Sarah", "Brown", "sarahbrown@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Michael", "Davis", "michaeldavis@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Emily", "Wilson", "emilywilson@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Olivia", "Martinez", "oliviamartinez@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("William", "Anderson", "williamanderson@gmail.com"));
-        customerService.saveForDemoData(new CustomerSaveRequestDTO("Ava", "Thomas", "avathomas@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("12345678999","5353563421","John", "Doe", "johndoe@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("11111111111","5354825421","Jane", "Doe", "janedoe@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("22222222222","5355555421","Bob", "Smith", "bobsmith@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("33333333333","5353666421","Alice", "Johnson", "alicejohnson@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("44444444444","5222555421","Tom", "Lee", "tomlee@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("55555555555","5322255421","Sarah", "Brown", "sarahbrown@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("66666666666","5355559991","Michael", "Davis", "michaeldavis@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("77777777777","5354453211","Emily", "Wilson", "emilywilson@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("88888888888","5234555421","Olivia", "Martinez", "oliviamartinez@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("99999999999","5521555421","William", "Anderson", "williamanderson@gmail.com"));
+        customerService.saveForDemoData(new CustomerSaveRequestDTO("11222233444","5765475421","Ava", "Thomas", "avathomas@gmail.com"));
 
     }
 

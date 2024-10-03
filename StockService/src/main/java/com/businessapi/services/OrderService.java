@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.RabbitMQ.Model.InvoiceModel;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
@@ -15,12 +16,14 @@ import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.OrderRepository;
 import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +36,7 @@ public class OrderService
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final CustomerService customerService;
+    private final RabbitTemplate rabbitTemplate;
     private SupplierService supplierService;
 
     @Autowired
@@ -69,7 +73,10 @@ public class OrderService
                 .orderType(EOrderType.SELL)
                 .build();
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        Customer customer = customerService.findByIdAndMemberId(dto.customerId());
+        InvoiceModel invoiceModel = new InvoiceModel(customer.getIdentityNo(), customer.getEmail(), customer.getPhoneNo(), product.getId(), product.getName(),dto.quantity(),product.getPrice(),savedOrder.getTotal(), savedOrder.getCreatedAt().toLocalDate());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyGetModelFromStockService",invoiceModel );
         return true;
     }
 
@@ -98,7 +105,10 @@ public class OrderService
                 .orderType(EOrderType.SELL)
                 .build();
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        Customer customer = customerService.findbyId(dto.customerId());
+        InvoiceModel invoiceModel = new InvoiceModel(customer.getIdentityNo(), customer.getEmail(), customer.getPhoneNo(), product.getId(), product.getName(),dto.quantity(),product.getPrice(),savedOrder.getTotal(), savedOrder.getCreatedAt().toLocalDate());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyGetModelFromStockService",invoiceModel );
         return true;
     }
 
