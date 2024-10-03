@@ -1,6 +1,7 @@
 package com.businessapi.entity;
 
 
+import com.businessapi.entity.enums.ERole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,19 +17,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tblchat")
 public class ChatMessage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long senderId;
-    private Long recipientId;
-
-    private String content;
-
-    @Enumerated(EnumType.STRING)
-    private MessageType type;
-
+    private String message;
     private LocalDateTime timestamp;
-
+    @Enumerated(EnumType.STRING)
+    private ERole senderRole;
 }
-
