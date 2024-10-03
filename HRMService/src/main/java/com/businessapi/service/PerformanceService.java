@@ -4,9 +4,11 @@ package com.businessapi.service;
 import com.businessapi.dto.request.PerformanceSaveRequestDTO;
 import com.businessapi.dto.request.PerformanceUpdateRequestDTO;
 import com.businessapi.dto.response.PerformanceResponseDTO;
+import com.businessapi.entity.Employee;
 import com.businessapi.entity.Performance;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.HRMException;
+import com.businessapi.repository.EmployeeRepository;
 import com.businessapi.repository.PerformanceRepository;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PerformanceService {
     private final PerformanceRepository performanceRepository;
+    private final EmployeeRepository employeeRepository;
 
     public Boolean save(PerformanceSaveRequestDTO dto) {
         Performance performance= Performance.builder()
@@ -55,13 +58,17 @@ public class PerformanceService {
     public List<PerformanceResponseDTO> findAll() {
         List<Performance> performanceList = performanceRepository.findAll();
         List<PerformanceResponseDTO> performanceResponseDTOList=new ArrayList<>();
-        performanceList.forEach(performance ->
+        performanceList.forEach(performance ->{
+
+                Employee employee = employeeRepository.findById(performance.getEmployeeId()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
                 performanceResponseDTOList.add(PerformanceResponseDTO.builder()
                        .employeeId(performance.getEmployeeId())
+                        .firstName(employee.getFirstName())
+                        .lastName(employee.getLastName())
                        .date(performance.getDate())
                        .score(performance.getScore())
                        .feedback(performance.getFeedback())
-                       .build())
+                       .build());}
         );
         return performanceResponseDTOList;
     }

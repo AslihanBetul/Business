@@ -2,10 +2,7 @@ package com.businessapi.controller;
 
 import com.businessapi.constants.EndPoints;
 import com.businessapi.constants.messages.SuccesMessages;
-import com.businessapi.dto.requestDTOs.AddRoleToUserRequestDTO;
-import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
-import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
-import com.businessapi.dto.requestDTOs.UserUpdateRequestDTO;
+import com.businessapi.dto.requestDTOs.*;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
 import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
 import com.businessapi.dto.responseDTOs.ResponseDTO;
@@ -88,7 +85,23 @@ public class UserController {
     }
 
 
+    @PutMapping("/change-user-email")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> changeUserEmail(@RequestBody ChangeUserEmailRequestDTO changeUserEmailRequestDTO){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(userService.changeUserEmail(changeUserEmailRequestDTO)).message("User Email Changed").build());
+    }
 
+    @PutMapping("/change-user-password")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> changeUserPassword(@RequestBody ChangeUserPassword changeUserPassword){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(userService.changeUserPassword(changeUserPassword)).message("Password Changed").build());
+    }
+
+    @PutMapping("/update-user-status")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> updateUserStatus(@RequestBody UpdateUserStatusRequestDTO updateUserStatusRequestDTO){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).message("User status updated").data(userService.updateUserStatus(updateUserStatusRequestDTO)).build());
+    }
 
 
 }

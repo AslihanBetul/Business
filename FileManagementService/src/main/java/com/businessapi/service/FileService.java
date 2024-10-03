@@ -9,6 +9,7 @@ import com.businessapi.entity.File;
 import static com.businessapi.exception.ErrorType.*;
 import com.businessapi.exception.FileManagementServiceException;
 import com.businessapi.repository.FileRepository;
+import com.businessapi.utilty.JwtTokenManager;
 import com.businessapi.utilty.enums.EContentType;
 import com.businessapi.utilty.enums.EStatus;
 import io.minio.*;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @Service
 public class FileService {
     private final FileRepository fileRepository;
+     private final JwtTokenManager jwtTokenManager;
     private final MinioClient minioClient;
     private final ConfigProperties configProperties;
 
@@ -34,10 +36,12 @@ public class FileService {
         String bucketName = configProperties.getBucket();
         String uuid = UUID.randomUUID().toString();
 
-        try {
+        Long authId = jwtTokenManager.getIdFromToken(dto.token())
+                .orElseThrow(() -> new FileManagementServiceException(INVALID_TOKEN));
 
+        try {
             MultipartFile file = dto.file();
-            EContentType contentType = dto.contentType();
+            EContentType contentType = EContentType.valueOf(dto.contentType());
 
             boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
 
@@ -49,7 +53,7 @@ public class FileService {
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(uuid)
                     .stream(file.getInputStream(), file.getSize(), -1)
-                    .contentType(contentType.getType())
+                    .contentType(contentType.getContentType())
                     .bucket(bucketName)
                     .build();
             minioClient.putObject(putObjectArgs);
@@ -57,7 +61,7 @@ public class FileService {
 
             File fileEntity = File.builder()
                     .uuid(uuid)
-                    .authId(1L)
+                    .authId(authId)
                     .status(EStatus.ACTIVE)
                     .contentType(contentType)
                     .build();
@@ -114,7 +118,7 @@ public class FileService {
                     .bucket(configProperties.getBucket())
                     .object(dto.uuid())
                     .stream(fileInputStream, fileInputStream.available(), -1)
-                    .contentType(dto.contentType().getType())
+                    .contentType(dto.contentType().getContentType())
                     .build());
 
 

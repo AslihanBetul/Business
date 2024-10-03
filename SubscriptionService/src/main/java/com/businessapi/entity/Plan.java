@@ -19,10 +19,16 @@ public class Plan extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    private String name;
     private Double price;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private List<ERoles> roles;
+
+    @OneToMany
+    private List<PlanTranslation> translations;
+
+    public PlanTranslation getPlanTranslationByLanguage(String language) {
+        return translations.stream().filter(t -> t.getLanguage().equals(language)).findFirst().orElse(null);
+    }
 }

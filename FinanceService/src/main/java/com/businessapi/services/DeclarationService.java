@@ -1,6 +1,8 @@
 package com.businessapi.services;
 
 import com.businessapi.dto.request.DeclarationSaveRequestDTO;
+import com.businessapi.dto.request.ExpenseFindByDateRequestDTO;
+import com.businessapi.dto.request.GenerateDeclarationRequestDTO;
 import com.businessapi.entity.Declaration;
 import com.businessapi.entity.Expense;
 import com.businessapi.entity.Income;
@@ -70,7 +72,7 @@ public class DeclarationService {
     }
 
     private List<BigDecimal> calculateTaxableIncome(DeclarationSaveRequestDTO dto){
-        List<Income> incomeList = incomeService.findByDate(dto.startDate(), dto.endDate());
+        List<Income> incomeList = incomeService.findByDateForDeclaration(dto.startDate(), dto.endDate());
         List<Expense> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
         List<Expense> approvedExpenseList = expenseList.stream().filter(expense -> expense.getStatus().equals(EStatus.APPROVED)).toList();
 
@@ -83,4 +85,12 @@ public class DeclarationService {
     }
 
 
+    public BigDecimal createDeclaration(GenerateDeclarationRequestDTO dto) {
+        return switch (dto.taxType()) {
+            case "income" -> taxService.calculateIncomeTax(dto.netIncome());
+            case "kdv" -> taxService.calculateVat(dto.netIncome());
+            case "corporate" -> taxService.calculateCorporateTax(dto.netIncome());
+            default -> throw new IllegalStateException("Invalid Tax Type: " + dto.taxType());
+        };
+    }
 }

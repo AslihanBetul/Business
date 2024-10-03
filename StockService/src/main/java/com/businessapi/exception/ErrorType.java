@@ -29,12 +29,18 @@ public enum ErrorType
     ORDER_NOT_ACTIVE(9013, "Order Not Active", HttpStatus.BAD_REQUEST),
     WRONG_ORDER_TYPE(9014, "Wrong Order Type", HttpStatus.BAD_REQUEST),
     CUSTOMER_NOT_FOUND(9015, "Customer Not Found", HttpStatus.BAD_REQUEST),
-    EMAIL_ALREADY_EXISTS( 9016, "Email Already Exists" ,  HttpStatus.BAD_REQUEST),
-    UNAUTHORIZED( 9017, "Unauthorized" ,  HttpStatus.UNAUTHORIZED),
-    SUPPLIER_EMAIL_ALREADY_EXISTS(9018, "Supplier Email Already Exists" , HttpStatus.BAD_REQUEST),
-    PRODUCT_CATEGORY_ALREADY_EXISTS( 9019, "Product Category Already Exists" , HttpStatus.BAD_REQUEST),
-    ORDER_NOT_BUY( 9020, "Order Type Should Be Buy" , HttpStatus.BAD_REQUEST),
-    ORDER_ALREADY_ARRIVED( 9021, "Order Already Arrived" , HttpStatus.BAD_REQUEST);
+    EMAIL_ALREADY_EXISTS(9016, "Email Already Exists", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED(9017, "Unauthorized", HttpStatus.UNAUTHORIZED),
+    SUPPLIER_EMAIL_ALREADY_EXISTS(9018, "Supplier Email Already Exists", HttpStatus.BAD_REQUEST),
+    PRODUCT_CATEGORY_ALREADY_EXISTS(9019, "Product Category Already Exists", HttpStatus.BAD_REQUEST),
+    ORDER_NOT_BUY(9020, "Order Type Should Be Buy", HttpStatus.BAD_REQUEST),
+    ORDER_ALREADY_ARRIVED(9021, "Order Already Arrived", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL(9022, "Email Format Is Invalid", HttpStatus.BAD_REQUEST),
+    ORDER_CAN_NOT_BE_DELETED(9023, "Order Arrived Or Approved Can Not Be Deleted", HttpStatus.BAD_REQUEST),
+    ORDER_CAN_NOT_BE_UPDATED(9024, "Order Arrived Or Approved Can Not Be Updated", HttpStatus.BAD_REQUEST),
+    STOCK_MOVEMENT_CAN_NOT_BE_DELETED(9025, "Stock Movement Can Not Be Deleted", HttpStatus.BAD_REQUEST),
+    VALUE_CAN_NOT_BE_BELOW_ZERO(9026, "Value Can Not Be Below Zero", HttpStatus.BAD_REQUEST),
+    IDENTITY_NO_ALREADY_EXISTS(9027, "Identity No Already Exists", HttpStatus.BAD_REQUEST);
 
     private Integer code;
     private String message;

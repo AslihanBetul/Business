@@ -72,6 +72,18 @@ public class RabbitConfig {
     public static final String queueDeleteRoleFromSubscription = "queueDeleteRoleFromSubscription";
     public static final String keyDeleteRoleFromSubscription = "keyDeleteRoleFromSubscription";
 
+    //Admin tarafından kullanıcının şifresinin yenilenmesi
+    private static final String queueChangePasswordFromUser = "queueChangePasswordFromUser";
+    private static final String keyChangePasswordFromUser = "keyChangePasswordFromUser";
+
+    //Admin tarafından kullanıcı status update'i
+    private static final String queueUpdateStatus = "queueUpdateStatus";
+    private static final String keyUpdateStatus = "keyUpdateStatus";
+
+    //Token karşığılığında userId gönderilmesi
+    private static final String queueGetUserIdByToken = "queueGetUserIdByToken";
+    private static final String keyGetUserIdByToken = "keyGetUserIdByToken";
+
 
     @Bean
     public Queue queue() {
@@ -157,7 +169,18 @@ public class RabbitConfig {
     public Queue queueDeleteRoleFromSubscription() {
         return new Queue(queueDeleteRoleFromSubscription);
     }
-
+    @Bean
+    public Queue queueChangePasswordFromUser() {
+        return new Queue(queueChangePasswordFromUser);
+    }
+    @Bean
+    public Queue queueUpdateStatus() {
+        return new Queue(queueUpdateStatus);
+    }
+    @Bean
+    public Queue queueGetUserIdByToken() {
+        return new Queue(queueGetUserIdByToken);
+    }
 
 
     @Bean
@@ -216,7 +239,18 @@ public class RabbitConfig {
     public Binding bindingDeleteRoleFromSubscription (Queue queueDeleteRoleFromSubscription, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueDeleteRoleFromSubscription).to(businessDirectExchange).with(keyDeleteRoleFromSubscription);
     }
-
+    @Bean
+    public Binding bindingChangePasswordFromUser(Queue queueChangePasswordFromUser, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueChangePasswordFromUser).to(businessDirectExchange).with(keyChangePasswordFromUser);
+    }
+    @Bean
+    public Binding bindingUpdateStatus(Queue queueUpdateStatus, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueUpdateStatus).to(businessDirectExchange).with(keyUpdateStatus);
+    }
+    @Bean
+    public Binding bindingGetUserIdByToken (Queue queueGetUserIdByToken, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueGetUserIdByToken).to(businessDirectExchange).with(keyGetUserIdByToken);
+    }
 
 
     @Bean

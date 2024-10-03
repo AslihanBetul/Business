@@ -68,7 +68,7 @@ public class ProductCategoryController
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<ProductCategory>>builder()
-                .data(productCategoryService.findAll(dto))
+                .data(productCategoryService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -81,7 +81,7 @@ public class ProductCategoryController
 
         return ResponseEntity.ok(ResponseDTO
                 .<ProductCategory>builder()
-                .data(productCategoryService.findById(id))
+                .data(productCategoryService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());

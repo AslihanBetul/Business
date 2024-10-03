@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -23,29 +24,28 @@ public class ProductService
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
 
-    public Product findById(Long id)
+    public Product findByIdAndMemberId(Long id)
     {
-        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        return product;
+        return productRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }
 
     public Product findByIdForSupplier(Long id)
     {
         return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }
-    public Product findByIdForAutoScheduler(Long id)
+
+    public Product findById(Long id)
     {
         return productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-    }
-    public Product findByIdForDemoData(Long id)
-    {
-        Product product = productRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        return product;
     }
 
     public Boolean save(ProductSaveRequestDTO dto)
     {
-        productCategoryService.findById(dto.productCategoryId());
+        if (dto.stockCount() < 0 || dto.minimumStockLevel() < 0 || dto.price().compareTo(BigDecimal.ZERO) < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
+        productCategoryService.findByIdAndMemberId(dto.productCategoryId());
         productRepository.save(Product
                 .builder()
                 .productCategoryId(dto.productCategoryId())
@@ -63,7 +63,7 @@ public class ProductService
 
     public Boolean saveForDemoData(ProductSaveRequestDTO dto)
     {
-        productCategoryService.findByIdForDemoData(dto.productCategoryId());
+        productCategoryService.findById(dto.productCategoryId());
         productRepository.save(Product
                 .builder()
                 .productCategoryId(dto.productCategoryId())
@@ -95,6 +95,10 @@ public class ProductService
 
     public Boolean update(ProductUpdateRequestDTO dto)
     {
+        if (dto.stockCount() < 0 || dto.minimumStockLevel() < 0 || dto.price().compareTo(BigDecimal.ZERO) < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         if (dto.productCategoryId() != null)
         {
@@ -124,21 +128,20 @@ public class ProductService
         return true;
     }
 
-    public List<ProductResponseDTO> findAll(PageRequestDTO dto)
+    public List<ProductResponseDTO> findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(PageRequestDTO dto)
     {
-        return productRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto.searchText(), EStatus.ACTIVE,SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByName(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public List<Product> findAllByMinimumStockLevel(PageRequestDTO dto)
     {
-        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(),dto.searchText(), PageRequest.of(dto.page(), dto.size()));
+        return productRepository.findAllByMinimumStockLevelAndStatusAndNameContainingIgnoreCaseOrderByNameAsc(EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), dto.searchText(), PageRequest.of(dto.page(), dto.size()));
     }
 
     public Boolean changeAutoOrderMode(Long id)
     {
 
-        Product product = productRepository.findByIdAndMemberId(id,SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
-        SessionManager.authorizationCheck(product.getMemberId());
+        Product product = productRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         product.setIsAutoOrderEnabled(!product.getIsAutoOrderEnabled());
         productRepository.save(product);
         return true;

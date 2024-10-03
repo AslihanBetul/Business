@@ -4,6 +4,7 @@ package com.businessapi.controller;
 import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Employee;
 import com.businessapi.service.EmployeeService;
@@ -16,10 +17,11 @@ import java.util.List;
 
 import static com.businessapi.constants.EndPoints.*;
 
+
 @RestController
 @RequestMapping(EMPLOYEE)
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT,RequestMethod.DELETE})
+@CrossOrigin(origins = "*")
 public class EmployeeController {
     private  final EmployeeService employeeService;
 
@@ -35,7 +37,7 @@ public class EmployeeController {
                 .build());
     }
 
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update Employee")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody EmployeeUpdateRequestDTO dto){
 
@@ -46,7 +48,7 @@ public class EmployeeController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_BY_ID)
+    @PostMapping (FIND_BY_ID)
     @Operation(summary = "Find employee by id")
     public ResponseEntity<ResponseDTO<EmployeeResponseDTO>> findById(@RequestParam Long id){
 
@@ -57,13 +59,15 @@ public class EmployeeController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_ALL)
+
+
+    @PostMapping (FIND_ALL)
     @Operation(summary = "Find all employee ")
-    public ResponseEntity<ResponseDTO<List<EmployeeResponseDTO>>> findAll(){
+    public ResponseEntity<ResponseDTO<List<Employee>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<EmployeeResponseDTO>>builder()
-                .data(employeeService.findAll())
+                .<List<Employee>>builder()
+                .data(employeeService.searchByName(dto))
                 .message("Success")
                 .code(200)
                 .build());

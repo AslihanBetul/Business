@@ -57,32 +57,20 @@ public class DataSourceService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
-        //  For HRM, used GET request
+        // For HRM, Stock, and Finance services, used POST request with body
         try {
-            if (serviceType.equalsIgnoreCase("hrm")) {
-                HttpEntity<Void> entity = new HttpEntity<>(headers);
-                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("searchText", "");
+            requestBody.put("page", 0);
+            requestBody.put("size", 100);
 
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    jsonData = response.getBody();
-                } else {
-                    throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
-                }
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                jsonData = response.getBody();
             } else {
-                // For Stock and Finance, use POST request with body
-                Map<String, Object> requestBody = new HashMap<>();
-                requestBody.put("searchText", "");
-                requestBody.put("page", 0);
-                requestBody.put("size", 100);
-
-                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-                ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    jsonData = response.getBody();
-                } else {
-                    throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
-                }
+                throw new RuntimeException("Data fetch failed with status: " + response.getStatusCode());
             }
 
             // Save data after fetching

@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.RabbitMQ.Model.InvoiceModel;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.BuyOrderResponseDTO;
 import com.businessapi.dto.response.SellOrderResponseDTO;
@@ -15,11 +16,14 @@ import com.businessapi.exception.StockServiceException;
 import com.businessapi.repositories.OrderRepository;
 import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +36,7 @@ public class OrderService
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final CustomerService customerService;
+    private final RabbitTemplate rabbitTemplate;
     private SupplierService supplierService;
 
     @Autowired
@@ -42,11 +47,14 @@ public class OrderService
 
     public Boolean saveSellOrder(SellOrderSaveRequestDTO dto)
     {
-
-        Product product = productService.findById(dto.productId());
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
+        Product product = productService.findByIdAndMemberId(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK, product.getName() + " Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -65,17 +73,20 @@ public class OrderService
                 .orderType(EOrderType.SELL)
                 .build();
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        Customer customer = customerService.findByIdAndMemberId(dto.customerId());
+        InvoiceModel invoiceModel = new InvoiceModel(customer.getIdentityNo(), customer.getEmail(), customer.getPhoneNo(), product.getId(), product.getName(),dto.quantity(),product.getPrice(),savedOrder.getTotal(), savedOrder.getCreatedAt().toLocalDate());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyGetModelFromStockService",invoiceModel );
         return true;
     }
 
     public Boolean saveSellOrderForDemoData(SellOrderSaveRequestDTO dto)
     {
 
-        Product product = productService.findByIdForDemoData(dto.productId());
+        Product product = productService.findById(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
-            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+            throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK, product.getName() + " Stock count is: " + product.getStockCount());
         }
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -94,13 +105,20 @@ public class OrderService
                 .orderType(EOrderType.SELL)
                 .build();
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        Customer customer = customerService.findbyId(dto.customerId());
+        InvoiceModel invoiceModel = new InvoiceModel(customer.getIdentityNo(), customer.getEmail(), customer.getPhoneNo(), product.getId(), product.getName(),dto.quantity(),product.getPrice(),savedOrder.getTotal(), savedOrder.getCreatedAt().toLocalDate());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyGetModelFromStockService",invoiceModel );
         return true;
     }
 
     public Boolean saveBuyOrder(BuyOrderSaveRequestDTO dto)
     {
-        Product product = productService.findById(dto.productId());
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
+        Product product = productService.findByIdAndMemberId(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
@@ -122,7 +140,7 @@ public class OrderService
 
     public Boolean saveBuyOrderForAutoScheduler(BuyOrderSaveRequestDTO dto, Long memberId)
     {
-        Product product = productService.findByIdForAutoScheduler(dto.productId());
+        Product product = productService.findById(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
             throw new StockServiceException(ErrorType.PRODUCT_NOT_ACTIVE);
@@ -149,14 +167,15 @@ public class OrderService
 
     public Boolean delete(Long id)
     {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+        Order order = orderRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
 
-        // Authorization check whether the member is authorized to do that or not
-        SessionManager.authorizationCheck(order.getMemberId());
-
+        if (order.getStatus() == EStatus.ARRIVED || order.getStatus() == EStatus.APPROVED)
+        {
+            throw new StockServiceException(ErrorType.ORDER_CAN_NOT_BE_DELETED);
+        }
         if (order.getOrderType() == EOrderType.SELL)
         {
-            Product product = productService.findById(order.getProductId());
+            Product product = productService.findByIdAndMemberId(order.getProductId());
             product.setStockCount(product.getStockCount() + order.getQuantity());
             productService.save(product);
         }
@@ -169,10 +188,15 @@ public class OrderService
 
     public Boolean updateBuyOrder(BuyOrderUpdateRequestDTO dto)
     {
-        Order order = orderRepository.findById(dto.id()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
-
-        // Authorization check whether the member is authorized to do that or not
-        SessionManager.authorizationCheck(order.getMemberId());
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
+        Order order = orderRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
+        if (order.getStatus() == EStatus.ARRIVED || order.getStatus() == EStatus.APPROVED)
+        {
+            throw new StockServiceException(ErrorType.ORDER_CAN_NOT_BE_UPDATED);
+        }
         order.setQuantity(dto.quantity());
         order.setProductId(dto.productId());
         order.setSupplierId(dto.supplierId());
@@ -180,28 +204,29 @@ public class OrderService
         return true;
     }
 
-    public Boolean updateSellOrder(SellOrderUpdateRequestDTO dto) {
-
-        Order order = orderRepository.findById(dto.id())
+    public Boolean updateSellOrder(SellOrderUpdateRequestDTO dto)
+    {
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
+        Order order = orderRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember())
                 .orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
 
-
-        SessionManager.authorizationCheck(order.getMemberId());
-
-
-        Product product = productService.findById(dto.productId());
-
+        Product product = productService.findByIdAndMemberId(dto.productId());
 
         Integer stockDifference = dto.quantity() - order.getQuantity();
 
-
-        if (stockDifference < 0) {
+        if (stockDifference < 0)
+        {
             product.setStockCount(product.getStockCount() + Math.abs(stockDifference));
-        } else if (stockDifference > 0) {
+        } else if (stockDifference > 0)
+        {
 
-            if (product.getStockCount() < stockDifference) {
+            if (product.getStockCount() < stockDifference)
+            {
 
-                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK , product.getName() +" Stock count is: " + product.getStockCount());
+                throw new StockServiceException(ErrorType.INSUFFICIENT_STOCK, product.getName() + " Stock count is: " + product.getStockCount());
             }
             product.setStockCount(product.getStockCount() - stockDifference);
         }
@@ -219,27 +244,13 @@ public class OrderService
 
     public List<Order> findAll(PageRequestDTO dto)
     {
-
         return orderRepository.findAll(PageRequest.of(dto.page(), dto.size())).getContent();
-
     }
 
     public Order findById(Long id)
     {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
-
-        // Authorization check whether the member is authorized to do that or not
-        SessionManager.authorizationCheck(order.getMemberId());
-        return order;
+        return orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
     }
-
-    public Order findByIdForSupplier(Long id)
-    {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
-
-        return order;
-    }
-
 
     /**
      * Finds products with name containing search text
@@ -262,7 +273,7 @@ public class OrderService
         orderList.stream().forEach(order ->
         {
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
-            Supplier supplier = supplierService.findById(order.getSupplierId());
+            Supplier supplier = supplierService.findByIdAndMemberId(order.getSupplierId());
             buyOrderResponseDTOList.add(new BuyOrderResponseDTO(order.getId(), supplier.getName(), supplier.getEmail(), productName, order.getUnitPrice(), order.getQuantity(), order.getTotal(), order.getOrderType(), order.getCreatedAt(), order.getStatus()));
         });
         return buyOrderResponseDTOList.stream()
@@ -291,7 +302,7 @@ public class OrderService
         orderList.stream().forEach(order ->
         {
             String productName = products.stream().filter(product -> product.getId() == order.getProductId()).findFirst().get().getName();
-            Customer customer = customerService.findById(order.getCustomerId());
+            Customer customer = customerService.findByIdAndMemberId(order.getCustomerId());
 
             sellOrderResponseDTOList.add(new SellOrderResponseDTO(order.getId(), customer.getName() + " " + customer.getSurname(), customer.getEmail(), productName, order.getUnitPrice(), order.getTotal(), order.getQuantity(), order.getOrderType(), order.getCreatedAt(), order.getStatus()));
         });
@@ -308,5 +319,10 @@ public class OrderService
 
         return orderRepository.findAllByProductNameContainingIgnoreCaseAndsupplierIdAndStatusNot(dto.searchText(), supplier.getId(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
 
+    }
+
+    public Order findByIdAndMemberId(Long id, Long memberIdFromAuthenticatedMember)
+    {
+        return orderRepository.findByIdAndMemberId(id, memberIdFromAuthenticatedMember).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
     }
 }

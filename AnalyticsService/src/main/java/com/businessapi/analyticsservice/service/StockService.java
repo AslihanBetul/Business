@@ -7,11 +7,16 @@ import com.businessapi.analyticsservice.entity.stockService.entity.StockMovement
 import com.businessapi.analyticsservice.entity.stockService.entity.Supplier;
 import com.businessapi.analyticsservice.entity.stockService.enums.EStockMovementType;
 import com.businessapi.analyticsservice.repository.DataSourceRepository;
+import com.businessapi.analyticsservice.util.ExcelUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -60,6 +65,24 @@ public class StockService {
                         order -> order.getCreatedAt().toLocalDate(),  // group by date (without time)
                         Collectors.reducing(BigDecimal.ZERO, Order::getTotal, BigDecimal::add)  // sum total for each date
                 ));
+    }
+
+    public ResponseEntity<byte[]> exportTotalSalesToExcel(List<Order> orders) {
+        try {
+            List<String> headers = Arrays.asList("Order ID", "Total", "Created At");
+            List<List<Object>> data = orders.stream()
+                    .map(order -> Arrays.asList((Object) order.getId(), order.getTotal(), order.getCreatedAt()))
+                    .collect(Collectors.toList());
+
+            ByteArrayOutputStream outputStream = ExcelUtil.writeToExcel("Total Sales", headers, data);
+
+            HttpHeaders headersExcel = new HttpHeaders();
+            headersExcel.set("Content-Disposition", "attachment; filename=total_sales.xlsx");
+
+            return new ResponseEntity<>(outputStream.toByteArray(), headersExcel, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /*
@@ -123,5 +146,25 @@ public class StockService {
                         Supplier::getContactInfo,
                         Collectors.counting()
                 ));
+    }
+
+    public ResponseEntity<byte[]> exportSuppliersPerCountryToExcel(List<Supplier> suppliers) {
+        try {
+            Map<String, Long> suppliersPerCountry = analyzeNumOfSuppliersPerCountry(suppliers);
+
+            List<String> headers = Arrays.asList("Country", "Number of Suppliers");
+            List<List<Object>> data = suppliersPerCountry.entrySet().stream()
+                    .map(entry -> Arrays.asList((Object) entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+
+            ByteArrayOutputStream outputStream = ExcelUtil.writeToExcel("Suppliers Per Country", headers, data);
+
+            HttpHeaders headersExcel = new HttpHeaders();
+            headersExcel.set("Content-Disposition", "attachment; filename=suppliers_per_country.xlsx");
+
+            return new ResponseEntity<>(outputStream.toByteArray(), headersExcel, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

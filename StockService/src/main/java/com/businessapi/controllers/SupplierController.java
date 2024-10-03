@@ -68,7 +68,7 @@ public class SupplierController
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<Supplier>>builder()
-                .data(supplierService.findAll(dto))
+                .data(supplierService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -81,7 +81,7 @@ public class SupplierController
 
         return ResponseEntity.ok(ResponseDTO
                 .<Supplier>builder()
-                .data(supplierService.findById(id))
+                .data(supplierService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());

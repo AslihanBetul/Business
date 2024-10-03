@@ -4,6 +4,7 @@ import com.businessapi.constants.EndPoints;
 import com.businessapi.constants.messages.SuccesMessages;
 import com.businessapi.dto.requestDTOs.RoleCreateDTO;
 import com.businessapi.dto.requestDTOs.RoleUpdateRequestDTO;
+import com.businessapi.dto.requestDTOs.UpdateUserRoleStatusDTO;
 import com.businessapi.dto.responseDTOs.ResponseDTO;
 import com.businessapi.dto.responseDTOs.RoleResponseDTO;
 import com.businessapi.entity.User;
@@ -55,7 +56,7 @@ public class RoleController {
 
     @GetMapping(EndPoints.GET_ALL_USER_ROLES)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
-    @Operation(summary = "Admin tarafından bir kullanıcıya rol atanırken rollerin getirilmesi için gerekli get isteği",security = @SecurityRequirement(name = "bearerUser"))
+    @Operation(summary = "Rollerin hepsini getiren get isteği",security = @SecurityRequirement(name = "bearerUser"))
     public ResponseEntity<ResponseDTO<List<RoleResponseDTO>>> getAllUserRoles(){
 
         return ResponseEntity.ok(ResponseDTO.<List<RoleResponseDTO>>builder().code(200).data(roleService.getAllUserRoles()).message(SuccesMessages.All_ROLES_SENT).build());
@@ -67,6 +68,11 @@ public class RoleController {
     public ResponseEntity<ResponseDTO<List<RoleResponseDTO>>> getAllAssignableRoles(@PathVariable Long userId){
         User user = userService.findUserById(userId);
         return ResponseEntity.ok(ResponseDTO.<List<RoleResponseDTO>>builder().code(200).message("Kullanıcıya atanabilir roller gönderildi").data(roleService.getAllAssignableRoles(user)).build());
+    }
+    @PutMapping("/update-user-role-status")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> updateUserRoleStatus(@RequestBody @Valid UpdateUserRoleStatusDTO updateUserRoleStatusDTO){
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(roleService.updateUserRoleStatus(updateUserRoleStatusDTO)).message(SuccesMessages.ROLE_UPDATED).build());
     }
 
 

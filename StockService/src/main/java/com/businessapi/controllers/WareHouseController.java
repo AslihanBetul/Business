@@ -71,7 +71,7 @@ public class WareHouseController
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<WareHouse>>builder()
-                .data(wareHouseService.findAll(dto))
+                .data(wareHouseService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -84,7 +84,7 @@ public class WareHouseController
 
         return ResponseEntity.ok(ResponseDTO
                 .<WareHouse>builder()
-                .data(wareHouseService.findById(id))
+                .data(wareHouseService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
                 .build());
