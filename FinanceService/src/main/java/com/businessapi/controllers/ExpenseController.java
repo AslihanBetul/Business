@@ -156,4 +156,15 @@ public class ExpenseController {
                 .build());
     }
 
+    @PostMapping(GET_MOST)
+    @Operation(summary = "Lists the category of the most expensive expenses")
+    public ResponseEntity<ResponseDTO<List<ExpenseCategoryResponseDTO>>> getMostExpensive(@RequestBody ExpenseFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<ExpenseCategoryResponseDTO>>builder()
+                .data(expenseService.getMostExpensive(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }

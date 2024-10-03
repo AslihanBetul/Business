@@ -3,7 +3,6 @@ package com.businessapi.services;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
 import com.businessapi.entity.Expense;
-import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -130,5 +129,22 @@ public class ExpenseService {
         }
         System.out.println(expenseAmountsOfMonths);
         return expenseAmountsOfMonths;
+    }
+
+    public List<ExpenseCategoryResponseDTO> getMostExpensive(ExpenseFindByDateRequestDTO dto) {
+        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        //amounta göre büyükten küçüğe sırala
+        expenseList.sort((o1, o2) -> o2.getAmount().compareTo(o1.getAmount()));
+        List<ExpenseCategoryResponseDTO> mostExpensiveCategories = new ArrayList<>();
+        //ilk 5 elemanın kategorilerini al, eğer aynı kategoriden çıkarsa 5 eleman dolmadan, ikinci çıkanı atla sonrakini al
+        for (int i = 0; i < 5; i++) {
+            int finalI = i;
+            if (mostExpensiveCategories.stream().noneMatch(category -> category.expenseCategory().equals(expenseList.get(finalI).getExpenseCategory().name()))) {
+                mostExpensiveCategories.add(new ExpenseCategoryResponseDTO((long) (i + 1), expenseList.get(i).getExpenseCategory().name()));
+            } else {
+                i++;
+            }
+        }
+        return mostExpensiveCategories;
     }
 }

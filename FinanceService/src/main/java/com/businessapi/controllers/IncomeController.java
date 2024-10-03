@@ -114,4 +114,15 @@ public class IncomeController {
                 .build());
     }
 
+    @PostMapping(GET_MOST)
+    @Operation(summary = "Lists the most 5 income source")
+    public ResponseEntity<ResponseDTO<List<String>>> getMostSource(@RequestBody IncomeFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<String>>builder()
+                .data(incomeService.getMostSource(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }

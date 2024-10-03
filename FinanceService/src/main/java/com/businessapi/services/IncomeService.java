@@ -99,4 +99,14 @@ public class IncomeService {
         System.out.println(incomeAmountsOfMonths);
         return incomeAmountsOfMonths;
     }
+
+    public List<String> getMostSource(IncomeFindByDateRequestDTO dto) {
+        List<Income> incomeList = incomeRepository.findAllByIncomeDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        incomeList.sort((o1, o2) -> o2.getAmount().compareTo(o1.getAmount()));
+        List<String> mostToLeastSourceList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            mostToLeastSourceList.add(incomeList.get(i).getSource());
+        }
+        return mostToLeastSourceList;
+    }
 }

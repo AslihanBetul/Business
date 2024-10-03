@@ -43,4 +43,5 @@ public class Endpoints {
     public static final String COMPARE = "/compare";
     public static final String GET_ALL_CATEGORIES = "/get-all-categories";
     public static final String GET_FOR_MONTHS = "/get-for-months";
+    public static final String GET_MOST = "/get-most";
 }
