@@ -108,7 +108,7 @@ public class FileController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + uuid + "\"")
-                    .contentType(MediaType.parseMediaType(existingFile.getContentType().getType()))
+                    .contentType(MediaType.parseMediaType(existingFile.getContentType().getContentType()))
                     .body(resource);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
