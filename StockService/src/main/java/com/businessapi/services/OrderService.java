@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +43,10 @@ public class OrderService
 
     public Boolean saveSellOrder(SellOrderSaveRequestDTO dto)
     {
-
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productService.findByIdAndMemberId(dto.productId());
         if (product.getStockCount() <= dto.quantity())
         {
@@ -100,6 +104,10 @@ public class OrderService
 
     public Boolean saveBuyOrder(BuyOrderSaveRequestDTO dto)
     {
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productService.findByIdAndMemberId(dto.productId());
         if (product.getStatus() != EStatus.ACTIVE)
         {
@@ -170,6 +178,10 @@ public class OrderService
 
     public Boolean updateBuyOrder(BuyOrderUpdateRequestDTO dto)
     {
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Order order = orderRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
         if (order.getStatus() == EStatus.ARRIVED || order.getStatus() == EStatus.APPROVED)
         {
@@ -184,7 +196,10 @@ public class OrderService
 
     public Boolean updateSellOrder(SellOrderUpdateRequestDTO dto)
     {
-
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Order order = orderRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember())
                 .orElseThrow(() -> new StockServiceException(ErrorType.ORDER_NOT_FOUND));
 

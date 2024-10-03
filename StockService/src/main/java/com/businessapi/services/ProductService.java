@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -40,6 +41,10 @@ public class ProductService
 
     public Boolean save(ProductSaveRequestDTO dto)
     {
+        if (dto.stockCount() < 0 || dto.minimumStockLevel() < 0 || dto.price().compareTo(BigDecimal.ZERO) < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         productCategoryService.findByIdAndMemberId(dto.productCategoryId());
         productRepository.save(Product
                 .builder()
@@ -90,6 +95,10 @@ public class ProductService
 
     public Boolean update(ProductUpdateRequestDTO dto)
     {
+        if (dto.stockCount() < 0 || dto.minimumStockLevel() < 0 || dto.price().compareTo(BigDecimal.ZERO) < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
         if (dto.productCategoryId() != null)
         {

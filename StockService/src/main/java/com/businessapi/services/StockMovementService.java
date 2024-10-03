@@ -34,6 +34,10 @@ public class StockMovementService
 
     public Boolean save(StockMovementSaveDTO dto)
     {
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productService.findByIdAndMemberId(dto.productId());
         if (dto.stockMovementType() == EStockMovementType.OUT)
         {
@@ -124,6 +128,10 @@ public class StockMovementService
         } else
         {
             product.setStockCount(product.getStockCount() - stockMovement.getQuantity());
+            if (product.getStockCount() < 0)
+            {
+                throw new StockServiceException(ErrorType.STOCK_MOVEMENT_CAN_NOT_BE_DELETED, "Product stock level can not be below zero");
+            }
         }
         productService.save(product);
         stockMovement.setStatus(EStatus.DELETED);
@@ -133,7 +141,10 @@ public class StockMovementService
 
     public Boolean update(StockMovementUpdateRequestDTO dto)
     {
-
+        if (dto.quantity() < 0)
+        {
+            throw new StockServiceException(ErrorType.VALUE_CAN_NOT_BE_BELOW_ZERO);
+        }
         Product product = productService.findByIdAndMemberId(dto.productId());
 
         StockMovement stockMovement = stockMovementRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember())
