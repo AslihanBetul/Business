@@ -1,7 +1,9 @@
 package com.businessapi.service;
 
 import com.businessapi.RabbitMQ.Model.AddRoleFromSubscriptionModel;
+import com.businessapi.dto.request.SubscriptionHistoryRequestDto;
 import com.businessapi.dto.request.SubscriptionSaveRequestDTO;
+import com.businessapi.entity.Plan;
 import com.businessapi.entity.Subscription;
 import com.businessapi.entity.enums.ERoles;
 import com.businessapi.entity.enums.EStatus;
@@ -29,18 +31,18 @@ public class SubscriptionService {
     private final RabbitTemplate rabbitTemplate;
 
     public List<Subscription> findUsersSubscriptionsByAuthId(Long authId) {
-        return subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.DELETED);
+        return subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.ENDED);
     }
 
     public Subscription subscribe(SubscriptionSaveRequestDTO dto) {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
         List<Subscription> activeSubscriptions = findUsersSubscriptionsByAuthId(authId);
-        List<Long> planIds = activeSubscriptions.stream().map(Subscription::getPlanId).toList();
-        Set<ERoles> uniqueRoles = new HashSet<>(planService.getRolesByPlanIds(planIds));
+        List<Plan> plans = activeSubscriptions.stream().map(Subscription::getPlan).toList();
+        Set<ERoles> uniqueRoles = new HashSet<>(plans.stream().map(Plan::getRoles).flatMap(List::stream).toList());
 
         Subscription subscription = Subscription.builder()
                 .authId(authId)
-                .planId(dto.planId())
+                .plan(planService.findById(dto.planId()))
                 .startDate(LocalDateTime.now())
                 .build();
         if(dto.subscriptionType().equals(ESubscriptionType.MONTHLY)) {
@@ -67,23 +69,23 @@ public class SubscriptionService {
     public Boolean unsubscribe (Long planId) {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
         Subscription subscription = subscriptionRepository.findByPlanIdAndAuthIdAndStatus(planId, authId, EStatus.ACTIVE).orElseThrow(() -> new SubscriptionServiceException(ErrorType.SUBSCRIPTION_NOT_FOUND));
-        subscription.setStatus(EStatus.INACTIVE);
+        subscription.setStatus(EStatus.CANCELLED);
         subscriptionRepository.save(subscription);
         return true;
     }
 
     public List<String> checkSubscriptions () {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
-        List<Subscription> subscriptions = subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.DELETED);
+        List<Subscription> subscriptions = subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.ENDED);
         subscriptions.forEach(subscription -> {
             if(subscription.getEndDate().isBefore(LocalDateTime.now())) {
-                subscription.setStatus(EStatus.DELETED);
+                subscription.setStatus(EStatus.ENDED);
                 subscriptionRepository.save(subscription);
             }
         });
-        List<Subscription> activeSubscriptions = subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.DELETED);
-        List<Long> planIds = activeSubscriptions.stream().map(Subscription::getPlanId).toList();
-        Set<ERoles> uniqueRoles = new HashSet<>(planService.getRolesByPlanIds(planIds));
+        List<Subscription> activeSubscriptions = subscriptionRepository.findAllByAuthIdAndStatusNot(authId, EStatus.ENDED);
+        List<Plan> plans = activeSubscriptions.stream().map(Subscription::getPlan).toList();
+        Set<ERoles> uniqueRoles = new HashSet<>(plans.stream().map(Plan::getRoles).flatMap(List::stream).toList());
         rabbitTemplate.convertAndSend(
                 "businessDirectExchange",
                 "keyAddRoleFromSubscription",
@@ -97,12 +99,18 @@ public class SubscriptionService {
 
     private List<String> getActiveSubscriptionRoles(Long authId) {
         List<Subscription> subscriptions = subscriptionRepository.findAllByAuthIdAndStatus(authId, EStatus.ACTIVE);
-        List<Long> planIds = subscriptions.stream().map(Subscription::getPlanId).toList();
-        Set<ERoles> uniqueRoles = new HashSet<>(planService.getRolesByPlanIds(planIds));
+        List<Plan> plans = subscriptions.stream().map(Subscription::getPlan).toList();
+        Set<ERoles> uniqueRoles = new HashSet<>(plans.stream().map(Plan::getRoles).flatMap(List::stream).toList());
         return uniqueRoles.stream().map(ERoles::name).collect(Collectors.toList());
     }
 
     public void subscribeToPlanForDemoData (Long authId, Long planId, int year) {
-        subscriptionRepository.save(Subscription.builder().authId(authId).planId(planId).startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusYears(year)).build());
+        subscriptionRepository.save(Subscription.builder().authId(authId).plan(planService.findById(planId)).startDate(LocalDateTime.now()).endDate(LocalDateTime.now().plusYears(year)).build());
+    }
+
+    public List<SubscriptionHistoryRequestDto> getSubscriptionHistory(String language) {
+        Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Subscription> subscriptions = subscriptionRepository.findAllByAuthId(authId);
+        return subscriptions.stream().map(subscription -> subscription.toSubscriptionHistoryRequestDto(language)).collect(Collectors.toList());
     }
 }

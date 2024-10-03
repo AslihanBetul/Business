@@ -1,5 +1,6 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.SubscriptionHistoryRequestDto;
 import com.businessapi.dto.request.SubscriptionSaveRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Subscription;
@@ -53,6 +54,18 @@ public class SubscriptionController {
         return ResponseEntity.ok(ResponseDTO
                 .<List<String>>builder()
                 .data(subscriptionService.checkSubscriptions())
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(SUBSCRIPTION_HISTORY)
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @Operation(summary = "Get subscription history", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ResponseDTO<List<SubscriptionHistoryRequestDto>>> getSubscriptionHistory(@RequestParam String language){
+        return ResponseEntity.ok(ResponseDTO
+                .<List<SubscriptionHistoryRequestDto>>builder()
+                .data(subscriptionService.getSubscriptionHistory(language))
                 .message("Success")
                 .code(200)
                 .build());

@@ -17,4 +17,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     List<Subscription> findAllByAuthIdAndStatus(Long authId, EStatus status);
 
+    List<Subscription> findAllByAuthId(Long authId);
 }
