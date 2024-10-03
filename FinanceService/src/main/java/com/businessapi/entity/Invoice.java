@@ -26,4 +26,5 @@ public class Invoice extends BaseEntity {
     Integer quantity;
     LocalDate invoiceDate;
     BigDecimal totalAmount;
+    BigDecimal price;
 }

@@ -29,11 +29,15 @@ public class CustomerService
         {
             throw new StockServiceException(ErrorType.INVALID_EMAIL);
         }
+        if (customerRepository.existsByIdentityNoAndMemberId(dto.identityNo(), SessionManager.getMemberIdFromAuthenticatedMember()))
+        {
+            throw new StockServiceException(ErrorType.IDENTITY_NO_ALREADY_EXISTS);
+        }
         if (customerRepository.findCustomerByEmailIgnoreCaseAndMemberId(dto.email(), SessionManager.getMemberIdFromAuthenticatedMember()).isPresent())
         {
             throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
+        customerRepository.save(Customer.builder().identityNo(dto.identityNo()).phoneNo(dto.phoneNo()).memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
         return true;
     }
 
@@ -52,7 +56,7 @@ public class CustomerService
         {
             throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(2L).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
+        customerRepository.save(Customer.builder().identityNo(dto.identityNo()).phoneNo(dto.phoneNo()).memberId(2L).name(dto.name()).surname(dto.surname()).email(dto.email()).build());
     }
 
     public Boolean delete(Long id)
@@ -65,6 +69,14 @@ public class CustomerService
 
     public Boolean update(CustomerUpdateRequestDTO dto)
     {
+        if (!isValidEmail(dto.email()))
+        {
+            throw new StockServiceException(ErrorType.INVALID_EMAIL);
+        }
+        if (customerRepository.existsByIdentityNoAndMemberId(dto.identityNo(), SessionManager.getMemberIdFromAuthenticatedMember()))
+        {
+            throw new StockServiceException(ErrorType.IDENTITY_NO_ALREADY_EXISTS);
+        }
         Customer customer = customerRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.CUSTOMER_NOT_FOUND));
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent())
         {
@@ -73,6 +85,8 @@ public class CustomerService
         customer.setName(dto.name());
         customer.setSurname(dto.surname());
         customer.setEmail(dto.email());
+        customer.setIdentityNo(dto.identityNo());
+        customer.setPhoneNo(dto.phoneNo());
         customerRepository.save(customer);
         return true;
     }
@@ -90,4 +104,8 @@ public class CustomerService
     }
 
 
+    public Customer findbyId(Long aLong)
+    {
+        return customerRepository.findById(aLong).orElseThrow(() -> new StockServiceException(ErrorType.CUSTOMER_NOT_FOUND));
+    }
 }

@@ -39,7 +39,8 @@ public enum ErrorType
     ORDER_CAN_NOT_BE_DELETED(9023, "Order Arrived Or Approved Can Not Be Deleted", HttpStatus.BAD_REQUEST),
     ORDER_CAN_NOT_BE_UPDATED(9024, "Order Arrived Or Approved Can Not Be Updated", HttpStatus.BAD_REQUEST),
     STOCK_MOVEMENT_CAN_NOT_BE_DELETED(9025, "Stock Movement Can Not Be Deleted", HttpStatus.BAD_REQUEST),
-    VALUE_CAN_NOT_BE_BELOW_ZERO(9026, "Value Can Not Be Below Zero", HttpStatus.BAD_REQUEST);
+    VALUE_CAN_NOT_BE_BELOW_ZERO(9026, "Value Can Not Be Below Zero", HttpStatus.BAD_REQUEST),
+    IDENTITY_NO_ALREADY_EXISTS(9027, "Identity No Already Exists", HttpStatus.BAD_REQUEST);
 
     private Integer code;
     private String message;
