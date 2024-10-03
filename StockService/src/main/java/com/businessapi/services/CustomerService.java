@@ -76,7 +76,7 @@ public class CustomerService
         Customer customer = customerRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.CUSTOMER_NOT_FOUND));
         if (!customer.getEmail().equals(dto.email()))
         {
-            if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent())
+            if (customerRepository.findCustomerByEmailIgnoreCaseAndMemberId(dto.email(), SessionManager.getMemberIdFromAuthenticatedMember()).isPresent())
             {
                 throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
             }
