@@ -73,15 +73,9 @@ public class CustomerService
         {
             throw new StockServiceException(ErrorType.INVALID_EMAIL);
         }
-        if (customerRepository.existsByIdentityNoAndMemberId(dto.identityNo(), SessionManager.getMemberIdFromAuthenticatedMember()))
-        {
-            throw new StockServiceException(ErrorType.IDENTITY_NO_ALREADY_EXISTS);
-        }
+
         Customer customer = customerRepository.findByIdAndMemberId(dto.id(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.CUSTOMER_NOT_FOUND));
-        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent())
-        {
-            throw new StockServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
-        }
+
         customer.setName(dto.name());
         customer.setSurname(dto.surname());
         customer.setEmail(dto.email());
