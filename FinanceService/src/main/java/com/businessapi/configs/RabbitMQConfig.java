@@ -17,10 +17,22 @@ public class RabbitMQConfig {
     String directExchange = "businessDirectExchange";
     String queueFindAuthByToken = "find.auth.by.token";
     String keyFindAuthByToken = "key.find.auth.by.token";
+    String queueGetModelFromStockService = "queueGetModelFromStockService";
+    String keyGetModelFromStockService = "keyGetModelFromStockService";
 
     @Bean
     public DirectExchange directExchange(){
         return new DirectExchange(directExchange);
+    }
+
+    @Bean
+    public Queue queueGetModelFromStockService(){
+        return new Queue(queueGetModelFromStockService);
+    }
+
+    @Bean
+    public Binding bindingGetModelFromStockService(Queue queueGetModelFromStockService, DirectExchange directExchange){
+        return BindingBuilder.bind(queueGetModelFromStockService).to(directExchange).with(keyGetModelFromStockService);
     }
 
     @Bean

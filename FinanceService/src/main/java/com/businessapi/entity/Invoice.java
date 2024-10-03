@@ -18,11 +18,11 @@ public class Invoice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    Long customerIdOrSupplierId;
+    String buyerTcNo;
+    String buyerEmail;
+    String buyerPhone;
+    Long productId;
+    Integer quantity;
     LocalDate invoiceDate;
     BigDecimal totalAmount;
-    BigDecimal paidAmount;
-    @Enumerated(EnumType.STRING)
-    EInvoiceStatus invoiceStatus;
-    String description;
 }
