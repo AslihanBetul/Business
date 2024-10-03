@@ -1,10 +1,10 @@
 package com.businessapi.controllers;
 
-import com.businessapi.dto.request.ExpenseSaveRequestDTO;
-import com.businessapi.dto.request.ExpenseUpdateRequestDTO;
-import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Expense;
+import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.services.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.businessapi.constants.Endpoints.*;
@@ -106,6 +107,61 @@ public class ExpenseController {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(expenseService.reject(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_BY_DATE)
+    @Operation(summary = "Lists all expenses with between the given dates")
+    public ResponseEntity<ResponseDTO<List<Expense>>> findByDate(@RequestBody ExpenseFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<Expense>>builder()
+                .data(expenseService.findByDate(dto.startDate(), dto.endDate()))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(CALCULATE)
+    @Operation(summary = "Calculates total expenses between the given dates")
+    public ResponseEntity<ResponseDTO<BigDecimal>> calculateTotalExpenses(@RequestBody ExpenseFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<BigDecimal>builder()
+                .data(expenseService.calculateTotalExpenseBetweenDates(dto.startDate(), dto.endDate()))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(GET_ALL_CATEGORIES)
+    @Operation(summary = "Lists all expense categories")
+    public ResponseEntity<ResponseDTO<List<ExpenseCategoryResponseDTO>>> getAllCategories() {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<ExpenseCategoryResponseDTO>>builder()
+                .data(expenseService.getAllExpenseCategories())
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(GET_FOR_MONTHS)
+    @Operation(summary = "Lists all expenses for the given months")
+    public ResponseEntity<ResponseDTO<List<BigDecimal>>> getForMonths(@RequestBody ExpenseFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<BigDecimal>>builder()
+                .data(expenseService.getForMonths(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(GET_MOST)
+    @Operation(summary = "Lists the category of the most expensive expenses")
+    public ResponseEntity<ResponseDTO<List<ExpenseCategoryResponseDTO>>> getMostExpensive(@RequestBody ExpenseFindByDateRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<ExpenseCategoryResponseDTO>>builder()
+                .data(expenseService.getMostExpensive(dto))
                 .message("Success")
                 .code(200)
                 .build());
