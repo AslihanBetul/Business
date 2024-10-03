@@ -31,7 +31,7 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping(SAVE)
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "Upload a file")
     public ResponseEntity<ResponseDTO<String>> uploadFile (@ModelAttribute SaveFileRequestDTO dto) {
         try (InputStream inputStream = dto.file().getInputStream() ) {
@@ -99,7 +99,7 @@ public class FileController {
 
 
     @GetMapping(value = GET+"/{uuid}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     public ResponseEntity<Resource> getFile(@PathVariable String uuid) {
         try {
             File existingFile = fileService.getFileMetadata(uuid);
