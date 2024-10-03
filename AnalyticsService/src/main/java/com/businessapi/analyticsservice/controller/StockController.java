@@ -7,6 +7,7 @@ import com.businessapi.analyticsservice.service.StockService;
 import com.businessapi.analyticsservice.entity.stockService.entity.Product;
 import com.businessapi.analyticsservice.dto.response.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +60,14 @@ public class StockController {
                 .build());
     }
 
+    // Endpoint to export total sales to Excel
+    @GetMapping("/export-total-sales")
+    public ResponseEntity<byte[]> exportTotalSales() throws Exception {
+        String jsonOrders = stockService.getDataFromDataSource("order");
+        List<Order> orders = stockService.parseOrders(jsonOrders);
+        return stockService.exportTotalSalesToExcel(orders);
+    }
+
     @PostMapping("/low-stock")
     @Operation(summary = "Get low stock alerts")
     public ResponseEntity<ResponseDTO<List<Product>>> getLowStockAlerts() throws Exception {
@@ -105,4 +114,11 @@ public class StockController {
                 .build());
     }
 
+    // Endpoint to export suppliers per country to Excel
+    @GetMapping("/export-suppliers-per-country")
+    public ResponseEntity<byte[]> exportSuppliersPerCountry() throws Exception {
+        String jsonSupplier = stockService.getDataFromDataSource("supplier");
+        List<Supplier> suppliers = stockService.parseSupplier(jsonSupplier);
+        return stockService.exportSuppliersPerCountryToExcel(suppliers);
+    }
 }
