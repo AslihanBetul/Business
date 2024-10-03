@@ -2,6 +2,7 @@ package com.businessapi.controller;
 
 import com.businessapi.dto.request.PlanSaveRequestDTO;
 import com.businessapi.dto.request.PlanUpdateRequestDTO;
+import com.businessapi.dto.response.PlanGetResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Plan;
 import com.businessapi.service.PlanService;
@@ -26,14 +27,9 @@ public class PlanController {
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Creates new subscription plan", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ResponseDTO<Plan>> saveSubscriptionPlan(@RequestBody PlanSaveRequestDTO dto){
-        Plan plan = Plan.builder()
-                .name(dto.name())
-                .price(dto.price())
-                .roles(dto.roles())
-                .build();
         return ResponseEntity.ok(ResponseDTO
                 .<Plan>builder()
-                .data(planService.save(plan))
+                .data(planService.save(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -41,10 +37,10 @@ public class PlanController {
     @PostMapping(FIND_ALL)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "Get all subscription plans", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ResponseDTO<List<Plan>>> FindAllSubscriptionPlans(){
+    public ResponseEntity<ResponseDTO<List<PlanGetResponseDTO>>> FindAllSubscriptionPlans(@RequestParam String language){
         return ResponseEntity.ok(ResponseDTO
-                .<List<Plan>>builder()
-                .data(planService.findAll())
+                .<List<PlanGetResponseDTO>>builder()
+                .data(planService.findAll(language))
                 .message("Success")
                 .code(200)
                 .build());
@@ -53,8 +49,7 @@ public class PlanController {
     @GetMapping(FIND_BY_ID)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Get subscription plan by id", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ResponseDTO<Plan>> FindSubscriptionPlanById(@PathVariable Long id){
-
+    public ResponseEntity<ResponseDTO<Plan>> FindSubscriptionPlanById(@RequestParam Long id){
         return ResponseEntity.ok(ResponseDTO
                 .<Plan>builder()
                 .data(planService.findById(id))
@@ -66,7 +61,7 @@ public class PlanController {
     @DeleteMapping(DELETE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Delete subscription plan by id", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ResponseDTO<Boolean>> DeleteSubscriptionPlanById(@PathVariable Long id){
+    public ResponseEntity<ResponseDTO<Boolean>> DeleteSubscriptionPlanById(@RequestParam Long id){
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(planService.delete(id))
@@ -79,15 +74,9 @@ public class PlanController {
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Update subscription plan by id", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ResponseDTO<Plan>> UpdateSubscriptionPlanById(@RequestBody PlanUpdateRequestDTO dto){
-        Plan plan = Plan.builder()
-                .id(dto.id())
-                .name(dto.name())
-                .price(dto.price())
-                .roles(dto.roles())
-                .build();
         return ResponseEntity.ok(ResponseDTO
                 .<Plan>builder()
-                .data(planService.save(plan))
+                .data(planService.update(dto))
                 .message("Success")
                 .code(200)
                 .build());

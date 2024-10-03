@@ -1,5 +1,7 @@
 package com.businessapi.entity;
 
+import com.businessapi.dto.request.SubscriptionHistoryRequestDto;
+import com.businessapi.entity.enums.ESubscriptionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +22,23 @@ public class Subscription extends BaseEntity {
     private Long id;
 
     private Long authId;
-    private Long planId;
+    @ManyToOne
+    private Plan plan;
+    private ESubscriptionType subscriptionType;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+
+    public SubscriptionHistoryRequestDto toSubscriptionHistoryRequestDto(String language) {
+        return SubscriptionHistoryRequestDto
+                .builder()
+                .authId(authId)
+                .planName(plan.getPlanTranslationByLanguage(language).getName())
+                .planDescription(plan.getPlanTranslationByLanguage(language).getDescription())
+                .subscriptionType(subscriptionType)
+                .status(super.getStatus())
+                .startDate(startDate)
+                .endDate(endDate)
+                .planPrice(plan.getPrice())
+                .build();
+    }
 }
