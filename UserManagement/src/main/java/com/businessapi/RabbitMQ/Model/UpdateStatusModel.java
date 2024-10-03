@@ -1,4 +1,4 @@
-package com.businessapi.views;
+package com.businessapi.RabbitMQ.Model;
 
 import com.businessapi.entity.enums.EStatus;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class GetAllRoleView {
-    private Long roleId;
-    private String roleName;
+public class UpdateStatusModel {
+    private Long authId;
     private EStatus status;
-    private String roleDescription;
 }

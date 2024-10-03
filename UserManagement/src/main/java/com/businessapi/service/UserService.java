@@ -1,10 +1,7 @@
 package com.businessapi.service;
 
 import com.businessapi.RabbitMQ.Model.*;
-import com.businessapi.dto.requestDTOs.AddRoleToUserRequestDTO;
-import com.businessapi.dto.requestDTOs.UserDeleteRequestDTO;
-import com.businessapi.dto.requestDTOs.UserSaveRequestDTO;
-import com.businessapi.dto.requestDTOs.UserUpdateRequestDTO;
+import com.businessapi.dto.requestDTOs.*;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
 import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
 import com.businessapi.entity.Role;
@@ -43,8 +40,13 @@ public class UserService {
     @Transactional
     public void saveUser(UserSaveRequestDTO userSaveRequestDTO) {
         User user = UserMapper.INSTANCE.userSaveRequestDTOToUser(userSaveRequestDTO);
-        List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
-        user.setRole(usersRoles);
+        if(!userSaveRequestDTO.roleIds().isEmpty()){
+            List<Role> usersRoles = roleService.getRolesByRoleId(userSaveRequestDTO.roleIds());
+            user.setRole(usersRoles);
+        }else {
+            user.setRole(new ArrayList<>());
+        }
+
         user.setStatus(EStatus.ACTIVE);
 
         Long authId =(Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveAuthFromUser", SaveAuthFromUserModel.builder().email(userSaveRequestDTO.email()).password(userSaveRequestDTO.password()).build());
@@ -134,11 +136,15 @@ public class UserService {
         List<GetAllUsersResponseDTO> allUsersResponseDTOList = new ArrayList<>();
 
        allUsersList.forEach(user -> {
+           List<String> userRolesString = user.getRole().stream().map(Role::getRoleName).toList();
+           String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange","keyGetMailByAuthId", user.getAuthId());
            allUsersResponseDTOList.add(GetAllUsersResponseDTO.builder()
-                   .userId(user.getId())
+                   .id(user.getId())
                    .firstName(user.getFirstName())
                    .lastName(user.getLastName())
-                   .userRoles(RoleMapper.INSTANCE.rolesToRoleResponseDTOList(user.getRole()))
+                   .email(usersMail)
+                   .status(user.getStatus())
+                   .userRoles(userRolesString)
                    .build());
        });
 
@@ -257,6 +263,45 @@ public class UserService {
 
     }
 
+
+    @Transactional
+    public Boolean changeUserEmail(ChangeUserEmailRequestDTO changeUserEmailRequestDTO) {
+
+        User user = userRepository.findById(changeUserEmailRequestDTO.id()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        sendUserMailToAuthService(AuthMailUpdateFromUser.builder().authId(user.getAuthId()).email(changeUserEmailRequestDTO.email()).build());
+
+
+        return true;
+    }
+
+    public Boolean changeUserPassword(ChangeUserPassword changeUserPassword) {
+        User user = userRepository.findById(changeUserPassword.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(changeUserPassword.password()).build());
+        return true;
+    }
+
+    @Transactional
+    public Boolean updateUserStatus(UpdateUserStatusRequestDTO updateUserStatusRequestDTO) {
+        User user = userRepository.findById(updateUserStatusRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+        user.setStatus(updateUserStatusRequestDTO.status());
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keyUpdateStatus",UpdateStatusModel.builder().authId(user.getAuthId()).status(user.getStatus()).build());
+        userRepository.save(user);
+
+        return null;
+    }
+
+    @RabbitListener(queues = "queueGetUserIdByToken")
+    public Long getUserIdByToken(String token) {
+
+        //String jwtToken = token.replace("Bearer ", ""); eğer token Normal gelmezse yalın hale getirmek için bunu yorum satırından kaldırın daha sonra jwtToken değişkenini token değişkeni yerine bir alt satırdaki Long authId = jwtTokenManager.getAuthIdFromToken(token).orElseThrow(()->new UserException(ErrorType.INVALID_TOKEN)); metodunda kullanın
+
+        Long authId = jwtTokenManager.getAuthIdFromToken(token).orElseThrow(()->new UserException(ErrorType.INVALID_TOKEN));
+
+        User user = userRepository.findByAuthId(authId).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
+
+        return user.getId();
+    }
 
 
 }

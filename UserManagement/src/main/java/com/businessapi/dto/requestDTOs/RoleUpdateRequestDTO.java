@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 
 public record RoleUpdateRequestDTO(
-        @NotBlank(message = ErrorMessages.ROLE_ID_CANT_BE_BLANK)
+
         Long roleId,
         @Size(max = 60)
         @NotBlank(message = ErrorMessages.ROLE_CANT_BE_BLANK)

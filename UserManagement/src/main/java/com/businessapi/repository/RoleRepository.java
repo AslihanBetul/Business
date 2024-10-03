@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     List<Role> findAllByIdIn(List<Long> ids);
 
-    @Query("select new com.businessapi.views.GetAllRoleView(r.id,r.roleName,r.roleDescription) from Role r where r.status=?1")
-    List<GetAllRoleView> getAllRoles(EStatus status);
+    @Query("select new com.businessapi.views.GetAllRoleView(r.id,r.roleName,r.status,r.roleDescription) from Role r")
+    List<GetAllRoleView> getAllRoles();
 
 
     Boolean existsByRoleNameIgnoreCase(String roleName);
