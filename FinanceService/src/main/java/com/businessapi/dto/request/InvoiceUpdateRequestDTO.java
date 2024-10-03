@@ -11,6 +11,7 @@ public record InvoiceUpdateRequestDTO(
         String buyerEmail,
         String buyerPhone,
         Long productId,
+        String productName,
         Integer quantity,
         LocalDate invoiceDate,
         BigDecimal totalAmount

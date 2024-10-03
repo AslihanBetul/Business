@@ -28,6 +28,7 @@ public class InvoiceService {
                 .buyerEmail(dto.buyerEmail())
                 .buyerPhone(dto.buyerPhone())
                 .productId(dto.productId())
+                .productName(dto.productName())
                 .quantity(dto.quantity())
                 .invoiceDate(dto.invoiceDate())
                 .totalAmount(dto.totalAmount())
@@ -43,6 +44,7 @@ public class InvoiceService {
         invoice.setBuyerEmail(dto.buyerEmail());
         invoice.setBuyerPhone(dto.buyerPhone());
         invoice.setProductId(dto.productId());
+        invoice.setProductName(dto.productName());
         invoice.setQuantity(dto.quantity());
         invoice.setInvoiceDate(dto.invoiceDate());
         invoice.setTotalAmount(dto.totalAmount());
@@ -74,6 +76,7 @@ public class InvoiceService {
                 .buyerEmail(model.getBuyerEmail())
                 .buyerPhone(model.getBuyerPhone())
                 .productId(model.getProductId())
+                .productName(model.getProductName())
                 .quantity(model.getQuantity())
                 .invoiceDate(model.getInvoiceDate())
                 .totalAmount(model.getTotalAmount())

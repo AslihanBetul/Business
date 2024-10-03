@@ -17,6 +17,7 @@ public class InvoiceModel {
     String buyerEmail;
     String buyerPhone;
     Long productId;
+    String productName;
     Integer quantity;
     BigDecimal totalAmount;
     LocalDate invoiceDate;
