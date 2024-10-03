@@ -1,6 +1,7 @@
 package com.businessapi.constants;
 
 public class EndPoints {
+
     private static final String VERSION = "/v1";
     private static final String DEV = "/dev";
 
@@ -20,6 +21,7 @@ public class EndPoints {
     public static final String FIND_ALL = "/find-all";
 
     public static final String FIND_BY_ID = "/find-by-id";
+    public static final String SEARCH_BY_NAME = "/search-by-name";
 
 
 }

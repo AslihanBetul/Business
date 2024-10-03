@@ -12,22 +12,17 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
-                        .requestMatchers("dev/v1/employee/**").permitAll()
+                        .requestMatchers("/**").permitAll()
 
                         .anyRequest().authenticated())
-//                .addFilterBefore(jwtTokenFilter,
-//                        UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable());
-				/*.cors(httpSecurityCorsConfigurer ->
-						      httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource));
-*/		return httpSecurity.build();
+        return httpSecurity.build();
 
     }
 }

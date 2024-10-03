@@ -1,6 +1,7 @@
 package com.businessapi.entity;
 
 import com.businessapi.utility.enums.EStatus;
+import com.rabbitmq.tools.json.JSONUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long memberId;
     private String firstName;
     private String lastName;
     private String position;
