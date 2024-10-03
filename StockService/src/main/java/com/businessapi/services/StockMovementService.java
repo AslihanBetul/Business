@@ -124,6 +124,10 @@ public class StockMovementService
         } else
         {
             product.setStockCount(product.getStockCount() - stockMovement.getQuantity());
+            if (product.getStockCount() < 0)
+            {
+                throw new StockServiceException(ErrorType.STOCK_MOVEMENT_CAN_NOT_BE_DELETED, "Product stock level can not be below zero");
+            }
         }
         productService.save(product);
         stockMovement.setStatus(EStatus.DELETED);

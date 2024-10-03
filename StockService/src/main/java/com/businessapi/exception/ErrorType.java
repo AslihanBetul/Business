@@ -37,7 +37,8 @@ public enum ErrorType
     ORDER_ALREADY_ARRIVED( 9021, "Order Already Arrived" , HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(9022, "Email Format Is Invalid", HttpStatus.BAD_REQUEST),
     ORDER_CAN_NOT_BE_DELETED( 9023, "Order Arrived Or Approved Can Not Be Deleted" , HttpStatus.BAD_REQUEST),
-    ORDER_CAN_NOT_BE_UPDATED( 9024, "Order Arrived Or Approved Can Not Be Updated" , HttpStatus.BAD_REQUEST);
+    ORDER_CAN_NOT_BE_UPDATED( 9024, "Order Arrived Or Approved Can Not Be Updated" , HttpStatus.BAD_REQUEST),
+    STOCK_MOVEMENT_CAN_NOT_BE_DELETED( 9025, "Stock Movement Can Not Be Deleted" , HttpStatus.BAD_REQUEST);
 
     private Integer code;
     private String message;
