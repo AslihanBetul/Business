@@ -19,6 +19,8 @@ public class Customer extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long memberId;
+    String identityNo;
+    String phoneNo;
     String name;
     String surname;
     String email;

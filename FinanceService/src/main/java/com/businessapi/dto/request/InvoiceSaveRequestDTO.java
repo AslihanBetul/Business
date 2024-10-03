@@ -5,11 +5,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record InvoiceSaveRequestDTO(
-        Long customerIdOrSupplierId,
+        String buyerTcNo,
+        String buyerEmail,
+        String buyerPhone,
+        Long productId,
+        String productName,
+        Integer quantity,
         LocalDate invoiceDate,
-        BigDecimal totalAmount,
-        BigDecimal paidAmount,
-        EInvoiceStatus invoiceStatus,
-        String description
+        BigDecimal totalAmount
 ) {
 }

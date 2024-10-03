@@ -6,6 +6,7 @@ import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.request.PayrollSaveRequestDTO;
 import com.businessapi.dto.request.PayrollUpdateRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.PayrollResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Payroll;
@@ -61,11 +62,11 @@ public class PayrollController {
     }
     @GetMapping (FIND_ALL)
     @Operation(summary = "Find all payroll ")
-    public ResponseEntity<ResponseDTO<List<PayrollResponseDTO>>> findAll(){
+    public ResponseEntity<ResponseDTO<List<PayrollResponseDTO>>> findAll(PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<PayrollResponseDTO>>builder()
-                .data(payrollService.findAll())
+                .data(payrollService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());

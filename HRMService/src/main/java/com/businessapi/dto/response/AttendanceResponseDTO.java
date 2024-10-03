@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 @Builder
 public record AttendanceResponseDTO(
         Long employeeId,
+        String firstName,
+        String lastName,
         LocalDateTime checkInDateTime,
         LocalDateTime checkOutDateTime) {
 }

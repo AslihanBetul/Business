@@ -1,5 +1,6 @@
 package com.businessapi.services;
 
+import com.businessapi.RabbitMQ.Model.InvoiceModel;
 import com.businessapi.dto.request.InvoiceSaveRequestDTO;
 import com.businessapi.dto.request.InvoiceUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
@@ -10,6 +11,7 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.InvoiceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,14 @@ public class InvoiceService {
 
     public Boolean save(InvoiceSaveRequestDTO dto) {
         Invoice invoice = Invoice.builder()
-                .customerIdOrSupplierId(dto.customerIdOrSupplierId())
+                .buyerTcNo(dto.buyerTcNo())
+                .buyerEmail(dto.buyerEmail())
+                .buyerPhone(dto.buyerPhone())
+                .productId(dto.productId())
+                .productName(dto.productName())
+                .quantity(dto.quantity())
                 .invoiceDate(dto.invoiceDate())
                 .totalAmount(dto.totalAmount())
-                .paidAmount(dto.paidAmount())
-                .invoiceStatus(dto.invoiceStatus())
-                .description(dto.description())
                 .build();
 
         invoiceRepository.save(invoice);
@@ -36,12 +40,14 @@ public class InvoiceService {
 
     public Boolean update(InvoiceUpdateRequestDTO dto) {
         Invoice invoice = invoiceRepository.findById(dto.id()).orElseThrow(() -> new FinanceServiceException(ErrorType.INVOICE_NOT_FOUND));
-        invoice.setCustomerIdOrSupplierId(dto.customerIdOrSupplierId());
+        invoice.setBuyerTcNo(dto.buyerTcNo());
+        invoice.setBuyerEmail(dto.buyerEmail());
+        invoice.setBuyerPhone(dto.buyerPhone());
+        invoice.setProductId(dto.productId());
+        invoice.setProductName(dto.productName());
+        invoice.setQuantity(dto.quantity());
         invoice.setInvoiceDate(dto.invoiceDate());
         invoice.setTotalAmount(dto.totalAmount());
-        invoice.setPaidAmount(dto.paidAmount());
-        invoice.setInvoiceStatus(dto.invoiceStatus());
-        invoice.setDescription(dto.description());
 
         invoiceRepository.save(invoice);
         return true;
@@ -62,8 +68,21 @@ public class InvoiceService {
         return invoiceRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.INVOICE_NOT_FOUND));
     }
 
-    public List<Invoice> findUnpaidAndPartiallyPaidInvoices() {
-        return invoiceRepository.findAllByInvoiceStatusIn(List.of(EInvoiceStatus.UNPAID, EInvoiceStatus.PARTIALLY_PAID));
+
+    @RabbitListener(queues = "queueGetModelFromStockService")
+    public void createInvoiceFromModel (InvoiceModel model) {
+        Invoice invoice = Invoice.builder()
+                .buyerTcNo(model.getBuyerTcNo())
+                .buyerEmail(model.getBuyerEmail())
+                .buyerPhone(model.getBuyerPhone())
+                .productId(model.getProductId())
+                .productName(model.getProductName())
+                .quantity(model.getQuantity())
+                .price(model.getPrice())
+                .invoiceDate(model.getInvoiceDate())
+                .totalAmount(model.getTotalAmount())
+                .build();
+        invoiceRepository.save(invoice);
     }
 }
 
