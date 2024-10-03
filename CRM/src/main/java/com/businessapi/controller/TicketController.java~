@@ -60,13 +60,4 @@ public class TicketController {
                 .message("Tickets found successfully")
                 .build());
     }
-    @PostMapping(FINDBYID)
-    @Operation(summary = "Find ticket by id",description = "Find ticket by id")
-    public ResponseEntity<ResponseDTO<Ticket>> findById(@RequestParam Long id) {
-        return ResponseEntity.ok(ResponseDTO.<Ticket>builder()
-                .data(ticketService.findById(id))
-                .code(200)
-                .message("Ticket found successfully")
-                .build());
-    }
 }

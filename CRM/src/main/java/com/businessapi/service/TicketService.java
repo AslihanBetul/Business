@@ -36,6 +36,7 @@ public class TicketService {
                 .priority(dto.priority())
                 .createdDate(dto.createdDate())
                 .closedDate(dto.closedDate())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build());
         return true;
@@ -50,7 +51,7 @@ public class TicketService {
 
     public Boolean update(TicketUpdateDTO dto) {
         Ticket ticket = ticketRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
-        if (ticket != null && ticket.getStatus().equals(EStatus.DELETED) || ticket.getStatus().equals(EStatus.PASSIVE)) {
+        if (ticket != null) {
             ticket.setCustomerId(dto.customerId() != null ? dto.customerId() : ticket.getCustomerId());
             ticket.setSubject(dto.subject() != null ? dto.subject() : ticket.getSubject());
             ticket.setDescription(dto.description() != null ? dto.description() : ticket.getDescription());
@@ -66,7 +67,7 @@ public class TicketService {
 
     public Boolean delete(Long id) {
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
-        if (ticket != null && ticket.getStatus().equals(EStatus.DELETED) || ticket.getStatus().equals(EStatus.PASSIVE)) {
+        if (ticket != null && !ticket.getStatus().equals(EStatus.DELETED)) {
             ticket.setStatus(EStatus.DELETED);
             ticketRepository.save(ticket);
             return true;
@@ -75,6 +76,10 @@ public class TicketService {
     }
 
     public List<Ticket> findAll(PageRequestDTO dto) {
-       return ticketRepository.findAllBySubjectContainingIgnoreCaseAndStatusAndMemberIdOrderBySubjectAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+        return ticketRepository.findAllBySubjectContainingIgnoreCaseAndStatusAndMemberIdOrderBySubjectAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+    }
+
+    public Ticket findById(Long id) {
+        return ticketRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
     }
 }

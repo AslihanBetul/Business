@@ -2,6 +2,7 @@ package com.businessapi.service;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
+import com.businessapi.dto.response.OpportunityResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -87,7 +89,12 @@ public class CustomerService {
         return customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
     }
 
-    public List<CustomerResponseForOpportunityDTO> getAllCustomersForOpportunity() {
-        return customerRepository.findAllCustomersForOpportunity();
+    public List<CustomerResponseForOpportunityDTO> getAllCustomersForOpportunity(PageRequestDTO dto) {
+        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+    }
+    public List<OpportunityResponseDTO> getAllCustomersForOpportunity() {
+        List<Customer> customers = customerRepository.findAll();
+        List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
+        return opportunityResponseDTOS;
     }
 }

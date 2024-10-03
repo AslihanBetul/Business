@@ -40,7 +40,7 @@ public class MarketingCampaignController {
                 .message("Marketing campaigns found successfully")
                 .build());
     }
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update marketing campaign by id",description = "Update marketing campaign by id")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody MarketingCampaignUpdateDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()

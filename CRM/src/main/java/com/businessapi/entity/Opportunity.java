@@ -25,4 +25,6 @@ public class Opportunity extends BaseEntity {
     private Double probability;
     @Enumerated(EnumType.STRING)
     EStatus status;
+
+
 }
