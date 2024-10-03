@@ -60,13 +60,6 @@ public class MarketingCampaignController {
                 .build());
     }
     @PostMapping(FINDBYID)
-    @Operation(summary = "Find marketingcampaign by id",description = "Find marketingcampaign  by id")
-    public ResponseEntity<ResponseDTO<MarketingCampaign>> findById(@RequestParam Long id) {
-        return ResponseEntity.ok(ResponseDTO.<MarketingCampaign>builder()
-                .data(marketingCampaignService.findById(id))
-                .code(200)
-                .message("Marketing campaign found successfully")
-                .build());
-    }
+    @Operation(summary = "Find marketingcampaign by id",description = "Find customer by id")
 
 }

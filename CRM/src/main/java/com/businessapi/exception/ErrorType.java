@@ -23,7 +23,10 @@ public enum ErrorType {
     NOT_FOUNDED_CUSTOMER(3001,"The customer not found" ,HttpStatus.NOT_FOUND ),
     CUSTOMER_NOT_ACTIVE(3002,"The customer may be inactive or deleted" ,HttpStatus.BAD_REQUEST ),
     CUSTOMER_ALREADY_DELETED(3004,"The customer already deleted" ,HttpStatus.BAD_REQUEST ),
-    EMAIL_ALREADY_EXISTS(3004,"Customer email already exists" , HttpStatus.BAD_REQUEST ),;
+    EMAIL_ALREADY_EXISTS(3004,"Customer email already exists" , HttpStatus.BAD_REQUEST ),
+
+    // Marketing campaign errors
+    MARKETING_CAMPAIGN_ALREADY_DELETED(4000,"The marketing campaign already deleted" ,HttpStatus.BAD_REQUEST );
 
 
 

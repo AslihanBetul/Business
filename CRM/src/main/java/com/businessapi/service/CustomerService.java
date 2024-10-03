@@ -1,6 +1,7 @@
 package com.businessapi.service;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.exception.CustomerServiceException;
 import com.businessapi.exception.ErrorType;
@@ -84,5 +85,9 @@ public class CustomerService {
 
     public Customer findById(Long id) {
         return customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+    }
+
+    public List<CustomerResponseForOpportunityDTO> getAllCustomersForOpportunity() {
+        return customerRepository.findAllCustomersForOpportunity();
     }
 }

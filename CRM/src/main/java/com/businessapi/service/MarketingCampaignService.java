@@ -44,6 +44,7 @@ public class MarketingCampaignService {
 
     public Boolean update(MarketingCampaignUpdateDTO dto) {
         MarketingCampaign marketingCampaign = marketingCampeignRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(marketingCampaign.getMemberId());
         marketingCampaign.setName(dto.name() != null ? dto.name() : marketingCampaign.getName());
         marketingCampaign.setDescription(dto.description() != null ? dto.description() : marketingCampaign.getDescription());
         marketingCampaign.setStartDate(dto.startDate() != null ? dto.startDate() : marketingCampaign.getStartDate());
@@ -55,8 +56,16 @@ public class MarketingCampaignService {
 
     public Boolean delete(Long id) {
         MarketingCampaign marketingCampaign = marketingCampeignRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(marketingCampaign.getMemberId());
+        if (marketingCampaign.getStatus() == EStatus.DELETED) {
+            throw new CustomerServiceException(ErrorType.MARKETING_CAMPAIGN_ALREADY_DELETED);
+        }
         marketingCampaign.setStatus(EStatus.DELETED);
         marketingCampeignRepository.save(marketingCampaign);
         return true;
+    }
+
+    public MarketingCampaign findById(Long id) {
+        return marketingCampeignRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
     }
 }

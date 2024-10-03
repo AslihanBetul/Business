@@ -60,6 +60,7 @@ public class OpportunityService {
 
     public Boolean update(OpportunityUpdateDTO dto) {
         Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(opportunity.getMemberId());
         if (opportunity != null && opportunity.getStatus().equals(EStatus.DELETED) || opportunity.getStatus().equals(EStatus.PASSIVE)) {
             opportunity.setName(dto.name() != null ? dto.name() : opportunity.getName());
             opportunity.setDescription(dto.description() != null ? dto.description() : opportunity.getDescription());
@@ -76,6 +77,7 @@ public class OpportunityService {
 
     public Boolean delete(Long id) {
         Opportunity opportunity = opportunityRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(opportunity.getMemberId());
         if (opportunity != null && opportunity.getStatus().equals(EStatus.DELETED) || opportunity.getStatus().equals(EStatus.PASSIVE)) {
             opportunity.setStatus(EStatus.DELETED);
             opportunityRepository.save(opportunity);
