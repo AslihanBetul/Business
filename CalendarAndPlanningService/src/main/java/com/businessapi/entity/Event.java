@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class Event extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
     Long userId;
     String title;
     String description;

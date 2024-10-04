@@ -15,9 +15,11 @@ public enum ErrorType {
     ERROR_CREATE_TOKEN(1002, "Token creation error. Please try again.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_TOKEN(1003, "The provided token is invalid. Please try again.", HttpStatus.UNAUTHORIZED),
     USER_NOT_FOUND(1004, "User not found. Please try again.", HttpStatus.NOT_FOUND),
-    TOKEN_CREATION_FAILED(5001,"token creation failed", HttpStatus.SERVICE_UNAVAILABLE),
-    TOKEN_VERIFY_FAILED(5002,"token verify failed", HttpStatus.SERVICE_UNAVAILABLE),
-    TOKEN_FORMAT_NOT_ACCEPTABLE(5003,"token format not acceptable", HttpStatus.BAD_REQUEST),
+    TOKEN_CREATION_FAILED(1005,"token creation failed", HttpStatus.SERVICE_UNAVAILABLE),
+    TOKEN_VERIFY_FAILED(1006,"token verify failed", HttpStatus.SERVICE_UNAVAILABLE),
+    TOKEN_FORMAT_NOT_ACCEPTABLE(1007,"token format not acceptable", HttpStatus.BAD_REQUEST),
+    EVENT_NOT_FOUND(1008, "Event not found. Please try again.", HttpStatus.NOT_FOUND),
+    EVENT_IS_NOT_ACTIVE(1009, "Event is not active. Please try again.", HttpStatus.NOT_FOUND)
     ;
 
 
