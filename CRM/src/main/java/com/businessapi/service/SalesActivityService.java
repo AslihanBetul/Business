@@ -33,6 +33,7 @@ public class SalesActivityService {
                 .type(dto.type())
                 .date(dto.date())
                 .notes(dto.notes())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build();
         salesActivityRepository.save(salesActivity);
@@ -76,5 +77,9 @@ public class SalesActivityService {
 
     public List<SalesActivity> findAll(PageRequestDTO dto) {
         return salesActivityRepository.findAllByTypeContainingIgnoreCaseAndStatusAndMemberIdOrderByTypeAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.memberId, PageRequest.of(dto.page(), dto.size()));
+    }
+
+    public SalesActivity findById(Long id) {
+        return salesActivityRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
     }
 }

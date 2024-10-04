@@ -1,6 +1,7 @@
 package com.businessapi.repository;
 
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
+import com.businessapi.dto.response.OpportunityResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.utility.enums.EStatus;
 
@@ -21,7 +22,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT new com.businessapi.dto.response.CustomerResponseForOpportunityDTO(c.id, c.firstName, c.lastName, c.email, c.phone, c.address) " +
             "FROM Customer c")
-    List<CustomerResponseForOpportunityDTO> findAllCustomersForOpportunity();
+    List<CustomerResponseForOpportunityDTO> findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(String s,Long memberId, PageRequest of);
+
+
 
 
 }

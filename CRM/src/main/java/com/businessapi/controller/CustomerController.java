@@ -75,9 +75,9 @@ public class CustomerController {
 
     @PostMapping(FOR_OPPORTUNITY)
     @Operation(summary = "Find customer by id",description = "Find customer by id")
-    public ResponseEntity<ResponseDTO<List<CustomerResponseForOpportunityDTO>>> getCustomersForOpportunity() {
+    public ResponseEntity<ResponseDTO<List<CustomerResponseForOpportunityDTO>>> getCustomersForOpportunity(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<List<CustomerResponseForOpportunityDTO>>builder()
-                .data(customerService.getAllCustomersForOpportunity())
+                .data(customerService.getAllCustomersForOpportunity(dto))
                 .code(200)
                 .message("Customer found successfully").build());
 

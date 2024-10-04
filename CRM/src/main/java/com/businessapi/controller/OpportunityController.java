@@ -60,6 +60,15 @@ public class OpportunityController {
                 .message("Opportunity deleted successfully")
                 .build());
     }
+    @PostMapping(FINDBYID)
+    @Operation(summary = "Find opportunity by id",description = "Find opportunity by id")
+    public ResponseEntity<ResponseDTO<Opportunity>> findById(@RequestParam Long id) {
+        return ResponseEntity.ok(ResponseDTO.<Opportunity>builder()
+                .data(opportunityService.findById(id))
+                .code(200)
+                .message("Opportunity found successfully")
+                .build());
+    }
 
 
 }

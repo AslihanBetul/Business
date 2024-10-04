@@ -64,15 +64,5 @@ public class SalesActivityController {
                 .code(200)
                 .build());
     }
-    @PostMapping(FINDBYID)
-    @Operation(summary = "Find sales activity by id")
-    public ResponseEntity<ResponseDTO<SalesActivity>> findById(@RequestParam Long id) {
-        return ResponseEntity.ok(ResponseDTO
-                .<SalesActivity>builder()
-                .data(salesActivityService.findById(id))
-                .message("Success")
-                .code(200)
-                .build());
-    }
 
 }

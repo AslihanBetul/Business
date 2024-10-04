@@ -1,6 +1,9 @@
 package com.businessapi.service;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
+import com.businessapi.dto.response.OpportunityResponseDTO;
+import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
 import com.businessapi.entity.Ticket;
 import com.businessapi.exception.CustomerServiceException;
@@ -61,7 +64,7 @@ public class OpportunityService {
     public Boolean update(OpportunityUpdateDTO dto) {
         Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         SessionManager.authorizationCheck(opportunity.getMemberId());
-        if (opportunity != null && opportunity.getStatus().equals(EStatus.DELETED) || opportunity.getStatus().equals(EStatus.PASSIVE)) {
+        if (opportunity != null ) {
             opportunity.setName(dto.name() != null ? dto.name() : opportunity.getName());
             opportunity.setDescription(dto.description() != null ? dto.description() : opportunity.getDescription());
             opportunity.setValue(dto.value() != null ? dto.value() : opportunity.getValue());
@@ -78,7 +81,7 @@ public class OpportunityService {
     public Boolean delete(Long id) {
         Opportunity opportunity = opportunityRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         SessionManager.authorizationCheck(opportunity.getMemberId());
-        if (opportunity != null && opportunity.getStatus().equals(EStatus.DELETED) || opportunity.getStatus().equals(EStatus.PASSIVE)) {
+        if (opportunity != null && opportunity.getStatus().equals(EStatus.ACTIVE)) {
             opportunity.setStatus(EStatus.DELETED);
             opportunityRepository.save(opportunity);
             return true;
@@ -88,7 +91,13 @@ public class OpportunityService {
 
     }
 
-    public Optional<Opportunity> findById(Long id) {
-        return opportunityRepository.findById(id);
+    public Opportunity findById(Long id) {
+        return opportunityRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
     }
+
+    public List<OpportunityResponseDTO> findAllOpportunities() {
+        return customerService.getAllCustomersForOpportunity();
+
+    }
+
 }
