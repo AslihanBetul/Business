@@ -3,6 +3,8 @@ package com.businessapi.services;
 import com.businessapi.dto.request.BudgetSaveRequestDTO;
 import com.businessapi.dto.request.BudgetUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.DepartmentResponseDTO;
+import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
 import com.businessapi.entity.Budget;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +66,27 @@ public class BudgetService {
 
     public Budget findById(Long id) {
         return budgetRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.BUDGET_NOT_FOUND));
+    }
+
+    public Budget findByDepartment(String department) {
+        return budgetRepository.findByDepartment(department);
+    }
+
+
+    public List<DepartmentResponseDTO> getDepartments() {
+        List<Budget> budgets = budgetRepository.findAll();
+        List<DepartmentResponseDTO> departments = new ArrayList<>();
+        for (Budget budget : budgets) {
+            if (departments.stream().noneMatch(department -> department.department().equals(budget.getDepartment()))) {
+                departments.add(new DepartmentResponseDTO((long) (departments.size() + 1), budget.getDepartment()));
+            }
+        }
+        return departments;
+    }
+
+    public void setSpentAmount(String department, BigDecimal bigDecimal) {
+        Budget budget = budgetRepository.findByDepartment(department);
+        budget.setSpentAmount(budget.getSpentAmount().add(bigDecimal));
+        budgetRepository.save(budget);
     }
 }

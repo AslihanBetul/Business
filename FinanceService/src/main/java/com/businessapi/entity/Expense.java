@@ -26,4 +26,5 @@ public class Expense extends BaseEntity {
     LocalDate expenseDate;
     BigDecimal amount;
     String description;
+    String department;
 }

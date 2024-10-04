@@ -2,6 +2,7 @@ package com.businessapi.services;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
+import com.businessapi.entity.Budget;
 import com.businessapi.entity.Expense;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
+    private final BudgetService budgetService;
 
     public Boolean save(ExpenseSaveRequestDTO dto) {
         Expense expense = Expense.builder()
@@ -29,11 +31,16 @@ public class ExpenseService {
                 .expenseDate(dto.expenseDate())
                 .amount(dto.amount())
                 .description(dto.description())
+                .department(dto.department())
                 .build();
 
         if (dto.expenseCategory().equals(EExpenseCategory.TAX)) {
             expense.setStatus(EStatus.APPROVED);
         }
+
+        Budget budgetByDepartment = budgetService.findByDepartment(dto.department());
+        budgetByDepartment.setSpentAmount(budgetByDepartment.getSpentAmount().add(dto.amount()));
+
         expenseRepository.save(expense);
         return true;
     }
@@ -133,10 +140,8 @@ public class ExpenseService {
 
     public List<ExpenseCategoryResponseDTO> getMostExpensive(ExpenseFindByDateRequestDTO dto) {
         List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
-        //amounta göre büyükten küçüğe sırala
         expenseList.sort((o1, o2) -> o2.getAmount().compareTo(o1.getAmount()));
         List<ExpenseCategoryResponseDTO> mostExpensiveCategories = new ArrayList<>();
-        //ilk 5 elemanın kategorilerini al, eğer aynı kategoriden çıkarsa 5 eleman dolmadan, ikinci çıkanı atla sonrakini al
         for (int i = 0; i < 5; i++) {
             int finalI = i;
             if (mostExpensiveCategories.stream().noneMatch(category -> category.expenseCategory().equals(expenseList.get(finalI).getExpenseCategory().name()))) {

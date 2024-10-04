@@ -28,6 +28,7 @@ public class DemoDataGenerator {
         generateBudgetDemoData();
         generateIncomeDemoData();
         generateExpenseDemoData();
+        setSpentAmounts();
     }
 
     private void generateBudgetDemoData() {
@@ -56,17 +57,22 @@ public class DemoDataGenerator {
     }
 
     private void generateExpenseDemoData() {
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.BUSSINESS, LocalDate.parse("2024-01-15"), new BigDecimal(20000), "Monthly rent payment"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.EDUCATION, LocalDate.parse("2024-02-15"), new BigDecimal(5000), "Monthly utility bills"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.INSURANCE, LocalDate.parse("2024-03-15"), new BigDecimal(100000), "Monthly salary payments"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.MARKETING, LocalDate.parse("2024-04-15"), new BigDecimal(20000), "Monthly office supplies"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.OFFICE_SUPPLIES, LocalDate.parse("2024-05-15"), new BigDecimal(30000), "Purchase of new equipment"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.PERSONNEL, LocalDate.parse("2024-06-15"), new BigDecimal(10000), "Monthly maintenance costs"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.TRAVEL, LocalDate.parse("2024-07-15"), new BigDecimal(15000), "Monthly insurance premiums"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.UTILITIES, LocalDate.parse("2024-08-15"), new BigDecimal(50000), "Quarterly tax payments"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.EDUCATION, LocalDate.parse("2024-09-15"), new BigDecimal(30000), "Monthly marketing expenses"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.PERSONNEL, LocalDate.parse("2024-10-15"), new BigDecimal(20000), "Monthly travel expenses"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.OFFICE_SUPPLIES, LocalDate.parse("2024-11-15"), new BigDecimal(10000), "Monthly training costs"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.BUSSINESS, LocalDate.parse("2024-12-15"), new BigDecimal(5000), "Monthly entertainment expenses"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.BUSSINESS, LocalDate.parse("2024-01-15"), new BigDecimal(20000), "Monthly rent payment", "SALES"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.EDUCATION, LocalDate.parse("2024-02-15"), new BigDecimal(5000), "Monthly utility bills", "MARKETING"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.INSURANCE, LocalDate.parse("2024-03-15"), new BigDecimal(100000), "Monthly salary payments", "HR"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.MARKETING, LocalDate.parse("2024-04-15"), new BigDecimal(20000), "Monthly office supplies", "IT"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.OFFICE_SUPPLIES, LocalDate.parse("2024-05-15"), new BigDecimal(30000), "Purchase of new equipment", "FINANCE"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.PERSONNEL, LocalDate.parse("2024-06-15"), new BigDecimal(10000), "Monthly maintenance costs", "R&D"));
+        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.TRAVEL, LocalDate.parse("2024-07-15"), new BigDecimal(15000), "Monthly insurance premiums", "CSR"));
+    }
+
+    private void setSpentAmounts() {
+        budgetService.setSpentAmount("SALES", new BigDecimal(20000));
+        budgetService.setSpentAmount("MARKETING", new BigDecimal(505000));
+        budgetService.setSpentAmount("HR", new BigDecimal(100000));
+        budgetService.setSpentAmount("IT", new BigDecimal(20000));
+        budgetService.setSpentAmount("FINANCE", new BigDecimal(30000));
+        budgetService.setSpentAmount("R&D", new BigDecimal(10000));
+        budgetService.setSpentAmount("CSR", new BigDecimal(15000));
     }
 }
