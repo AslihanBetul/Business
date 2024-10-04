@@ -49,7 +49,7 @@ public class SubscriptionController {
     }
 
     @PostMapping(CHECK_SUBSCRIPTIONS)
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     @Operation(summary = "Checks subscriptions", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ResponseDTO<List<String>>> checkSubscriptions(){
         return ResponseEntity.ok(ResponseDTO
