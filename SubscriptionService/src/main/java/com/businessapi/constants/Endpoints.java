@@ -31,6 +31,7 @@ public class Endpoints
     public static final String UNSUBSCRIBE = "/unsubscribe";
     public static final String CHECK_SUBSCRIPTIONS = "/check-subscriptions";
     public static final String SUBSCRIPTION_HISTORY = "/subscription-history";
+    public static final String FIND_ALL_ACTIVE_SUBSCRIPTION_PLANS = "/find-all-active-subscription-plans";
 
 
 

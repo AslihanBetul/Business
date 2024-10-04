@@ -113,4 +113,9 @@ public class SubscriptionService {
         List<Subscription> subscriptions = subscriptionRepository.findAllByAuthId(authId);
         return subscriptions.stream().map(subscription -> subscription.toSubscriptionHistoryRequestDto(language)).collect(Collectors.toList());
     }
+
+    public List<Plan> findAllActiveSubscriptionPlans() {
+        Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
+        return subscriptionRepository.findAllByAuthIdAndStatus(authId, EStatus.ACTIVE).stream().map(Subscription::getPlan).toList();
+    }
 }

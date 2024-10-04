@@ -3,6 +3,7 @@ package com.businessapi.controller;
 import com.businessapi.dto.request.SubscriptionHistoryRequestDto;
 import com.businessapi.dto.request.SubscriptionSaveRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.entity.Plan;
 import com.businessapi.entity.Subscription;
 import com.businessapi.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class SubscriptionController {
     }
 
     @PostMapping(CHECK_SUBSCRIPTIONS)
-    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "Checks subscriptions", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ResponseDTO<List<String>>> checkSubscriptions(){
         return ResponseEntity.ok(ResponseDTO
@@ -66,6 +67,18 @@ public class SubscriptionController {
         return ResponseEntity.ok(ResponseDTO
                 .<List<SubscriptionHistoryRequestDto>>builder()
                 .data(subscriptionService.getSubscriptionHistory(language))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_ALL_ACTIVE_SUBSCRIPTION_PLANS)
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @Operation(summary = "Get all active subscriptions", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ResponseDTO<List<Plan>>> findAllActiveSubscriptions(){
+        return ResponseEntity.ok(ResponseDTO
+                .<List<Plan>>builder()
+                .data(subscriptionService.findAllActiveSubscriptionPlans())
                 .message("Success")
                 .code(200)
                 .build());
