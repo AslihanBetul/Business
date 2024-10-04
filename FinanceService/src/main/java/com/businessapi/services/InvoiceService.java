@@ -61,6 +61,15 @@ public class InvoiceService {
     }
 
     public List<Invoice> findAll(PageRequestDTO dto) {
+//        String productName = dto.searchText();
+//        if (productName != null && !productName.isEmpty()) {
+//
+//            System.out.println(invoiceRepository.findByProductNameContainingIgnoreCaseAndStatusNot(productName, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent());
+//            return invoiceRepository.findByProductNameContainingIgnoreCaseAndStatusNot(productName, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+//        }
+//        System.out.println(invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent());
+//        return invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+//
         return invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 

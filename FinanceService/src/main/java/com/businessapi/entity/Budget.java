@@ -1,10 +1,7 @@
 package com.businessapi.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -23,5 +20,7 @@ public class Budget extends BaseEntity{
     String department;
     Integer year;
     BigDecimal amount;
+    @Builder.Default
+    BigDecimal spentAmount = new BigDecimal(0);
     String description;
 }

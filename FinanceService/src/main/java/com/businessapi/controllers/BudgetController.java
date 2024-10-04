@@ -3,6 +3,7 @@ package com.businessapi.controllers;
 import com.businessapi.dto.request.BudgetSaveRequestDTO;
 import com.businessapi.dto.request.BudgetUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.DepartmentResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Budget;
 import com.businessapi.services.BudgetService;
@@ -72,6 +73,17 @@ public class BudgetController {
         return ResponseEntity.ok(ResponseDTO
                 .<Budget>builder()
                 .data(budgetService.findById(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(GET_DEPARTMENTS)
+    @Operation(summary = "Lists all departments of budgets")
+    public ResponseEntity<ResponseDTO<List<DepartmentResponseDTO>>> getDepartments() {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<DepartmentResponseDTO>>builder()
+                .data(budgetService.getDepartments())
                 .message("Success")
                 .code(200)
                 .build());

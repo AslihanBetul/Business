@@ -9,6 +9,7 @@ public record ExpenseSaveRequestDTO(
         EExpenseCategory expenseCategory,
         LocalDate expenseDate,
         BigDecimal amount,
-        String description
+        String description,
+        String department
 ) {
 }

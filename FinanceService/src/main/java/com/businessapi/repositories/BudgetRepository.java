@@ -13,5 +13,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     @Query("SELECT b FROM Budget b WHERE b.department LIKE %:department% AND b.status != :status")
     Page<Budget> findByDepartmentContainingIgnoreCaseAndStatusNot(@Param("department") String department, @Param("status") EStatus status, Pageable pageable);
+
+    Budget findByDepartment (String department);
 }
 
