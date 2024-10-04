@@ -37,10 +37,10 @@ public class PlanController {
     @PostMapping(FIND_ALL)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "Get all subscription plans", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ResponseDTO<List<PlanGetResponseDTO>>> FindAllSubscriptionPlans(@RequestParam String language){
+    public ResponseEntity<ResponseDTO<List<Plan>>> FindAllSubscriptionPlans(){
         return ResponseEntity.ok(ResponseDTO
-                .<List<PlanGetResponseDTO>>builder()
-                .data(planService.findAll(language))
+                .<List<Plan>>builder()
+                .data(planService.findAll())
                 .message("Success")
                 .code(200)
                 .build());
@@ -70,7 +70,7 @@ public class PlanController {
                 .build());
     }
 
-    @PutMapping(UPDATE)
+    @PostMapping(UPDATE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Update subscription plan by id", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ResponseDTO<Plan>> UpdateSubscriptionPlanById(@RequestBody PlanUpdateRequestDTO dto){

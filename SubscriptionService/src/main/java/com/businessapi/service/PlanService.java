@@ -23,28 +23,8 @@ import java.util.stream.Collectors;
 public class PlanService {
     private final PlanRepository planRepository;
     private final PlanTranslationService planTranslationService;
-    public List<PlanGetResponseDTO> findAll(String language) {
-        List<Plan> planList = planRepository.findAllByStatusNot(EStatus.DELETED);
-        System.out.println("language: " + language);
-        return planList.stream().map(plan -> {
-            Optional<PlanTranslation> optionalTranslation = plan.getTranslations().stream().filter(t -> t.getLanguage().equals(language)).findFirst();
-            PlanTranslation translation;
-            if(optionalTranslation.isPresent()){
-                translation = optionalTranslation.get();
-            } else if (plan.getTranslations().stream().filter(t -> t.getLanguage().equals("tr")).findFirst().isPresent()) {
-                translation = plan.getTranslations().stream().filter(t -> t.getLanguage().equals("tr")).findFirst().get();
-            } else {
-                throw new RuntimeException("No translation found for plan: " + plan.getId());
-            }
-            System.out.println(translation);
-            return new PlanGetResponseDTO(
-                    plan.getId(),
-                    plan.getPrice(),
-                    plan.getRoles(),
-                    translation.getDescription(),
-                    translation.getName()
-            );
-        }).collect(Collectors.toList());
+    public List<Plan> findAll() {
+        return planRepository.findAllByStatusNot(EStatus.DELETED);
     }
 
     public Plan save(PlanSaveRequestDTO dto) {
