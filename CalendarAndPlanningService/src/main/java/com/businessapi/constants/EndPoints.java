@@ -14,6 +14,8 @@ public class EndPoints {
     public static final String UPDATE = "/update-event";
     public static final String DELETE = "/delete-event";
 
+    public static final String FIND_ALL_BY_USER_ID = "/find-all-by-user-id";
+
 
 
 
