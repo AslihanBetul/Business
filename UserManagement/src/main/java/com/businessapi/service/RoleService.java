@@ -52,6 +52,10 @@ public class RoleService {
 
     public List<RoleResponseDTO> getAllUserRoles() {
         List<GetAllRoleView> allroles = roleRepository.getAllRoles();
+        allroles.removeIf(getAllRoleView ->getAllRoleView.getRoleName().equals("SUPER_ADMIN")
+        );
+
+
 
         List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
 
@@ -70,6 +74,7 @@ public class RoleService {
 
     public List<RoleResponseDTO> getAllAssignableRoles(User user) {
         List<Role> allRoles = roleRepository.findAll();
+        allRoles.removeIf(role -> role.getRoleName().equals("SUPER_ADMIN")|| !role.getStatus().equals(EStatus.ACTIVE));
         allRoles.removeAll(user.getRole());
         List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
         allRoles.forEach(role -> {

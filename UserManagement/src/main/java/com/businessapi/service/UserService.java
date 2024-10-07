@@ -16,9 +16,11 @@ import com.businessapi.util.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +134,9 @@ public class UserService {
 
     public List<GetAllUsersResponseDTO> getAllUser() {
         List<User> allUsersList = userRepository.findAll();
+        allUsersList = allUsersList.stream()
+                .filter(user -> user.getRole().stream().noneMatch(role -> role.getRoleName().equals("SUPER_ADMIN")))
+                .toList();
 
         List<GetAllUsersResponseDTO> allUsersResponseDTOList = new ArrayList<>();
 
@@ -151,6 +156,17 @@ public class UserService {
 
         return allUsersResponseDTOList;
     }
+
+
+    public List<User> pagableGettAll(PageRequestDTO pageRequestDTO){
+
+        return userRepository.findAllByLastNameContainingIgnoreCase(pageRequestDTO.searchText(), PageRequest.of(pageRequestDTO.page(), pageRequestDTO.size()));
+
+    }
+
+
+
+
 
     public void addRoleToUser(AddRoleToUserRequestDTO addRoleToUserRequestDTO) {
         User user = userRepository.findById(addRoleToUserRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
