@@ -19,5 +19,6 @@ public interface AuthRepository  extends JpaRepository<Auth,Long> {
     @Query("SELECT a.email FROM Auth a WHERE a.id = :authId")
     String findEmailById(@Param("authId") Long authId);
 
+    Boolean existsByEmailIgnoreCase(String email);
 }
 

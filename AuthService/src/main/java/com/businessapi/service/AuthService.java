@@ -311,4 +311,9 @@ public class AuthService {
         auth.setStatus(updateStatusModel.getStatus());
         authRepository.save(auth);
     }
+
+    @RabbitListener(queues = "queueExistByEmail")
+    public Boolean existByEmail(SaveAuthFromUserModel dto){
+        return authRepository.existsByEmailIgnoreCase(dto.getEmail());
+    }
 }

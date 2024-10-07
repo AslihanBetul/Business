@@ -46,6 +46,10 @@ public class Config {
     private static final String queueUpdateStatus = "queueUpdateStatus";
     private static final String keyUpdateStatus = "keyUpdateStatus";
 
+    //For email check whether is exist or not
+    private static final String queueExistByEmail = "queueExistByEmail";
+    private static final String keyExistByEmail = "keyExistByEmail";
+
     @Bean
    public DirectExchange directExchange(){
         return new DirectExchange(businessDirectExchange);
@@ -100,6 +104,14 @@ public class Config {
     @Bean
     public Queue queueUpdateStatus() {
         return new Queue(queueUpdateStatus);
+    }
+    @Bean
+    public Queue queueExistByEmail() {
+        return new Queue(queueExistByEmail);
+    }
+    @Bean
+    public Binding bindingExistByEmail(){
+        return BindingBuilder.bind(queueExistByEmail()).to(directExchange()).with(keyExistByEmail);
     }
     @Bean
     public Binding bindingSaveUserFromAuth(){
