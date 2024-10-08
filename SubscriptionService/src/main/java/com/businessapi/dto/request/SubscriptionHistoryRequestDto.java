@@ -14,6 +14,7 @@ public record SubscriptionHistoryRequestDto (
     EStatus status,
     LocalDateTime startDate,
     LocalDateTime endDate,
+    LocalDateTime cancellationDate,
     String planName,
     Double planPrice,
     String planDescription

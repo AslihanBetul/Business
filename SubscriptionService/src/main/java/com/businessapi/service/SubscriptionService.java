@@ -70,6 +70,7 @@ public class SubscriptionService {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
         Subscription subscription = subscriptionRepository.findByPlanIdAndAuthIdAndStatus(planId, authId, EStatus.ACTIVE).orElseThrow(() -> new SubscriptionServiceException(ErrorType.SUBSCRIPTION_NOT_FOUND));
         subscription.setStatus(EStatus.CANCELLED);
+        subscription.setCancellationDate(LocalDateTime.now());
         subscriptionRepository.save(subscription);
         return true;
     }
