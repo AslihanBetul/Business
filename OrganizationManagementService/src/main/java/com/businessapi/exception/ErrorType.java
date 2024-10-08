@@ -16,7 +16,8 @@ public enum ErrorType
     UNAUTHORIZED(9017, "Unauthorized", HttpStatus.UNAUTHORIZED),
     DEPARTMENT_NOT_FOUND(9100, "Department not found", HttpStatus.BAD_REQUEST),
     MANAGER_NOT_FOUND( 9101, "Manager not found",  HttpStatus.BAD_REQUEST ),
-    EMPLOYEE_NOT_FOUND(9102,"Employee not found", HttpStatus.BAD_REQUEST );
+    EMPLOYEE_NOT_FOUND(9102,"Employee not found", HttpStatus.BAD_REQUEST ),
+    EMAIL_ALREADY_EXIST( 9103, "Email already exist" , HttpStatus.BAD_REQUEST );
 
     private Integer code;
     private String message;

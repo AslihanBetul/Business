@@ -20,6 +20,7 @@ public class Employee extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long memberId;
+    Long authId;
     @ManyToOne
     Manager manager;
     @ManyToOne

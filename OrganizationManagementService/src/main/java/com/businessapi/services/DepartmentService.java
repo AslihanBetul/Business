@@ -27,6 +27,13 @@ public class DepartmentService
         return true;
     }
 
+    public Boolean saveForDemoData(DepartmentSaveRequestDto dto)
+    {
+        departmentRepository.save(Department.builder().memberId(2L).name(dto.name()).build());
+        return true;
+    }
+
+
     public Boolean delete(Long id)
     {
         Department department = departmentRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.DEPARTMENT_NOT_FOUND));
@@ -51,5 +58,10 @@ public class DepartmentService
     public Department findByIdAndMemberId(Long id)
     {
         return departmentRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.DEPARTMENT_NOT_FOUND));
+    }
+
+    public Department findById(Long id)
+    {
+        return departmentRepository.findById(id).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.DEPARTMENT_NOT_FOUND));
     }
 }

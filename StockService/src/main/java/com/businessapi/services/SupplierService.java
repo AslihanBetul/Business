@@ -2,6 +2,7 @@ package com.businessapi.services;
 
 
 import com.businessapi.RabbitMQ.Model.EmailSendModal;
+import com.businessapi.RabbitMQ.Model.ExistByEmailModel;
 import com.businessapi.RabbitMQ.Model.SaveUserFromOtherServicesModel;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.request.SupplierSaveRequestDTO;
@@ -36,6 +37,11 @@ public class SupplierService
     @Transactional
     public Boolean save(SupplierSaveRequestDTO dto)
     {
+        Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
+        if (Boolean.TRUE.equals(isEmailExist))
+        {
+            throw new StockServiceException(ErrorType.SUPPLIER_EMAIL_ALREADY_EXISTS);
+        }
         supplierRepository.findByEmail(dto.email()).ifPresent(supplier -> {
             throw new StockServiceException(ErrorType.SUPPLIER_EMAIL_ALREADY_EXISTS);
         });
