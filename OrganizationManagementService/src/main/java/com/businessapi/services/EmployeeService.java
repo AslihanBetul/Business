@@ -7,6 +7,7 @@ import com.businessapi.dto.request.EmployeeSaveRequestDto;
 import com.businessapi.dto.request.EmployeeUpdateRequestDto;
 import com.businessapi.dto.request.ManagerUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.entities.Department;
 import com.businessapi.entities.Employee;
 import com.businessapi.entities.Manager;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -104,9 +106,16 @@ public class EmployeeService
         return true;
     }
 
-    public List<Employee> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
+    public List<EmployeeResponseDTO> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
     {
-        return employeeRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        List<Employee> employees = employeeRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        List<EmployeeResponseDTO> employeeResponseDTOS = new ArrayList<>();
+
+        for (Employee employee : employees)
+        {
+            employeeResponseDTOS.add(new EmployeeResponseDTO(employee.getId(), employee.getManager().getName() + " "+  employee.getManager().getSurname(),employee.getDepartment().getName(),employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname() , employee.getEmail()));
+        }
+        return employeeResponseDTOS;
     }
 
     public Employee findByIdAndMemberId(Long id)
