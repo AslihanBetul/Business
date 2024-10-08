@@ -3,6 +3,7 @@ package com.businessapi.controllers;
 import com.businessapi.dto.request.EmployeeSaveRequestDto;
 import com.businessapi.dto.request.EmployeeUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Employee;
 import com.businessapi.services.EmployeeService;
@@ -67,10 +68,10 @@ public class EmployeeController
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Employee with respect to pagination")
     @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public ResponseEntity<ResponseDTO<List<Employee>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<EmployeeResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Employee>>builder()
+                .<List<EmployeeResponseDTO>>builder()
                 .data(employeeService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
