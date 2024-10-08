@@ -313,7 +313,7 @@ public class AuthService {
     }
 
     @RabbitListener(queues = "queueExistByEmail")
-    public Boolean existByEmail(SaveAuthFromUserModel dto){
+    public Boolean existByEmail(ExistByEmailModel dto){
         return authRepository.existsByEmailIgnoreCase(dto.getEmail());
     }
 }

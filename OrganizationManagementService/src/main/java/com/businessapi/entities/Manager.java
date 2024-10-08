@@ -20,6 +20,7 @@ public class Manager extends BaseEntity
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long memberId;
+    Long authId;
     @ManyToOne
     Department department;
     String identityNo;
