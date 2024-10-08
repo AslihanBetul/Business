@@ -27,6 +27,8 @@ public class Subscription extends BaseEntity {
     private ESubscriptionType subscriptionType;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    @Builder.Default
+    private LocalDateTime cancellationDate = null;
 
     public SubscriptionHistoryRequestDto toSubscriptionHistoryRequestDto(String language) {
         return SubscriptionHistoryRequestDto
@@ -35,6 +37,7 @@ public class Subscription extends BaseEntity {
                 .planName(plan.getPlanTranslationByLanguage(language).getName())
                 .planDescription(plan.getPlanTranslationByLanguage(language).getDescription())
                 .subscriptionType(subscriptionType)
+                .cancellationDate(cancellationDate)
                 .status(super.getStatus())
                 .startDate(startDate)
                 .endDate(endDate)
