@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,11 @@ public class EmployeeService
     @Transactional
     public Boolean save(EmployeeSaveRequestDto dto)
     {
+        if (!isValidEmail(dto.email()))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.INVALID_EMAIL);
+        }
+
         Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
         if (Boolean.TRUE.equals(isEmailExist))
         {
@@ -58,6 +65,15 @@ public class EmployeeService
 
 
         return true;
+    }
+
+    private boolean isValidEmail(String email)
+    {
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     public Boolean saveForDemoData(EmployeeSaveRequestDto dto)

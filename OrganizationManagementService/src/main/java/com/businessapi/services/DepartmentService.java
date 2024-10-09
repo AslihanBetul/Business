@@ -23,6 +23,11 @@ public class DepartmentService
 
     public Boolean save(DepartmentSaveRequestDto dto)
     {
+        if (departmentRepository.existsByNameIgnoreCaseAndMemberIdAndStatusIsNot(dto.name(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.DEPARTMENT_ALREADY_EXIST);
+        }
+
         departmentRepository.save(Department.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).build());
         return true;
     }
