@@ -15,4 +15,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long>
     Optional<Department> findByIdAndMemberId(Long id, Long memberId);
 
     List<Department> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String name, Long memberId, EStatus status, PageRequest pageable);
+
+    Boolean existsByNameIgnoreCaseAndMemberIdAndStatusIsNot(String name, Long memberIdFromAuthenticatedMember, EStatus status);
 }

@@ -7,7 +7,10 @@ import com.businessapi.dto.request.DepartmentUpdateRequestDto;
 import com.businessapi.dto.request.ManagerSaveRequestDto;
 import com.businessapi.dto.request.ManagerUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.ManagerResponseDTO;
 import com.businessapi.entities.Department;
+import com.businessapi.entities.Employee;
 import com.businessapi.entities.Manager;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
@@ -21,7 +24,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +41,10 @@ public class ManagerService
     @Transactional
     public Boolean save(ManagerSaveRequestDto dto)
     {
+        if (!isValidEmail(dto.email()))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.INVALID_EMAIL);
+        }
         Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
         if (Boolean.TRUE.equals(isEmailExist))
         {
@@ -51,6 +61,15 @@ public class ManagerService
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
         managerRepository.save(Manager.builder().authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).memberId(SessionManager.getMemberIdFromAuthenticatedMember()).name(dto.name()).surname(dto.surname()).department(department).build());
         return true;
+    }
+
+    private boolean isValidEmail(String email)
+    {
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     public Boolean saveForDemoData(ManagerSaveRequestDto dto)
@@ -94,9 +113,16 @@ public class ManagerService
         return true;
     }
 
-    public List<Manager> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
+    public List<ManagerResponseDTO> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(PageRequestDTO dto)
     {
-        return managerRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        List<Manager> managers = managerRepository.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        List<ManagerResponseDTO> managerResponseDTOS = new ArrayList<>();
+
+        for (Manager manager : managers)
+        {
+            managerResponseDTOS.add(new ManagerResponseDTO(manager.getId(), manager.getDepartment().getName(),manager.getIdentityNo(), manager.getPhoneNo(), manager.getName(), manager.getSurname() , manager.getEmail()));
+        }
+        return managerResponseDTOS;
     }
 
     public Manager findByIdAndMemberId(Long id)

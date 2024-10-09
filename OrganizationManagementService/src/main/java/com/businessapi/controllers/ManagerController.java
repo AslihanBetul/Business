@@ -1,6 +1,7 @@
 package com.businessapi.controllers;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.ManagerResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Department;
 import com.businessapi.entities.Manager;
@@ -67,10 +68,10 @@ public class ManagerController
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Manager with respect to pagination")
     @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public ResponseEntity<ResponseDTO<List<Manager>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<ManagerResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<Manager>>builder()
+                .<List<ManagerResponseDTO>>builder()
                 .data(managerService.findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(dto))
                 .message("Success")
                 .code(200)
