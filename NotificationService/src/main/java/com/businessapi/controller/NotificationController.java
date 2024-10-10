@@ -75,8 +75,8 @@ public class NotificationController {
 
 
     @GetMapping(GET_UNREAD_COUNT)
-    @MessageMapping("/notifications/unread")
-    @SendTo("/topic/unreadNotifications")
+    @MessageMapping("/notifications/unreadcount")
+    @SendTo("/topic/unreadcountNotifications")
     public ResponseEntity<Long> getUnreadNotificationCount() {
         long unreadCount = notificationService.getUnreadNotificationCount();
         return ResponseEntity.ok(unreadCount);
