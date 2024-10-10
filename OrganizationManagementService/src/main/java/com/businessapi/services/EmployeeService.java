@@ -8,6 +8,8 @@ import com.businessapi.dto.request.EmployeeUpdateRequestDto;
 import com.businessapi.dto.request.ManagerUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.OrganizationDataDTO;
+import com.businessapi.dto.response.OrganizationNodeDTO;
 import com.businessapi.entities.Department;
 import com.businessapi.entities.Employee;
 import com.businessapi.entities.Manager;
@@ -24,9 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,11 +64,17 @@ public class EmployeeService
         EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
         rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
 
-        Manager manager = managerService.findByIdAndMemberId(dto.managerId());
+        Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
         employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
 
+        return true;
+    }
+
+    public Boolean save(Employee employee)
+    {
+        employeeRepository.save(employee);
         return true;
     }
 
@@ -76,7 +87,7 @@ public class EmployeeService
         return matcher.matches();
     }
 
-    public Boolean saveForDemoData(EmployeeSaveRequestDto dto)
+    public Employee saveForDemoData(EmployeeSaveRequestDto dto)
     {
         Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
         if (Boolean.TRUE.equals(isEmailExist))
@@ -91,12 +102,31 @@ public class EmployeeService
         //EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
         //rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
 
-        Manager manager = managerService.findById(dto.managerId());
+        Employee manager = employeeRepository.findById(dto.managerId()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findById(dto.departmentId());
-        employeeRepository.save(Employee.builder().memberId(2L).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
 
-        return true;
+        return employeeRepository.save(Employee.builder().memberId(2L).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+    }
+
+    public Employee saveForDemoDataOwner(EmployeeSaveRequestDto dto)
+    {
+        Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
+        if (Boolean.TRUE.equals(isEmailExist))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
+        }
+
+        String password = PasswordGenerator.generatePassword();
+        //saving supplier as auth and user
+        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
+        //sending password to new members
+        //EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
+        //rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+
+        Department department = departmentService.findById(dto.departmentId());
+
+        return employeeRepository.save(Employee.builder().memberId(2L).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).name(dto.name()).surname(dto.surname()).department(department).build());
     }
 
     public Boolean delete(Long id)
@@ -116,7 +146,7 @@ public class EmployeeService
         employee.setName(dto.name());
         employee.setSurname(dto.surname());
         employee.setPhoneNo(dto.phoneNo());
-        employee.setManager(manager);
+        //employee.setManager(manager);
         employee.setDepartment(department);
         employeeRepository.save(employee);
         return true;
@@ -143,4 +173,42 @@ public class EmployeeService
     {
         return employeeRepository.findById(id).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
     }
+
+    public List<OrganizationNodeDTO> getEmployeeHierarchy() {
+        List<Employee> employees = employeeRepository.findAll();  // Tüm çalışanları çekiyoruz //TODO BURAYI MEMBERIDLIYE CEVIRICEZ SONRA
+        Map<Long, Employee> employeeMap = employees.stream()
+                .collect(Collectors.toMap(Employee::getId, employee -> employee));  // Tüm çalışanları map yapısına koyuyoruz
+
+        List<OrganizationNodeDTO> organizationNodes = new ArrayList<>();
+
+        // En üst düzey yöneticileri bulup hiyerarşik yapı oluşturuyoruz
+        employees.stream()
+                .filter(employee -> employee.getManager() == null)  // Yöneticisi olmayanlar (örneğin CEO)
+                .forEach(employee -> organizationNodes.add(convertToOrganizationNode(employee, employeeMap)));
+
+        return organizationNodes;
+    }
+
+    private OrganizationNodeDTO convertToOrganizationNode(Employee employee, Map<Long, Employee> employeeMap) {
+        OrganizationNodeDTO nodeDTO = new OrganizationNodeDTO();
+        nodeDTO.setType("person");
+        nodeDTO.setExpanded(true);  // Varsayılan olarak düğümü genişletiyoruz
+
+        // Data alanını dolduruyoruz
+        OrganizationDataDTO dataDTO = new OrganizationDataDTO();
+        dataDTO.setId(employee.getId());
+        dataDTO.setImage("https://randomuser.me/api/portraits/lego/1.jpg");
+        dataDTO.setName(employee.getName() + " " + employee.getSurname());
+        dataDTO.setTitle(employee.getDepartment() != null ? employee.getDepartment().getName() : "No Department");
+        nodeDTO.setData(dataDTO);
+
+        // Alt çalışanları (subordinates) children olarak ekliyoruz
+        List<OrganizationNodeDTO> children = employee.getSubordinates().stream()
+                .map(subordinate -> convertToOrganizationNode(subordinate, employeeMap))
+                .collect(Collectors.toList());
+        nodeDTO.setChildren(children);
+
+        return nodeDTO;
+    }
+
 }

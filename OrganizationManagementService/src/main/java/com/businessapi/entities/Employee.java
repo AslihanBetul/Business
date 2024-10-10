@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @AllArgsConstructor
@@ -22,9 +24,11 @@ public class Employee extends BaseEntity
     Long memberId;
     Long authId;
     @ManyToOne
-    Manager manager;
+    Employee manager;
     @ManyToOne
     Department department;
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Employee> subordinates;
     String identityNo;
     String phoneNo;
     String name;
