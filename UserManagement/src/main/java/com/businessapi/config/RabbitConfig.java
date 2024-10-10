@@ -83,6 +83,9 @@ public class RabbitConfig {
     //Token karşığılığında userId gönderilmesi
     private static final String queueGetUserIdByToken = "queueGetUserIdByToken";
     private static final String keyGetUserIdByToken = "keyGetUserIdByToken";
+    //Admin Tarafından Kullanıcıya yeni şifre göndermek için mailService iletişim kuyruğı
+    private static final String queueSendMailNewPassword = "queueSendMailNewPassword";
+    private static final String keySendMailNewPassword = "keySendMailNewPassword";
 
 
     @Bean
@@ -181,6 +184,10 @@ public class RabbitConfig {
     public Queue queueGetUserIdByToken() {
         return new Queue(queueGetUserIdByToken);
     }
+    @Bean
+    public Queue queueSendMailNewPassword() {
+        return new Queue(queueSendMailNewPassword);
+    }
 
 
     @Bean
@@ -250,6 +257,10 @@ public class RabbitConfig {
     @Bean
     public Binding bindingGetUserIdByToken (Queue queueGetUserIdByToken, DirectExchange businessDirectExchange) {
         return BindingBuilder.bind(queueGetUserIdByToken).to(businessDirectExchange).with(keyGetUserIdByToken);
+    }
+    @Bean
+    public Binding bindingSendMailNewPassword (Queue queueSendMailNewPassword, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSendMailNewPassword).to(businessDirectExchange).with(keySendMailNewPassword);
     }
 
 

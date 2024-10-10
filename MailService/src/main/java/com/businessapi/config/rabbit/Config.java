@@ -20,6 +20,9 @@ public class Config {
     private final String keyForgetPassword = "keyForgetPassword";
     private final String queueSendMail = "queueSendMail";
     private final String keySendMail = "keySendMail";
+    //Admin Tarafından Kullanıcıya yeni şifre göndermek için mailService iletişim kuyruğı
+    private static final String queueSendMailNewPassword = "queueSendMailNewPassword";
+    private static final String keySendMailNewPassword = "keySendMailNewPassword";
 
     @Bean
     public DirectExchange directExchange(){
@@ -53,7 +56,14 @@ public class Config {
         return new Queue(queueForgetPassword);
     }
 
-
+    @Bean
+    public Queue queueSendMailNewPassword() {
+        return new Queue(queueSendMailNewPassword);
+    }
+    @Bean
+    public Binding bindingSendMailNewPassword (Queue queueSendMailNewPassword, DirectExchange businessDirectExchange) {
+        return BindingBuilder.bind(queueSendMailNewPassword).to(businessDirectExchange).with(keySendMailNewPassword);
+    }
 
     @Bean
     public Binding bindingForgetPassword (Queue queueForgetPassword, DirectExchange businessDirectExchange) {

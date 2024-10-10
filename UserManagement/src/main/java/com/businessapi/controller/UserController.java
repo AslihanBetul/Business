@@ -95,7 +95,7 @@ public class UserController {
     @PutMapping("/change-user-password")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     public ResponseEntity<ResponseDTO<Boolean>> changeUserPassword(@RequestBody ChangeUserPassword changeUserPassword){
-        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(userService.changeUserPassword(changeUserPassword)).message("Password Changed").build());
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().code(200).data(userService.changeUserPassword(changeUserPassword)).message("A new password has been sent to the user's e-mail address.").build());
     }
 
     @PutMapping("/update-user-status")

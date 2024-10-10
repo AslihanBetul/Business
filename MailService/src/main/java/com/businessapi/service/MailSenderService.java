@@ -2,11 +2,13 @@ package com.businessapi.service;
 
 import com.businessapi.config.rabbit.model.EmailSendModal;
 import com.businessapi.config.rabbit.model.EmailVerificationModel;
+import com.businessapi.config.rabbit.model.SendMailNewPasswordModel;
 import com.businessapi.utilty.JwtTokenManager;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -113,5 +115,41 @@ public class MailSenderService {
         javaMailSender.send(mimeMessage);
     }
 
+    @RabbitListener(queues = "queueSendMailNewPassword")
+    public void sendNewPasswordChangedByAdmin(SendMailNewPasswordModel sendMailNewPasswordModel) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "utf-8");
+        String loginLink = "http://localhost:3000/login";
+        String textHTML = "<html><body>" +
+                "<table cellpadding=\"0\" cellspacing=\"0\" align=\"center\" width=\"100%\" style=\"font-family:Arial,sans-serif;color:#333;background-color:#f9f9f9;padding:20px;\">" +
+                "    <tr>" +
+                "        <td style=\"background-color:#ffffff;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);\">" +
+                "            <table cellpadding=\"20\" cellspacing=\"0\" width=\"100%\">" +
+                "                <tr>" +
+                "                    <td style=\"text-align:center;\">" +
+                "                        <h1 style=\"color:#333333;font-size:24px;margin:0;\">Hoş Geldiniz, Yeni Şifreniz !</h1>" +
+                "                        <p style=\"font-size:16px;color:#555555;\">"+ sendMailNewPasswordModel.getNewPassword() +"</p>" +
+                "                        <a href=\"" + loginLink + "\" style=\"display: inline-block; padding: 12px 24px; font-size: 16px; color: #ffffff; background-color: #007bff; border-radius: 4px; text-decoration: none;\">Giriş Yap</a>" +
+
+                "                    </td>" +
+                "                </tr>" +
+                "                <tr>" +
+                "                    <td style=\"text-align:center;padding-top:20px;\">" +
+                "                        <p style=\"font-size:14px;color:#888888;margin:0;\"> Lütfen bu e-postayı yanıtlamayın.</p>" +
+                "                    </td>" +
+                "                </tr>" +
+                "            </table>" +
+                "        </td>" +
+                "    </tr>" +
+                "</table>" +
+                "</body></html>";
+
+        message.setSubject("Yeni Şifreniz");
+        message.setText(textHTML,true);
+        message.setBcc("aslihanmertjava@gmail.com");
+        message.setCc("ertugrulsaliher@gmail.com");
+        message.setTo(sendMailNewPasswordModel.getEmail());
+        javaMailSender.send(mimeMessage);
+    }
 
 }

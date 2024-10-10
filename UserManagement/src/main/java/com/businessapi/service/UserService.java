@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -293,8 +294,20 @@ public class UserService {
 
     public Boolean changeUserPassword(ChangeUserPassword changeUserPassword) {
         User user = userRepository.findById(changeUserPassword.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
-        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(changeUserPassword.password()).build());
+        String userNewPassword = passwordGenerator();
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(userNewPassword).build());
+        String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange","keyGetMailByAuthId", user.getAuthId());
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySendMailNewPassword",SendMailNewPasswordModel.builder().newPassword(userNewPassword).email(usersMail).build());
         return true;
+    }
+    public String passwordGenerator(){
+        String codeSource= UUID.randomUUID().toString();
+        String[] splitCodeSource = codeSource.split("-");
+        StringBuilder code= new StringBuilder();
+        for (String s : splitCodeSource) {
+            code.append(s.charAt(0));
+        }
+        return code.toString();
     }
 
     @Transactional
