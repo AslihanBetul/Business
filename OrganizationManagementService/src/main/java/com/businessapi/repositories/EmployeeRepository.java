@@ -17,4 +17,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>
     Optional<Employee> findByIdAndMemberId(Long id, Long memberId);
 
     List<Employee> findAllByNameContainingIgnoreCaseAndMemberIdAndStatusIsNotOrderByNameAsc(String s, Long memberIdFromAuthenticatedMember, EStatus eStatus, PageRequest of);
+
+    List<Employee> findAllByMemberIdAndStatusIsNot(Long memberId, EStatus eStatus);
 }

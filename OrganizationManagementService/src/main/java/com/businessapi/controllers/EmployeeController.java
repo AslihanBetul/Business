@@ -4,6 +4,7 @@ import com.businessapi.dto.request.EmployeeSaveRequestDto;
 import com.businessapi.dto.request.EmployeeUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.OrganizationNodeDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Employee;
 import com.businessapi.services.EmployeeService;
@@ -86,6 +87,19 @@ public class EmployeeController
         return ResponseEntity.ok(ResponseDTO
                 .<Employee>builder()
                 .data(employeeService.findByIdAndMemberId(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(GET_EMPLOYEE_HIERARCHY)
+    @Operation(summary = "Finds Employee hierarchy")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    public ResponseEntity<ResponseDTO<List<OrganizationNodeDTO>>> getEmployeeHierarchy(){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<List<OrganizationNodeDTO>>builder()
+                .data(employeeService.getEmployeeHierarchy())
                 .message("Success")
                 .code(200)
                 .build());
