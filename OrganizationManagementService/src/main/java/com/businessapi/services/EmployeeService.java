@@ -268,8 +268,9 @@ public class EmployeeService
         dataDTO.setTitle(employee.getDepartment() != null ? employee.getDepartment().getName() : "No Department");
         nodeDTO.setData(dataDTO);
 
-        // Alt çalışanları (subordinates) children olarak ekliyoruz
+        // Alt çalışanları (subordinates) children olarak ekliyoruz ve sadece silinmemiş (DELETED olmayan) çalışanları ekliyoruz
         List<OrganizationNodeDTO> children = employee.getSubordinates().stream()
+                .filter(subordinate -> subordinate.getStatus() != EStatus.DELETED)  // DELETED olmayan çalışanları filtrele
                 .map(subordinate -> convertToOrganizationNode(subordinate, employeeMap))
                 .collect(Collectors.toList());
         nodeDTO.setChildren(children);
