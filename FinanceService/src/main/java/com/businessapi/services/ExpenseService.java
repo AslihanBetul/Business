@@ -2,13 +2,16 @@ package com.businessapi.services;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
+import com.businessapi.dto.response.ExpenseResponseDTO;
 import com.businessapi.entity.Budget;
+import com.businessapi.entity.Department;
 import com.businessapi.entity.Expense;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.ExpenseRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,24 +26,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService {
     private final ExpenseRepository expenseRepository;
-    private final BudgetService budgetService;
+    private final DepartmentService departmentService;
 
+    @Transactional
     public Boolean save(ExpenseSaveRequestDTO dto) {
+        Department department = departmentService.getDepartmentById(dto.departmentId());
+        department.getExpenses().size();
         Expense expense = Expense.builder()
                 .expenseCategory(dto.expenseCategory())
                 .expenseDate(dto.expenseDate())
                 .amount(dto.amount())
                 .description(dto.description())
-                .department(dto.department())
+                .department(department)
                 .build();
 
         if (dto.expenseCategory().equals(EExpenseCategory.TAX)) {
             expense.setStatus(EStatus.APPROVED);
         }
 
-        Budget budgetByDepartment = budgetService.findByDepartment(dto.department());
-        budgetByDepartment.setSpentAmount(budgetByDepartment.getSpentAmount().add(dto.amount()));
+//        Budget budgetByDepartment = budgetService.findByDepartment(dto.department());
+//        budgetByDepartment.setSpentAmount(budgetByDepartment.getSpentAmount().add(dto.amount()));
 
+        department.getExpenses().add(expense);
         expenseRepository.save(expense);
         return true;
     }
@@ -63,21 +70,24 @@ public class ExpenseService {
         return true;
     }
 
-    public List<Expense> findAll(PageRequestDTO dto) {
-        return expenseRepository.findAllByStatusNotAndExpenseCategoryNot(
-                EStatus.DELETED, EExpenseCategory.TAX, PageRequest.of(dto.page(), dto.size())).getContent();
-    }
-
-    public Expense findById(Long id) {
-        return expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
-    }
-
-    public List<Expense> findByCategory(EExpenseCategory expenseCategory) {
-        List<Expense> expensesByCategory = expenseRepository.findByExpenseCategoryAndStatusNot(expenseCategory, EStatus.DELETED);
-        if (expensesByCategory.isEmpty()) {
-            throw new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND);
+    public List<ExpenseResponseDTO> findAll(PageRequestDTO dto) {
+        List<Expense> expenseList = expenseRepository.findAllByStatusNotAndExpenseCategoryNot(EStatus.DELETED, EExpenseCategory.TAX, PageRequest.of(dto.page(), dto.size())).getContent();
+        List<ExpenseResponseDTO> expenseResponseDTOS = new ArrayList<>();
+        for (Expense expense : expenseList) {
+            expenseResponseDTOS.add(new ExpenseResponseDTO(expense.getId(), expense.getExpenseCategory(), expense.getExpenseDate(), expense.getAmount(), expense.getDescription(), expense.getDepartment().getName()));
         }
-        return expensesByCategory;
+        return expenseResponseDTOS;
+    }
+
+    public List<Expense> findAllForBudgetService() {
+        List<Expense> expenseList = expenseRepository.findAll();
+        expenseList.removeIf(expense -> expense.getStatus().equals(EStatus.DELETED));
+        return expenseList;
+    }
+
+    public ExpenseResponseDTO findById(Long id) {
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.EXPENSE_NOT_FOUND));
+        return new ExpenseResponseDTO(expense.getId(), expense.getExpenseCategory(), expense.getExpenseDate(), expense.getAmount(), expense.getDescription(), expense.getDepartment().getName());
     }
 
     public Boolean approve(Long id) {
@@ -94,8 +104,13 @@ public class ExpenseService {
         return true;
     }
 
-    public List<Expense> findByDate(LocalDate startDate, LocalDate endDate) {
-        return expenseRepository.findAllByExpenseDateBetweenAndStatusNot(startDate, endDate, EStatus.DELETED);
+    public List<ExpenseResponseDTO> findByDate(LocalDate startDate, LocalDate endDate) {
+        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(startDate, endDate, EStatus.DELETED);
+        List<ExpenseResponseDTO> expenseResponseDTOS = new ArrayList<>();
+        for (Expense expense : expenseList) {
+            expenseResponseDTOS.add(new ExpenseResponseDTO(expense.getId(), expense.getExpenseCategory(), expense.getExpenseDate(), expense.getAmount(), expense.getDescription(), expense.getDepartment().getName()));
+        }
+        return expenseResponseDTOS;
     }
 
     public BigDecimal calculateTotalExpenseBetweenDates(LocalDate startDate, LocalDate endDate) {

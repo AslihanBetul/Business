@@ -22,6 +22,7 @@ public class Endpoints {
     public static final String TAX = "/tax";
     public static final String INCOME = "/income";
     public static final String DECLARATION = "/declaration";
+    public static final String DEPARTMENT = "/department";
 
 
     //methods
@@ -45,4 +46,6 @@ public class Endpoints {
     public static final String GET_FOR_MONTHS = "/get-for-months";
     public static final String GET_MOST = "/get-most";
     public static final String GET_DEPARTMENTS = "/get-departments";
+    public static final String FIND_ALL_BY_DEPARTMENT_ID = "/find-all-by-department-id";
+    public static final String FIND_ALL_BY_DEPARTMENT_NAME = "/find-all-by-department-name";
 }

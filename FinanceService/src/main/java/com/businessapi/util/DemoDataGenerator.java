@@ -3,6 +3,8 @@ package com.businessapi.util;
 import com.businessapi.dto.request.BudgetSaveRequestDTO;
 import com.businessapi.dto.request.ExpenseSaveRequestDTO;
 import com.businessapi.dto.request.IncomeSaveRequestDTO;
+import com.businessapi.dto.request.SaveDepartmentRequestDTO;
+import com.businessapi.entity.enums.EBudgetCategory;
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.services.*;
 import jakarta.annotation.PostConstruct;
@@ -16,30 +18,42 @@ import java.time.LocalDate;
 @Service
 public class DemoDataGenerator {
     private final BudgetService budgetService;
-    private final DeclarationService declarationService;
     private final ExpenseService expenseService;
-    private final FinancialReportService financialReportService;
     private final IncomeService incomeService;
-    private final InvoiceService invoiceService;
-    private final TaxService taxService;
+    private final DepartmentService departmentService;
+
 
     @PostConstruct
     public void generateDemoData() {
+        generateDepartmentDemoData();
         generateBudgetDemoData();
         generateIncomeDemoData();
         generateExpenseDemoData();
-        setSpentAmounts();
+        //setSpentAmounts();
+    }
+
+    private void generateDepartmentDemoData() {
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("SALES"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("MARKETING"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("HR"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("IT"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("FINANCE"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("R&D"));
+        departmentService.saveDepartment(new SaveDepartmentRequestDTO("CSR"));
     }
 
     private void generateBudgetDemoData() {
-        budgetService.save(new BudgetSaveRequestDTO("SALES", 2025, new BigDecimal(1000000), "2025 Budget for Sales"));
-        budgetService.save(new BudgetSaveRequestDTO("MARKETING", 2025, new BigDecimal(500000), "2025 Budget for Marketing"));
-        budgetService.save(new BudgetSaveRequestDTO("HR", 2025, new BigDecimal(200000), "2025 Budget for HR"));
-        budgetService.save(new BudgetSaveRequestDTO("IT", 2025, new BigDecimal(300000), "2025 Budget for IT"));
-        budgetService.save(new BudgetSaveRequestDTO("FINANCE", 2025, new BigDecimal(400000), "2025 Budget for Finance"));
-        budgetService.save(new BudgetSaveRequestDTO("R&D", 2025, new BigDecimal(600000), "2025 Budget for R&D"));
-        budgetService.save(new BudgetSaveRequestDTO("CSR", 2025, new BigDecimal(100000), "2025 Budget for CSR"));
-    }
+        budgetService.save(new BudgetSaveRequestDTO(1L, new BigDecimal(200000), EBudgetCategory.OTHER, "Sales budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(1L, new BigDecimal(300000), EBudgetCategory.MARKETING, "Marketing budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(2L, new BigDecimal(500000), EBudgetCategory.MARKETING, "Marketing budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(3L, new BigDecimal(1000000), EBudgetCategory.PERSONNEL, "HR budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(4L, new BigDecimal(200000), EBudgetCategory.OFFICE_SUPPLIES, "IT budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(5L, new BigDecimal(300000), EBudgetCategory.UTILITIES, "Finance budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(5L, new BigDecimal(300000), EBudgetCategory.EDUCATION, "Finance budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(6L, new BigDecimal(100000), EBudgetCategory.TRAVEL, "R&D budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(7L, new BigDecimal(150000), EBudgetCategory.INSURANCE, "CSR budget for 2024"));
+        budgetService.save(new BudgetSaveRequestDTO(7L, new BigDecimal(150000), EBudgetCategory.OTHER, "CSR budget for 2024"));
+        }
 
     private void generateIncomeDemoData() {
         incomeService.saveIncome(new IncomeSaveRequestDTO("Product Sales", new BigDecimal(120000), LocalDate.parse("2024-01-15")));
@@ -57,22 +71,24 @@ public class DemoDataGenerator {
     }
 
     private void generateExpenseDemoData() {
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.BUSSINESS, LocalDate.parse("2024-01-15"), new BigDecimal(20000), "Monthly rent payment", "SALES"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.EDUCATION, LocalDate.parse("2024-02-15"), new BigDecimal(5000), "Monthly utility bills", "MARKETING"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.INSURANCE, LocalDate.parse("2024-03-15"), new BigDecimal(100000), "Monthly salary payments", "HR"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.MARKETING, LocalDate.parse("2024-04-15"), new BigDecimal(20000), "Monthly office supplies", "IT"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.OFFICE_SUPPLIES, LocalDate.parse("2024-05-15"), new BigDecimal(30000), "Purchase of new equipment", "FINANCE"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.PERSONNEL, LocalDate.parse("2024-06-15"), new BigDecimal(10000), "Monthly maintenance costs", "R&D"));
-        expenseService.save(new ExpenseSaveRequestDTO(EExpenseCategory.TRAVEL, LocalDate.parse("2024-07-15"), new BigDecimal(15000), "Monthly insurance premiums", "CSR"));
+        expenseService.save(new ExpenseSaveRequestDTO(1L, EExpenseCategory.BUSSINESS, LocalDate.parse("2024-01-15"), new BigDecimal(20000), "Monthly rent"));
+        expenseService.save(new ExpenseSaveRequestDTO(1L, EExpenseCategory.PERSONNEL, LocalDate.parse("2024-01-15"), new BigDecimal(20000), "Salaries"));
+        expenseService.save(new ExpenseSaveRequestDTO(2L, EExpenseCategory.OFFICE_SUPPLIES, LocalDate.parse("2024-02-15"), new BigDecimal(50000), "Marketing materials"));
+        expenseService.save(new ExpenseSaveRequestDTO(3L, EExpenseCategory.PERSONNEL, LocalDate.parse("2024-03-15"), new BigDecimal(100000), "Salaries"));
+        expenseService.save(new ExpenseSaveRequestDTO(4L, EExpenseCategory.TRAVEL, LocalDate.parse("2024-04-15"), new BigDecimal(20000), "Software licenses"));
+        expenseService.save(new ExpenseSaveRequestDTO(5L, EExpenseCategory.UTILITIES, LocalDate.parse("2024-05-15"), new BigDecimal(30000), "Electricity"));
+        expenseService.save(new ExpenseSaveRequestDTO(5L, EExpenseCategory.UTILITIES, LocalDate.parse("2024-06-15"), new BigDecimal(30000), "Water"));
+        expenseService.save(new ExpenseSaveRequestDTO(6L, EExpenseCategory.EDUCATION, LocalDate.parse("2024-06-15"), new BigDecimal(10000), "Training"));
+        expenseService.save(new ExpenseSaveRequestDTO(7L, EExpenseCategory.OTHER, LocalDate.parse("2024-07-15"), new BigDecimal(15000), "Donation"));
     }
 
-    private void setSpentAmounts() {
-        budgetService.setSpentAmount("SALES", new BigDecimal(20000));
-        budgetService.setSpentAmount("MARKETING", new BigDecimal(505000));
-        budgetService.setSpentAmount("HR", new BigDecimal(100000));
-        budgetService.setSpentAmount("IT", new BigDecimal(20000));
-        budgetService.setSpentAmount("FINANCE", new BigDecimal(30000));
-        budgetService.setSpentAmount("R&D", new BigDecimal(10000));
-        budgetService.setSpentAmount("CSR", new BigDecimal(15000));
-    }
+//    private void setSpentAmounts() {
+//        budgetService.setSpentAmount("SALES", new BigDecimal(20000));
+//        budgetService.setSpentAmount("MARKETING", new BigDecimal(505000));
+//        budgetService.setSpentAmount("HR", new BigDecimal(100000));
+//        budgetService.setSpentAmount("IT", new BigDecimal(20000));
+//        budgetService.setSpentAmount("FINANCE", new BigDecimal(30000));
+//        budgetService.setSpentAmount("R&D", new BigDecimal(10000));
+//        budgetService.setSpentAmount("CSR", new BigDecimal(15000));
+//    }
 }
