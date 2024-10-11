@@ -25,7 +25,7 @@ public class Plan extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private List<ERoles> roles;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<PlanTranslation> translations;
 
     public PlanTranslation getPlanTranslationByLanguage(String language) {
