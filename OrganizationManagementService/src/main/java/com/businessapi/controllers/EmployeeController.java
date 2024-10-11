@@ -3,6 +3,8 @@ package com.businessapi.controllers;
 import com.businessapi.dto.request.EmployeeSaveRequestDto;
 import com.businessapi.dto.request.EmployeeUpdateRequestDto;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.SubordinateSaveRequestDTO;
+import com.businessapi.dto.response.EmployeeFindByIdResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.dto.response.OrganizationNodeDTO;
 import com.businessapi.dto.response.ResponseDTO;
@@ -35,6 +37,19 @@ public class EmployeeController
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(employeeService.save(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(SAVE_SUBORDINATE)
+    @Operation(summary = "Creates new Employee with subordinates")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    public ResponseEntity<ResponseDTO<Boolean>> saveSubordinates(@RequestBody SubordinateSaveRequestDTO dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(employeeService.saveSubordinates(dto))
                 .message("Success")
                 .code(200)
                 .build());
@@ -82,10 +97,10 @@ public class EmployeeController
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds Employee by Id")
     @PreAuthorize("hasAnyAuthority('MEMBER')")
-    public ResponseEntity<ResponseDTO<Employee>> findById(Long id){
+    public ResponseEntity<ResponseDTO<EmployeeFindByIdResponseDTO>> findById(Long id){
 
         return ResponseEntity.ok(ResponseDTO
-                .<Employee>builder()
+                .<EmployeeFindByIdResponseDTO>builder()
                 .data(employeeService.findByIdAndMemberId(id))
                 .message("Success")
                 .code(200)
