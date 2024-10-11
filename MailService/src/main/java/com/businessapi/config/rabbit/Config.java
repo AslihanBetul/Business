@@ -20,6 +20,8 @@ public class Config {
     private final String keyForgetPassword = "keyForgetPassword";
     private final String queueSendMail = "queueSendMail";
     private final String keySendMail = "keySendMail";
+    private final String queueSendStyledEmail = "queueSendStyledEmail";
+    private final String keySendStyledEmail = "keySendStyledEmail";
 
     @Bean
     public DirectExchange directExchange(){
@@ -42,6 +44,14 @@ public class Config {
     @Bean
     public Binding bindingKeySendMail(){
         return BindingBuilder.bind(queueSendMail()).to(directExchange()).with(keySendMail);
+    }
+    @Bean
+    public Queue queueSendStyledEmail(){
+        return new Queue(queueSendStyledEmail);
+    }
+    @Bean
+    public Binding bindingKeySendStyledEmail(){
+        return BindingBuilder.bind(queueSendStyledEmail()).to(directExchange()).with(keySendStyledEmail);
     }
 
     @Bean
