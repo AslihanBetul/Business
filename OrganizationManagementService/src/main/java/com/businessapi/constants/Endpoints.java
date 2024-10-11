@@ -41,4 +41,5 @@ public class Endpoints
     public static final String SAVE_FROM_ORDER_ID = "/save-from-order-id";
 
     public static final String GET_EMPLOYEE_HIERARCHY = "/get-employee-hierarchy";
+    public static final String SAVE_SUBORDINATE = "/save-subordinate";
 }

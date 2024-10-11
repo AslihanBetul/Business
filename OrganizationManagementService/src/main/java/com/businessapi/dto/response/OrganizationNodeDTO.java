@@ -12,10 +12,9 @@ import java.util.List;
 @Builder
 @Data
 public class OrganizationNodeDTO {
-    private String type;
-    private OrganizationDataDTO data;  // Alt veri yapısı
-    private List<OrganizationNodeDTO> children;
-    private boolean expanded;
+    String type;
+    OrganizationDataDTO data;
+    List<OrganizationNodeDTO> children;
+    boolean expanded;
 
-    // Getter ve Setter metodları
 }
