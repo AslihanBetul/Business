@@ -24,7 +24,7 @@ public class ProductService
     private final ProductRepository productRepository;
     private final ProductCategoryService productCategoryService;
 
-    public Product findByIdAndMemberId(Long id)
+    public Product   findByIdAndMemberId(Long id)
     {
         return productRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new StockServiceException(ErrorType.PRODUCT_NOT_FOUND));
     }

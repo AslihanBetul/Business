@@ -28,7 +28,8 @@ public enum ErrorType {
     INVOICE_NOT_FOUND(9013, "Invoice Not Found", HttpStatus.BAD_REQUEST),
     TAX_NOT_FOUND(9014, "Tax Not Found", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9015, "Invalid Token", HttpStatus.BAD_REQUEST),
-    INCOME_NOT_FOUND(9016, "Income Not Found", HttpStatus.BAD_REQUEST);
+    INCOME_NOT_FOUND(9016, "Income Not Found", HttpStatus.BAD_REQUEST),
+    DEPARTMENT_NOT_FOUND(9017, "Department Not Found", HttpStatus.BAD_REQUEST),;
 
     private Integer code;
     private String message;

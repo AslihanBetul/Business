@@ -12,8 +12,8 @@ import java.util.Optional;
 
 @Service
 public class JwtTokenManager {
-    private final String SECRETKEY ="secretkey";
-    private final String ISSUER ="workforce";
+    private final String SECRETKEY ="123";
+    private final String ISSUER ="123";
     private final Long EXDATE = 1000L * 60 * 60 ; // 1 Hour
 
     public Optional<String> createToken (Long authId){

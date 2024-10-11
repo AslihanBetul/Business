@@ -3,6 +3,7 @@ package com.businessapi.services;
 import com.businessapi.dto.request.DeclarationSaveRequestDTO;
 import com.businessapi.dto.request.ExpenseFindByDateRequestDTO;
 import com.businessapi.dto.request.GenerateDeclarationRequestDTO;
+import com.businessapi.dto.response.ExpenseResponseDTO;
 import com.businessapi.entity.Declaration;
 import com.businessapi.entity.Expense;
 import com.businessapi.entity.Income;
@@ -73,11 +74,10 @@ public class DeclarationService {
 
     private List<BigDecimal> calculateTaxableIncome(DeclarationSaveRequestDTO dto){
         List<Income> incomeList = incomeService.findByDateForDeclaration(dto.startDate(), dto.endDate());
-        List<Expense> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
-        List<Expense> approvedExpenseList = expenseList.stream().filter(expense -> expense.getStatus().equals(EStatus.APPROVED)).toList();
+        List<ExpenseResponseDTO> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
 
         BigDecimal totalIncome = incomeList.stream().map(Income::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalExpense = approvedExpenseList.stream().map(Expense::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalExpense = expenseList.stream().map(ExpenseResponseDTO::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal taxableIncome = totalIncome.subtract(totalExpense);
 

@@ -3,8 +3,7 @@ package com.businessapi.controllers;
 import com.businessapi.dto.request.BudgetSaveRequestDTO;
 import com.businessapi.dto.request.BudgetUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
-import com.businessapi.dto.response.DepartmentResponseDTO;
-import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.dto.response.*;
 import com.businessapi.entity.Budget;
 import com.businessapi.services.BudgetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,9 +57,9 @@ public class BudgetController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all the budgets with respect to the given page and size")
-    public ResponseEntity<ResponseDTO<List<Budget>>> findAll(@RequestBody PageRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<List<BudgetMergedByDepartmentResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
-                .<List<Budget>>builder()
+                .<List<BudgetMergedByDepartmentResponseDTO>>builder()
                 .data(budgetService.findAll(dto))
                 .message("Success")
                 .code(200)
@@ -80,12 +79,35 @@ public class BudgetController {
 
     @PostMapping(GET_DEPARTMENTS)
     @Operation(summary = "Lists all departments of budgets")
-    public ResponseEntity<ResponseDTO<List<DepartmentResponseDTO>>> getDepartments() {
+    public ResponseEntity<ResponseDTO<Void>> getDepartments() {
         return ResponseEntity.ok(ResponseDTO
-                .<List<DepartmentResponseDTO>>builder()
+                .<Void>builder()
                 .data(budgetService.getDepartments())
                 .message("Success")
                 .code(200)
                 .build());
     }
+
+    @PostMapping(GET_ALL_CATEGORIES)
+    @Operation(summary = "Lists all categories of budgets")
+    public ResponseEntity<ResponseDTO<List<BudgetCategoryResponseDTO>>> getAllCategories() {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<BudgetCategoryResponseDTO>>builder()
+                .data(budgetService.getAllCategories())
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_ALL_BY_DEPARTMENT_NAME)
+    @Operation(summary = "Lists all budgets by department name")
+    public ResponseEntity<ResponseDTO<List<BudgetByDepartmentResponseDTO>>> findAllByDepartmentId(String departmentName) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<BudgetByDepartmentResponseDTO>>builder()
+                .data(budgetService.findAllByDepartmentName(departmentName))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
 }
