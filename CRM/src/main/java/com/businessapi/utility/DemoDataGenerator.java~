@@ -33,6 +33,7 @@ public class DemoDataGenerator {
     }
 
     private void customerDemoData() {
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Undefined", "Undefined", "undefined", "undefined", "undefined" , EStatus.PASSIVE));
         customerService.saveForDemoData(new CustomerSaveDemoDTO("John", "Doe", "johndoe@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
         customerService.saveForDemoData(new CustomerSaveDemoDTO("Jane", "Doe", "janedoe@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
         customerService.saveForDemoData(new CustomerSaveDemoDTO("Bob", "Smith", "bobsmith@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));

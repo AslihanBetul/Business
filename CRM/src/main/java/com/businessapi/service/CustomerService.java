@@ -46,7 +46,7 @@ public class CustomerService {
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
             throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(EStatus.ACTIVE).build());
+        customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(dto.status()).build());
     }
 
     // This method will return members customers with paginable
@@ -93,8 +93,11 @@ public class CustomerService {
         return customerRepository.findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
     public List<OpportunityResponseDTO> getAllCustomersForOpportunity() {
-        List<Customer> customers = customerRepository.findAll();
+        List<Customer> customers = customerRepository.findByStatus(EStatus.ACTIVE);
         List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
         return opportunityResponseDTOS;
+    }
+    public List<Customer> findAllByIds(List<Long> ids) {
+        return customerRepository.findAllById(ids);
     }
 }

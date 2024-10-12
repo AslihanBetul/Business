@@ -2,6 +2,7 @@ package com.businessapi.service;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
+import com.businessapi.dto.response.OpportunityDetailsDTO;
 import com.businessapi.dto.response.OpportunityResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
@@ -19,40 +20,71 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class OpportunityService {
     private final OpportunityRepository opportunityRepository;
-    private  CustomerService customerService;
+    private CustomerService customerService;
 
     @Autowired
-    private void setService (@Lazy CustomerService customerService){
+    private void setService(@Lazy CustomerService customerService) {
         this.customerService = customerService;
     }
 
     public Boolean save(OpportunitySaveDTO dto) {
-        opportunityRepository.save(Opportunity.builder()
+
+        Opportunity opportunity = Opportunity.builder()
                 .name(dto.name())
                 .description(dto.description())
                 .value(dto.value())
                 .stage(dto.stage())
                 .probability(dto.probability())
-                .customerId(dto.customerId())
                 .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
-                        .status(EStatus.ACTIVE)
-                .build());
+                .status(EStatus.ACTIVE)
+                .build();
+
+
+//        Customer customer = customerService.findById(1L);
+//        opportunity.setCustomers(List.of(customer));
+
+        opportunityRepository.save(opportunity);
 
         return true;
     }
 
-    public void saveForDemoData(OpportunitySaveDemoDTO dto)
-    {
-//        if (customerService.findById(dto.customerId()).isPresent()) {
-//            throw new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER);
-//        }
-        opportunityRepository.save(Opportunity.builder().memberId(2L).name(dto.name()).description(dto.description()).value(dto.value()).stage(dto.stage()).probability(dto.probability()).customerId(dto.customerId()).status(EStatus.ACTIVE).build());
+    public Boolean saveCustomerOpportunity(OpportunityForCustomerSaveDTO dto) {
 
+
+        Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(opportunity.getMemberId());
+
+        List<Customer> newCustomers = customerService.findAllByIds(dto.customers());
+
+        if (dto.customers() == null || dto.customers().isEmpty()) {
+            throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
+        }
+
+
+        List<Customer> existingCustomers = opportunity.getCustomers();
+
+
+        if (existingCustomers != null) {
+            existingCustomers.addAll(newCustomers);
+        } else {
+            existingCustomers = newCustomers;
+        }
+
+        opportunity.setCustomers(existingCustomers);
+        opportunityRepository.save(opportunity);
+        return true;
+    }
+
+
+    public void saveForDemoData(OpportunitySaveDemoDTO dto) {
+        Customer customer = customerService.findById(dto.customerId());
+        opportunityRepository.save(Opportunity.builder().memberId(2L).name(dto.name()).description(dto.description()).value(dto.value()).stage(dto.stage()).probability(dto.probability()).customers(List.of(customer)).status(EStatus.ACTIVE).build());
     }
 
 
@@ -64,13 +96,12 @@ public class OpportunityService {
     public Boolean update(OpportunityUpdateDTO dto) {
         Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         SessionManager.authorizationCheck(opportunity.getMemberId());
-        if (opportunity != null ) {
+        if (opportunity != null) {
             opportunity.setName(dto.name() != null ? dto.name() : opportunity.getName());
             opportunity.setDescription(dto.description() != null ? dto.description() : opportunity.getDescription());
             opportunity.setValue(dto.value() != null ? dto.value() : opportunity.getValue());
             opportunity.setStage(dto.stage() != null ? dto.stage() : opportunity.getStage());
             opportunity.setProbability(dto.probability() != null ? dto.probability() : opportunity.getProbability());
-            opportunity.setCustomerId(dto.customerId() != null ? dto.customerId() : opportunity.getCustomerId());
             opportunityRepository.save(opportunity);
             return true;
         } else {
@@ -98,6 +129,45 @@ public class OpportunityService {
     public List<OpportunityResponseDTO> findAllOpportunities() {
         return customerService.getAllCustomersForOpportunity();
 
+    }
+
+    public OpportunityDetailsDTO getDetails(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID geçersiz.");
+        }
+
+        Opportunity opportunity = opportunityRepository.findById(id)
+                .orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+
+
+        SessionManager.authorizationCheck(opportunity.getMemberId());
+
+
+        List<Long> customerIds = opportunityRepository.findAllCustomersIdById(id);
+        List<Customer> customers = customerService.findAllByIds(customerIds);
+
+
+        if (opportunity != null && opportunity.getStatus().equals(EStatus.ACTIVE)) {
+
+            List<CustomerDetailsDTO> customerDetails = customers.stream()
+                    .map(customer -> CustomerDetailsDTO.builder()
+                            .firstName(customer.getFirstName())
+                            .lastName(customer.getLastName())
+                            .build())
+                    .collect(Collectors.toList());
+
+
+            return OpportunityDetailsDTO.builder()
+                    .name(opportunity.getName())
+                    .description(opportunity.getDescription())
+                    .value(opportunity.getValue())
+                    .stage(opportunity.getStage())
+                    .probability(opportunity.getProbability())
+                    .customers(customerDetails)
+                    .build();
+        } else {
+            return null;
+        }
     }
 
 }
