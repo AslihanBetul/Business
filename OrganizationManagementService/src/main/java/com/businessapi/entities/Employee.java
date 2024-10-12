@@ -1,10 +1,7 @@
 package com.businessapi.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -34,4 +31,6 @@ public class Employee extends BaseEntity
     String name;
     String surname;
     String email;
+    @Builder.Default
+    Boolean isEmployeeTopLevelManager = false;
 }

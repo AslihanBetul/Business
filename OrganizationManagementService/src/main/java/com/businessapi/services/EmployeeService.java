@@ -64,8 +64,12 @@ public class EmployeeService
 
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
+        //Setting subordanites
+        List<Employee> subordinates = manager.getSubordinates();
+        subordinates.add(employee);
+        manager.setSubordinates(subordinates);
 
         return true;
     }
@@ -100,6 +104,33 @@ public class EmployeeService
         subordinates.add(employee);
         manager.setSubordinates(subordinates);
 
+
+        return true;
+    }
+
+    @Transactional
+    public Boolean saveTopLevelManager(ManagerSaveRequestDto dto)
+    {
+        if (!isValidEmail(dto.email()))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.INVALID_EMAIL);
+        }
+
+        Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
+        if (Boolean.TRUE.equals(isEmailExist))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
+        }
+
+        String password = PasswordGenerator.generatePassword();
+        //saving supplier as auth and user
+        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
+        //sending password to new members
+        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
+        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+
+        Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(null).name(dto.name()).surname(dto.surname()).department(department).isEmployeeTopLevelManager(true).build());
 
         return true;
     }
@@ -171,38 +202,63 @@ public class EmployeeService
 
     public Boolean update(EmployeeUpdateRequestDto dto) {
         Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
-        Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
-                .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
 
-        Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), memberId)
-                .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
+        //Updating top level manager
+        if (dto.managerId() == -1L)
+        {
+            Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
+                    .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
+            Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+            employee.setIdentityNo(dto.identityNo());
+            employee.setName(dto.name());
+            employee.setSurname(dto.surname());
+            employee.setPhoneNo(dto.phoneNo());
+            employee.setDepartment(department);
 
-        Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+            employeeRepository.save(employee);
+            return true;
 
-        // If manager of employee has changed
-        if (!employee.getManager().getId().equals(dto.managerId())) {
-            Employee oldManager = employeeRepository.findByIdAndMemberId(employee.getManager().getId(), memberId)
+        }
+        //  Updating Normal User
+        else
+        {
+            Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
                     .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
 
-            // Remove from old manager
-            oldManager.getSubordinates().remove(employee);
-            employeeRepository.save(oldManager);
+            Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), memberId)
+                    .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
 
-            // Add to new manager
-            manager.getSubordinates().add(employee);
-            employeeRepository.save(manager);
+            Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+
+            if (employee.getId().equals(manager.getId()))
+            {
+                throw new OrganizationManagementServiceException(ErrorType.MANAGER_CANNOT_BE_SAME_AS_EMPLOYEE);
+            }
+            // If manager of employee has changed
+            if (!employee.getManager().getId().equals(dto.managerId())) {
+                Employee oldManager = employeeRepository.findByIdAndMemberId(employee.getManager().getId(), memberId)
+                        .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
+
+                // Remove from old manager
+                oldManager.getSubordinates().remove(employee);
+                employeeRepository.save(oldManager);
+
+                // Add to new manager
+                manager.getSubordinates().add(employee);
+                employeeRepository.save(manager);
+            }
+
+            // Çalışan bilgilerini güncelle
+            employee.setIdentityNo(dto.identityNo());
+            employee.setName(dto.name());
+            employee.setSurname(dto.surname());
+            employee.setPhoneNo(dto.phoneNo());
+            employee.setManager(manager);
+            employee.setDepartment(department);
+
+            employeeRepository.save(employee);
+            return true;
         }
-
-        // Çalışan bilgilerini güncelle
-        employee.setIdentityNo(dto.identityNo());
-        employee.setName(dto.name());
-        employee.setSurname(dto.surname());
-        employee.setPhoneNo(dto.phoneNo());
-        employee.setManager(manager);
-        employee.setDepartment(department);
-
-        employeeRepository.save(employee);
-        return true;
     }
 
 
@@ -228,7 +284,7 @@ public class EmployeeService
         Employee employee = employeeRepository.findByIdAndMemberId(id, SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
 
         //If employee has no manager then its set to No Manager
-        Long managerId = employee.getManager() != null ? employee.getManager().getId() : 0;
+        Long managerId = employee.getManager() != null ? employee.getManager().getId() : -1L;
 
         return new EmployeeFindByIdResponseDTO(employee.getId(), managerId, employee.getDepartment().getId(), employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname(), employee.getEmail());
 
