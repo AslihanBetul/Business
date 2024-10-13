@@ -162,10 +162,10 @@ public class UserService {
 
     public PageableUserListResponseDTO pageableGettAll(PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.page(), pageRequestDTO.size());
-        Page<User> userPage = userRepository.findAllByLastNameContainingIgnoreCaseOrderByLastNameAsc(pageRequestDTO.searchText(),pageable);
+        Page<User> userPage = userRepository.findAllByLastNameContainingIgnoreCaseExcludingSuperAdmin(pageRequestDTO.searchText(),pageable);
 
         List<GetAllUsersResponseDTO> allUsersResponseDTOList = userPage.getContent().stream()
-                .filter(user -> user.getRole().stream().noneMatch(role -> role.getRoleName().equals("SUPER_ADMIN")))
+                //.filter(user -> user.getRole().stream().noneMatch(role -> role.getRoleName().equals("SUPER_ADMIN")))
                 .map(user -> {
                     List<String> userRolesString = user.getRole().stream().map(Role::getRoleName).toList();
                     String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyGetMailByAuthId", user.getAuthId());
