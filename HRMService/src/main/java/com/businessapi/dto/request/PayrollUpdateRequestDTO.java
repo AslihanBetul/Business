@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public record PayrollUpdateRequestDTO(
         Long id,
-        Long employeeId,
         LocalDate salaryDate,
         Double grossSalary,
         Double deductions,

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Builder
 public record BenefitResponseDTO(
+        Long id,
         Long employeeId,
         String firstName,
         String lastName,

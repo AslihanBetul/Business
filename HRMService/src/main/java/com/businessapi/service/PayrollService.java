@@ -45,7 +45,6 @@ public class PayrollService {
 
     public Boolean update(PayrollUpdateRequestDTO dto) {
         Payroll payroll = payrollRepository.findById(dto.id()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_PAYROLL));
-        payroll.setEmployeeId(dto.employeeId()!=null ? dto.employeeId():payroll.getEmployeeId());
         payroll.setSalaryDate(dto.salaryDate()!=null ? dto.salaryDate():payroll.getSalaryDate());
         payroll.setGrossSalary(dto.grossSalary()!=null ? dto.grossSalary():payroll.getGrossSalary());
         payroll.setDeductions(dto.deductions()!=null ? dto.deductions():payroll.getDeductions());
@@ -66,49 +65,32 @@ public class PayrollService {
                 .build();
     }
 
-//    public List<PayrollResponseDTO> findAll(PageRequestDTO dto) {
-//        List<Payroll> payrolls = payrollRepository.findAll();
-//        List<PayrollResponseDTO> payrollResponseDTOList=new ArrayList<>();
-//        payrolls.forEach(payroll ->{
-//                Employee employee = employeeRepository.findById(payroll.getEmployeeId()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
-//
-//                payrollResponseDTOList.add(PayrollResponseDTO.builder()
-//                       .employeeId(payroll.getEmployeeId())
-//                        .firstName(employee.getFirstName())
-//                        .lastName(employee.getLastName())
-//                       .salaryDate(payroll.getSalaryDate())
-//                       .grossSalary(payroll.getGrossSalary())
-//                       .deductions(payroll.getDeductions())
-//                       .netSalary(payroll.getNetSalary())
-//                       .build());}
-//        );
-//        return payrollResponseDTOList;
-//
-//    }
+
 
 
     public List<PayrollResponseDTO> findAll(PageRequestDTO dto) {
-        // Sayfa ve boyut bilgilerini al
+
         int page = dto.page();
         int size = dto.size();
         String searchText = dto.searchText();
 
-        // Pagination için Pageable oluştur
+
         Pageable pageable = PageRequest.of(page, size);
 
-        // Tüm payroll'ları al
-        List<Payroll> payrolls = payrollRepository.findAll();
 
-        // Arama işlemini gerçekleştirmek için DTO listesi oluştur
+        List<Payroll> payrolls = payrollRepository.findAllByStatus(EStatus.ACTIVE);
+
+
         List<PayrollResponseDTO> payrollResponseDTOList = new ArrayList<>();
 
-        // Her bir payroll'u DTO'ya dönüştür
+
         List<PayrollResponseDTO> finalPayrollResponseDTOList = payrollResponseDTOList;
         payrolls.forEach(payroll -> {
             Employee employee = employeeRepository.findById(payroll.getEmployeeId())
                     .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
 
             PayrollResponseDTO payrollResponseDTO = PayrollResponseDTO.builder()
+                    .id(payroll.getEmployeeId())
                     .employeeId(payroll.getEmployeeId())
                     .firstName(employee.getFirstName())
                     .lastName(employee.getLastName())
@@ -118,11 +100,11 @@ public class PayrollService {
                     .netSalary(payroll.getNetSalary())
                     .build();
 
-            // DTO'yu listeye ekle
+
             finalPayrollResponseDTOList.add(payrollResponseDTO);
         });
 
-        // Arama metnini kullanarak filtrele
+
         if (searchText != null && !searchText.isEmpty()) {
             payrollResponseDTOList = payrollResponseDTOList.stream()
                     .filter(payrollDto -> payrollDto.firstName().toLowerCase().contains(searchText.toLowerCase()) ||
@@ -130,7 +112,7 @@ public class PayrollService {
                     .collect(Collectors.toList());
         }
 
-        // Sayfalamayı uygulamak için sonuçları uygun şekilde böl
+
         int start = Math.min((int) pageable.getOffset(), payrollResponseDTOList.size());
         int end = Math.min(start + pageable.getPageSize(), payrollResponseDTOList.size());
         return payrollResponseDTOList.subList(start, end);
