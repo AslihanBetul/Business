@@ -1,7 +1,6 @@
 package com.businessapi.entity;
 
 import com.businessapi.utility.enums.EStatus;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +29,7 @@ public class Customer extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private EStatus status;
     @ManyToMany(mappedBy = "customers")
-    @JsonBackReference
+    @JsonIgnore
     private List<Opportunity> opportunities = new ArrayList<>();
 
 
