@@ -5,8 +5,8 @@ import com.businessapi.constants.messages.SuccesMessages;
 import com.businessapi.dto.requestDTOs.*;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
 import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
+import com.businessapi.dto.responseDTOs.PageableUserListResponseDTO;
 import com.businessapi.dto.responseDTOs.ResponseDTO;
-import com.businessapi.entity.User;
 import com.businessapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -107,8 +107,8 @@ public class UserController {
     @PostMapping("/get-users-with-page")
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<List<User>>> getUsersPagable(@RequestBody PageRequestDTO pageRequestDTO){
-        return ResponseEntity.ok(ResponseDTO.<List<User>>builder().code(200).message("Sended").data(userService.pagableGettAll(pageRequestDTO)).build());
+    public ResponseEntity<ResponseDTO<PageableUserListResponseDTO>> getUsersPagable(@RequestBody PageRequestDTO pageRequestDTO){
+        return ResponseEntity.ok(ResponseDTO.<PageableUserListResponseDTO>builder().code(200).message("Sended").data(userService.pageableGettAll(pageRequestDTO)).build());
     }
 
 
