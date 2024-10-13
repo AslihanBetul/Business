@@ -1,9 +1,6 @@
 package com.businessapi.controllers;
 
-import com.businessapi.dto.request.EmployeeSaveRequestDto;
-import com.businessapi.dto.request.EmployeeUpdateRequestDto;
-import com.businessapi.dto.request.PageRequestDTO;
-import com.businessapi.dto.request.SubordinateSaveRequestDTO;
+import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.EmployeeFindByIdResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.dto.response.OrganizationNodeDTO;
@@ -50,6 +47,19 @@ public class EmployeeController
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(employeeService.saveSubordinates(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(SAVE_TOP_LEVEL_MANAGER)
+    @Operation(summary = "Creates new Top Level Manager")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    public ResponseEntity<ResponseDTO<Boolean>> saveTopLevelManager(@RequestBody ManagerSaveRequestDto dto){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(employeeService.saveTopLevelManager(dto))
                 .message("Success")
                 .code(200)
                 .build());

@@ -66,6 +66,7 @@ public class DemoDataGenerator
         employee2.setSubordinates(List.of(employee4, employee5 ,employee6));
         employee4.setSubordinates(List.of(employee7, employee8 ,employee9));
 
+        employee1.setIsEmployeeTopLevelManager(true);
         employeeService.save(employee1);
         employeeService.save(employee2);
         employeeService.save(employee4);

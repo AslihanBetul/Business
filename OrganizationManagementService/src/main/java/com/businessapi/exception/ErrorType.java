@@ -19,7 +19,8 @@ public enum ErrorType
     EMPLOYEE_NOT_FOUND(9102, "Employee not found", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXIST(9103, "Email already exist", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(9104, "Invalid Email", HttpStatus.BAD_REQUEST),
-    DEPARTMENT_ALREADY_EXIST(9105, "Department already exist", HttpStatus.BAD_REQUEST);
+    DEPARTMENT_ALREADY_EXIST(9105, "Department already exist", HttpStatus.BAD_REQUEST),
+    MANAGER_CANNOT_BE_SAME_AS_EMPLOYEE( 9106,  "Manager cannot be same as employee",  HttpStatus.BAD_REQUEST),;
 
     private Integer code;
     private String message;
