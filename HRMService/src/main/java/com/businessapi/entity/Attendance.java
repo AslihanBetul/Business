@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,8 +22,9 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long employeeId;
-    private LocalDateTime checkInDateTime;
-    private LocalDateTime checkOutDateTime;
+    private LocalDate date;
+    private LocalTime checkInTime;
+    private LocalTime checkOutTime;
     @Enumerated(EnumType.STRING)
     private EStatus status;
 

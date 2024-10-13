@@ -4,6 +4,7 @@ package com.businessapi.controller;
 import com.businessapi.dto.request.PerformanceSaveRequestDTO;
 import com.businessapi.dto.request.PerformanceUpdateRequestDTO;
 
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.PerformanceResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 
@@ -36,7 +37,7 @@ public class PerformanceController {
                 .code(200)
                 .build());
     }
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update Performance")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody PerformanceUpdateRequestDTO dto){
 
@@ -58,13 +59,13 @@ public class PerformanceController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_ALL)
+    @PostMapping (FIND_ALL)
     @Operation(summary = "Find all Performance ")
-    public ResponseEntity<ResponseDTO<List<PerformanceResponseDTO>>> findAll(){
+    public ResponseEntity<ResponseDTO<List<PerformanceResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<PerformanceResponseDTO>>builder()
-                .data(performanceService.findAll())
+                .data(performanceService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());

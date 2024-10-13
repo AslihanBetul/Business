@@ -1,10 +1,12 @@
 package com.businessapi.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import java.time.LocalTime;
 
 public record AttendanceUpdateRequestDTO(
         Long id,
-        Long employeeId,
-        LocalDateTime checkInDateTime,
-        LocalDateTime checkOutDateTime) {
+        LocalDate date,
+        LocalTime checkInTime,
+        LocalTime checkOutTime) {
 }

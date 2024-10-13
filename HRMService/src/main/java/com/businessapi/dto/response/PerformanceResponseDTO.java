@@ -5,6 +5,7 @@ import lombok.Builder;
 import java.time.LocalDate;
 @Builder
 public record PerformanceResponseDTO(
+        Long id,
         Long employeeId,
         String firstName,
         String lastName,
