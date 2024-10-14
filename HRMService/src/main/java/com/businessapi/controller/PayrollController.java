@@ -38,7 +38,7 @@ public class PayrollController {
                 .build());
     }
 
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update Payroll")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody PayrollUpdateRequestDTO dto){
 
@@ -49,7 +49,7 @@ public class PayrollController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_BY_ID)
+    @PostMapping (FIND_BY_ID)
     @Operation(summary = "Find payroll by id")
     public ResponseEntity<ResponseDTO<PayrollResponseDTO>> findById(@RequestParam Long id){
 
@@ -60,9 +60,9 @@ public class PayrollController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_ALL)
+    @PostMapping (FIND_ALL)
     @Operation(summary = "Find all payroll ")
-    public ResponseEntity<ResponseDTO<List<PayrollResponseDTO>>> findAll(PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<PayrollResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<PayrollResponseDTO>>builder()

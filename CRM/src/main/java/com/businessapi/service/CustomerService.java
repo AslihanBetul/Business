@@ -92,9 +92,12 @@ public class CustomerService {
         return customerRepository.findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
     public List<OpportunityResponseDTO> getAllCustomersForOpportunity() {
-        List<Customer> customers = customerRepository.findAll();
+        List<Customer> customers = customerRepository.findByStatus(EStatus.ACTIVE);
         List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
         return opportunityResponseDTOS;
+    }
+    public List<Customer> findAllByIds(List<Long> ids) {
+        return customerRepository.findAllById(ids);
     }
 
     public Boolean uploadExcelCustomers(AllCustomerSaveDTO dtoList) {

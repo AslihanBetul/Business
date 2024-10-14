@@ -7,6 +7,7 @@ import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.response.BenefitResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.service.BenefitService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +37,7 @@ public class BenefitController {
                 .code(200)
                 .build());
     }
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update Benefit")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody BenefitUpdateRequestDTO dto){
 
@@ -47,7 +48,7 @@ public class BenefitController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_BY_ID)
+    @PostMapping (FIND_BY_ID)
     @Operation(summary = "Find Benefit by id")
     public ResponseEntity<ResponseDTO<BenefitResponseDTO>> findById(@RequestParam Long id){
 
@@ -58,13 +59,13 @@ public class BenefitController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_ALL)
+    @PostMapping (FIND_ALL)
     @Operation(summary = "Find all Benefit ")
-    public ResponseEntity<ResponseDTO<List<BenefitResponseDTO>>> findAll(){
+    public ResponseEntity<ResponseDTO<List<BenefitResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<BenefitResponseDTO>>builder()
-                .data(benefitService.findAll())
+                .data(benefitService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());

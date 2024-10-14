@@ -42,4 +42,5 @@ public class Endpoints
 
     public static final String GET_EMPLOYEE_HIERARCHY = "/get-employee-hierarchy";
     public static final String SAVE_SUBORDINATE = "/save-subordinate";
+    public static final String SAVE_TOP_LEVEL_MANAGER = "/save-top-level-manager";
 }

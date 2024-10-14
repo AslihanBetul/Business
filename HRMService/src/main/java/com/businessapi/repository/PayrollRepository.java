@@ -12,4 +12,6 @@ import java.util.List;
 
 public interface PayrollRepository extends JpaRepository<Payroll,Long > {
 
+    List<Payroll> findAllByStatus(EStatus eStatus);
+
 }

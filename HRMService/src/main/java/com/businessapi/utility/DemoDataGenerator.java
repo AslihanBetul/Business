@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RequiredArgsConstructor
 @Service
@@ -81,17 +82,18 @@ public class DemoDataGenerator {
     }
 
     private void attendanceDemoData() {
-        attendanceService.save(new AttendanceSaveRequestDTO(1L, LocalDateTime.of(2023, 1, 10, 9, 0), LocalDateTime.of(2023, 1, 10, 17, 0)));
-        attendanceService.save(new AttendanceSaveRequestDTO(2L, LocalDateTime.of(2023, 1, 11, 8, 30), LocalDateTime.of(2023, 1, 11, 16, 30)));
-        attendanceService.save(new AttendanceSaveRequestDTO(3L, LocalDateTime.of(2023, 1, 12, 9, 15), LocalDateTime.of(2023, 1, 12, 17, 15)));
-        attendanceService.save(new AttendanceSaveRequestDTO(4L, LocalDateTime.of(2023, 1, 13, 8, 45), LocalDateTime.of(2023, 1, 13, 16, 45)));
-        attendanceService.save(new AttendanceSaveRequestDTO(5L, LocalDateTime.of(2023, 1, 14, 9, 0), LocalDateTime.of(2023, 1, 14, 17, 0)));
-        attendanceService.save(new AttendanceSaveRequestDTO(6L, LocalDateTime.of(2023, 1, 15, 8, 30), LocalDateTime.of(2023, 1, 15, 16, 30)));
-        attendanceService.save(new AttendanceSaveRequestDTO(7L, LocalDateTime.of(2023, 1, 16, 9, 0), LocalDateTime.of(2023, 1, 16, 17, 0)));
-        attendanceService.save(new AttendanceSaveRequestDTO(8L, LocalDateTime.of(2023, 1, 17, 8, 45), LocalDateTime.of(2023, 1, 17, 16, 45)));
-        attendanceService.save(new AttendanceSaveRequestDTO(9L, LocalDateTime.of(2023, 1, 18, 9, 30), LocalDateTime.of(2023, 1, 18, 17, 30)));
-        attendanceService.save(new AttendanceSaveRequestDTO(10L, LocalDateTime.of(2023, 1, 19, 8, 30), LocalDateTime.of(2023, 1, 19, 16, 30)));
+        attendanceService.save(new AttendanceSaveRequestDTO(1L, LocalDate.of(2024, 10, 1), LocalTime.of(9, 0), LocalTime.of(17, 0)));
+        attendanceService.save(new AttendanceSaveRequestDTO(2L, LocalDate.of(2024, 10, 2), LocalTime.of(8, 30), LocalTime.of(16, 30)));
+        attendanceService.save(new AttendanceSaveRequestDTO(3L, LocalDate.of(2024, 10, 3), LocalTime.of(9, 15), LocalTime.of(17, 15)));
+        attendanceService.save(new AttendanceSaveRequestDTO(4L, LocalDate.of(2024, 10, 4), LocalTime.of(8, 45), LocalTime.of(16, 45)));
+        attendanceService.save(new AttendanceSaveRequestDTO(5L, LocalDate.of(2024, 10, 5), LocalTime.of(9, 0), LocalTime.of(17, 0)));
+        attendanceService.save(new AttendanceSaveRequestDTO(6L, LocalDate.of(2024, 10, 6), LocalTime.of(8, 30), LocalTime.of(16, 30)));
+        attendanceService.save(new AttendanceSaveRequestDTO(7L, LocalDate.of(2024, 10, 7), LocalTime.of(9, 0), LocalTime.of(17, 0)));
+        attendanceService.save(new AttendanceSaveRequestDTO(8L, LocalDate.of(2024, 10, 8), LocalTime.of(8, 45), LocalTime.of(16, 45)));
+        attendanceService.save(new AttendanceSaveRequestDTO(9L, LocalDate.of(2024, 10, 9), LocalTime.of(9, 30), LocalTime.of(17, 30)));
+        attendanceService.save(new AttendanceSaveRequestDTO(10L, LocalDate.of(2024, 10, 10), LocalTime.of(8, 30), LocalTime.of(16, 30)));
     }
+
 
 
 

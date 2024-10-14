@@ -2,9 +2,11 @@ package com.businessapi.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record AttendanceSaveRequestDTO(
         Long employeeId,
-        LocalDateTime checkInDateTime,
-        LocalDateTime checkOutDateTime) {
+        LocalDate date,
+        LocalTime checkInTime,
+        LocalTime checkOutTime) {
 }
