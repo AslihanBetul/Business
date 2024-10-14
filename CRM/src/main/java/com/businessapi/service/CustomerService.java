@@ -10,7 +10,6 @@ import com.businessapi.repository.CustomerRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -96,5 +95,21 @@ public class CustomerService {
         List<Customer> customers = customerRepository.findAll();
         List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
         return opportunityResponseDTOS;
+    }
+
+    public Boolean uploadExcelCustomers(AllCustomerSaveDTO dtoList) {
+        List<Customer> customers = dtoList.customers().stream().map(dto -> {
+            Customer customer = new Customer();
+            customer.setFirstName(dto.firstName());
+            customer.setLastName(dto.lastName());
+            customer.setEmail(dto.email());
+            customer.setPhone(dto.phone());
+            customer.setAddress(dto.address());
+            customer.setMemberId(SessionManager.getMemberIdFromAuthenticatedMember());
+            customer.setStatus(EStatus.ACTIVE);
+            return customer;
+        }).collect(Collectors.toList());
+        customerRepository.saveAll(customers);
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.AllCustomerSaveDTO;
 import com.businessapi.dto.request.CustomerSaveDTO;
 import com.businessapi.dto.request.CustomerUpdateDTO;
 import com.businessapi.dto.request.PageRequestDTO;
@@ -82,6 +83,16 @@ public class CustomerController {
                 .message("Customer found successfully").build());
 
     }
+
+    @PostMapping(UPLOAD_EXCEL_CUSTOMER)
+    public ResponseEntity<ResponseDTO<Boolean>> uploadExcelCustomer(@RequestBody AllCustomerSaveDTO dto) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+                .data(customerService.uploadExcelCustomers(dto))
+                .code(200)
+                .message("Customers uploaded successfully").build());
+    }
+
+
 
 
 
