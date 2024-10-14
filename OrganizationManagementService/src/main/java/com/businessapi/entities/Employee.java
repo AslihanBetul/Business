@@ -27,10 +27,13 @@ public class Employee extends BaseEntity
     @OneToMany(cascade = CascadeType.ALL)
     List<Employee> subordinates;
     String identityNo;
+    String title;
     String phoneNo;
     String name;
     String surname;
     String email;
     @Builder.Default
     Boolean isEmployeeTopLevelManager = false;
+    @Builder.Default
+    Boolean isAccountGivenToEmployee = false;
 }

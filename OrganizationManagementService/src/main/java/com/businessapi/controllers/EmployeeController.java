@@ -5,7 +5,6 @@ import com.businessapi.dto.response.EmployeeFindByIdResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.dto.response.OrganizationNodeDTO;
 import com.businessapi.dto.response.ResponseDTO;
-import com.businessapi.entities.Employee;
 import com.businessapi.services.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -125,6 +124,19 @@ public class EmployeeController
         return ResponseEntity.ok(ResponseDTO
                 .<List<OrganizationNodeDTO>>builder()
                 .data(employeeService.getEmployeeHierarchy())
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(CHANGE_IS_ACCOUNT_GIVEN_TO_EMPLOYEE_STATE)
+    @Operation(summary = "Changes state of is account given to employee. Also creates user and auth for employee if not exist.")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    public ResponseEntity<ResponseDTO<Boolean>> changeIsAccountGivenToEmployeeState(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(employeeService.changeIsAccountGivenToEmployeeState(id))
                 .message("Success")
                 .code(200)
                 .build());

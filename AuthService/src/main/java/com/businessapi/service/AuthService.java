@@ -316,4 +316,19 @@ public class AuthService {
     public Boolean existByEmail(ExistByEmailModel dto){
         return authRepository.existsByEmailIgnoreCase(dto.getEmail());
     }
+
+    @RabbitListener(queues = "queueActiveOrDeactivateAuthOfEmployee")
+    public void activateOrDeactivateAuthOfEmployee(Long authId){
+        Optional<Auth> auth = authRepository.findById(authId);
+        if (auth.isPresent()) {
+            if (auth.get().getStatus().equals(EStatus.ACTIVE)) {
+                auth.get().setStatus(EStatus.INACTIVE);
+                authRepository.save(auth.get());
+            } else if (auth.get().getStatus().equals(EStatus.INACTIVE))
+            {
+                auth.get().setStatus(EStatus.ACTIVE);
+                authRepository.save(auth.get());
+            }
+        }
+    }
 }

@@ -50,6 +50,10 @@ public class Config {
     private static final String queueExistByEmail = "queueExistByEmail";
     private static final String keyExistByEmail = "keyExistByEmail";
 
+    //For email check whether is exist or not
+    private static final String queueActiveOrDeactivateAuthOfEmployee = "queueActiveOrDeactivateAuthOfEmployee";
+    private static final String keyActiveOrDeactivateAuthOfEmployee = "keyActiveOrDeactivateAuthOfEmployee";
+
     @Bean
    public DirectExchange directExchange(){
         return new DirectExchange(businessDirectExchange);
@@ -108,6 +112,16 @@ public class Config {
     @Bean
     public Queue queueExistByEmail() {
         return new Queue(queueExistByEmail);
+    }
+
+    @Bean
+    public Queue queueActiveOrDeactivateAuthOfEmployee() {
+        return new Queue(queueActiveOrDeactivateAuthOfEmployee);
+    }
+
+    @Bean
+    public Binding bindingActiveOrDeactivateAuthOfEmployee(){
+        return BindingBuilder.bind(queueActiveOrDeactivateAuthOfEmployee()).to(directExchange()).with(keyActiveOrDeactivateAuthOfEmployee);
     }
     @Bean
     public Binding bindingExistByEmail(){

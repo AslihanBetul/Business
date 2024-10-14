@@ -10,7 +10,6 @@ import com.businessapi.dto.response.OrganizationDataDTO;
 import com.businessapi.dto.response.OrganizationNodeDTO;
 import com.businessapi.entities.Department;
 import com.businessapi.entities.Employee;
-import com.businessapi.entities.Manager;
 import com.businessapi.entities.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.OrganizationManagementServiceException;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,7 +35,6 @@ public class EmployeeService
 {
     private final EmployeeRepository employeeRepository;
     private final DepartmentService departmentService;
-    private final ManagerService managerService;
     private final RabbitTemplate rabbitTemplate;
 
 
@@ -55,16 +52,9 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
 
-        String password = PasswordGenerator.generatePassword();
-        //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
-        //sending password to new members
-        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
-        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
-
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
         //Setting subordanites
         List<Employee> subordinates = manager.getSubordinates();
@@ -88,16 +78,9 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
 
-        String password = PasswordGenerator.generatePassword();
-        //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
-        //sending password to new members
-        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
-        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
-
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
         //Setting subordanites
         List<Employee> subordinates = manager.getSubordinates();
@@ -122,15 +105,8 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
 
-        String password = PasswordGenerator.generatePassword();
-        //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
-        //sending password to new members
-        EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
-        rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
-
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(null).name(dto.name()).surname(dto.surname()).department(department).isEmployeeTopLevelManager(true).build());
+        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(null).name(dto.name()).surname(dto.surname()).department(department).isEmployeeTopLevelManager(true).build());
 
         return true;
     }
@@ -158,18 +134,13 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
 
-        String password = PasswordGenerator.generatePassword();
-        //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
-        //sending password to new members
-        //EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
-        //rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+
 
         Employee manager = employeeRepository.findById(dto.managerId()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findById(dto.departmentId());
 
 
-        return employeeRepository.save(Employee.builder().memberId(2L).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
     }
 
     public Employee saveForDemoDataOwner(EmployeeSaveRequestDto dto)
@@ -180,16 +151,9 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
 
-        String password = PasswordGenerator.generatePassword();
-        //saving supplier as auth and user
-        Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(dto.name(), dto.surname(), dto.email(), password, "MEMBER"));
-        //sending password to new members
-        //EmailSendModal emailObject = new EmailSendModal(dto.email(), "Supplier Registration", "You can use your mail (" + dto.email() + ") to login. Your password is: " + password + " You can check your orders in our panel.");
-        //rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
-
         Department department = departmentService.findById(dto.departmentId());
 
-        return employeeRepository.save(Employee.builder().memberId(2L).authId(authId).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).name(dto.name()).surname(dto.surname()).department(department).build());
+        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).name(dto.name()).surname(dto.surname()).department(department).build());
     }
 
     public Boolean delete(Long id)
@@ -272,7 +236,7 @@ public class EmployeeService
                 //If employee has no manager then its set to No Manager
                 String managerName = employee.getManager() != null ? employee.getManager().getName() + " " + employee.getManager().getSurname() : "No Manager";
 
-                employeeResponseDTOS.add(new EmployeeResponseDTO(employee.getId(), managerName ,employee.getDepartment().getName(),employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname() , employee.getEmail()));
+                employeeResponseDTOS.add(new EmployeeResponseDTO(employee.getId(), managerName ,employee.getDepartment().getName(),employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname() , employee.getEmail(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee()));
 
 
         }
@@ -286,7 +250,7 @@ public class EmployeeService
         //If employee has no manager then its set to No Manager
         Long managerId = employee.getManager() != null ? employee.getManager().getId() : -1L;
 
-        return new EmployeeFindByIdResponseDTO(employee.getId(), managerId, employee.getDepartment().getId(), employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname(), employee.getEmail());
+        return new EmployeeFindByIdResponseDTO(employee.getId(), managerId, employee.getDepartment().getId(), employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname(), employee.getEmail(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee());
 
     }
 
@@ -334,4 +298,50 @@ public class EmployeeService
         return nodeDTO;
     }
 
+    public Boolean changeIsAccountGivenToEmployeeState(Long id)
+    {
+        Employee employee = employeeRepository.findByIdAndMemberId(id,SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
+
+        // If employee has no account
+        if (!employee.getIsAccountGivenToEmployee())
+        {
+            //First time having account
+            if (employee.getAuthId() == null)
+            {
+
+                String password = PasswordGenerator.generatePassword();
+                //saving supplier as auth and user
+                Long authId = (Long) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keySaveUserFromOtherServices", new SaveUserFromOtherServicesModel(employee.getName(), employee.getSurname(), employee.getEmail(), password, "MEMBER"));
+                //sending password to new members
+                EmailSendModal emailObject = new EmailSendModal(employee.getEmail(), "Member Registration", "You can use your mail (" + employee.getEmail() + ") to login. Your password is: " + password);
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+
+                employee.setIsAccountGivenToEmployee(true);
+                employee.setAuthId(authId);
+                employeeRepository.save(employee);
+                return true;
+            }
+            //Only activating account
+            else
+            {
+                //Activating auth account of employee
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keyActiveOrDeactivateAuthOfEmployee", employee.getAuthId());
+                employee.setIsAccountGivenToEmployee(true);
+                employeeRepository.save(employee);
+                return true;
+            }
+
+
+        }
+        // If employee has account it will be deactivated
+        else
+        {
+            //Deactivating auth account of employee
+            rabbitTemplate.convertAndSend("businessDirectExchange", "keyActiveOrDeactivateAuthOfEmployee", employee.getAuthId());
+            employee.setIsAccountGivenToEmployee(false);
+            employeeRepository.save(employee);
+            return true;
+        }
+
+    }
 }

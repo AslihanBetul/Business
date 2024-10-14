@@ -8,7 +8,9 @@ public record EmployeeResponseDTO(
         String phoneNo,
         String name,
         String surname,
-        String email
+        String email,
+        Boolean isEmployeeTopLevelManager,
+        Boolean isAccountGivenToEmployee
 )
 {
 }
