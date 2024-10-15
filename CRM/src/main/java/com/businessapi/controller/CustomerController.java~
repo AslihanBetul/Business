@@ -103,7 +103,7 @@ public class CustomerController {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                 .data(customerService.sendEmailExternalSourceCustomers(email))
                 .code(200)
-                .message("Email send successfully").build());
+                .message("Customers uploaded successfully").build());
     }
 
 

@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.RabbitMQ.Model.CustomerSaveMailModel;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
 import com.businessapi.dto.response.OpportunityResponseDTO;
@@ -10,7 +11,9 @@ import com.businessapi.repository.CustomerRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +25,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
+    private final RabbitTemplate rabbitTemplate;
 
 
     public Boolean save(CustomerSaveDTO dto) {
-        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
-            throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
-        }
+        isSavedCustomer(dto);
         Customer customer = Customer.builder()
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
@@ -39,6 +41,38 @@ public class CustomerService {
         customer.setStatus(EStatus.ACTIVE);
         customerRepository.save(customer);
         return true;
+    }
+    public boolean sendEmailExternalSourceCustomers(String email){
+        CustomerSaveMailModel model = CustomerSaveMailModel.builder()
+                .email(email)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .build();
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySaveCustomerSendMail", model);
+        return true;
+    }
+    public Boolean saveExternalSourceCustomers(CustomerSaveLinkDTO dto){
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent() && customerRepository.existsCustomerByPhone(dto.phone())) {
+            throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_EXIST);
+        }
+
+        Customer customer = Customer.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .phone(dto.phone())
+                .address(dto.address())
+                .memberId(dto.memberId())
+                .build();
+        customer.setStatus(EStatus.ACTIVE);
+        customerRepository.save(customer);
+        return true;
+
+    }
+
+    private void isSavedCustomer(CustomerSaveDTO dto) {
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent() && customerRepository.existsCustomerByPhone(dto.phone())) {
+            throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_EXIST);
+        }
     }
 
     public void saveForDemoData(CustomerSaveDemoDTO dto) {
@@ -93,8 +127,7 @@ public class CustomerService {
     }
     public List<OpportunityResponseDTO> getAllCustomersForOpportunity() {
         List<Customer> customers = customerRepository.findByStatus(EStatus.ACTIVE);
-        List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
-        return opportunityResponseDTOS;
+        return customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
     }
     public List<Customer> findAllByIds(List<Long> ids) {
         return customerRepository.findAllById(ids);
@@ -115,4 +148,5 @@ public class CustomerService {
         customerRepository.saveAll(customers);
         return true;
     }
+
 }

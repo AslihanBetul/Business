@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.config.rabbit.model.CustomerSaveMailModel;
 import com.businessapi.config.rabbit.model.EmailModal;
 import com.businessapi.config.rabbit.model.EmailSendModal;
 import com.businessapi.config.rabbit.model.EmailVerificationModel;
@@ -123,6 +124,53 @@ public class MailSenderService {
         helper.setSubject(email.getSubject());
         javaMailSender.send(mimeMessage);
     }
+
+    @RabbitListener(queues = "queueSendEmailExternalSourceCustomers")
+    public boolean sendEmailExternalSourceCustomers(CustomerSaveMailModel model) throws MessagingException {
+        String rateLink = "http://localhost:3000/customer-save-from-link?memberId=" + model.getMemberId();
+        try {
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+
+            String htmlContent = "<html><body>" +
+                    "<table cellpadding=\"0\" cellspacing=\"0\" align=\"center\" width=\"100%\" style=\"font-family:Arial,sans-serif;color:#333;background-color:#f9f9f9;padding:20px;\">" +
+                    "    <tr>" +
+                    "        <td style=\"background-color:#ffffff;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);\">" +
+                    "            <table cellpadding=\"20\" cellspacing=\"0\" width=\"100%\">" +
+                    "                <tr>" +
+                    "                    <td style=\"text-align:center;\">" +
+                    "                        <h1 style=\"color:#333333;font-size:24px;margin:0;\">Merhaba!</h1>" +
+                    "                        <p style=\"font-size:16px;color:#555555;\">Alışveriş deneyiminizi değerlendirmek için lütfen aşağıdaki bağlantıya tıklayın:</p>" +
+                    "                        <a href=\"" + rateLink + "\" style=\"display:inline-block;padding:10px 20px;font-size:16px;color:#ffffff;background-color:#007bff;border-radius:5px;text-decoration:none;\">Değerlendirme Formu</a>" +
+                    "                    </td>" +
+                    "                </tr>" +
+                    "                <tr>" +
+                    "                    <td style=\"text-align:center;padding-top:20px;\">" +
+                    "                        <p style=\"font-size:14px;color:#888888;margin:0;\"> Lütfen bu e-postayı yanıtlamayın.</p>" +
+                    "                    </td>" +
+                    "                </tr>" +
+                    "            </table>" +
+                    "        </td>" +
+                    "    </tr>" +
+                    "</table>" +
+                    "</body></html>";
+
+
+            helper.setText(htmlContent, true);
+            helper.setTo(model.getEmail());
+            helper.setSubject("Alışveriş Değerlendirme Daveti");
+
+
+            javaMailSender.send(mimeMessage);
+            return true;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 }

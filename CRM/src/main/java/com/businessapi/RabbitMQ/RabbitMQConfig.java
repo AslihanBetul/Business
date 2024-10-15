@@ -19,11 +19,15 @@ public class RabbitMQConfig {
     String queueFindAuthByToken = "find.auth.by.token";
     String keyFindAuthByToken = "key.find.auth.by.token";
 
+    String queueSaveCustomerSendMail = "save.customer.send.mail";
+    String keySaveCustomerSendMail = "key.save.customer.send.mail";
+
 
     @Bean
     public DirectExchange businessDirectExchange() {
         return new DirectExchange(businessDirectExchange);
     }
+
 
 
 
@@ -33,8 +37,17 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue queueSaveCustomerSendMail(){
+        return new Queue(queueSaveCustomerSendMail);
+    }
+
+    @Bean
     public Binding bindingSaveDirectExchange(Queue queueFindAuthByToken, DirectExchange directExchange){
         return BindingBuilder.bind(queueFindAuthByToken).to(directExchange).with(keyFindAuthByToken);
+    }
+    @Bean
+    public Binding bindingSaveCustomerSendEmailDirectExchange(Queue queueSaveCustomerSendMail, DirectExchange directExchange){
+        return BindingBuilder.bind(queueSaveCustomerSendMail).to(directExchange).with(keySaveCustomerSendMail);
     }
 
     @Bean

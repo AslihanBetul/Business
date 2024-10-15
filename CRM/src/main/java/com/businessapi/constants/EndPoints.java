@@ -30,5 +30,7 @@ public class EndPoints {
     public static final String UPLOAD_EXCEL_CUSTOMER = "/upload-excel-customer";
 
 
-
+    public static final String SAVE_EXTERNAL_SOURCE_CUSTOMER = "/save-external-source-customer";
+    public static final String SEND_EMAIL_EXTERNAL_SOURCE_CUSTOMER = "/send-email-external-source-customer"; ;
+    ;
 }
