@@ -1,20 +1,21 @@
 package com.businessapi.services;
 
 import com.businessapi.dto.request.DeclarationSaveRequestDTO;
-import com.businessapi.dto.request.ExpenseFindByDateRequestDTO;
 import com.businessapi.dto.request.GenerateDeclarationRequestDTO;
+import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.DeclarationResponseDTO;
 import com.businessapi.dto.response.ExpenseResponseDTO;
 import com.businessapi.entity.Declaration;
-import com.businessapi.entity.Expense;
 import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.repositories.DeclarationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,11 +87,53 @@ public class DeclarationService {
 
 
     public BigDecimal createDeclaration(GenerateDeclarationRequestDTO dto) {
-        return switch (dto.taxType()) {
-            case "income" -> taxService.calculateIncomeTax(dto.netIncome());
-            case "kdv" -> taxService.calculateVat(dto.netIncome());
-            case "corporate" -> taxService.calculateCorporateTax(dto.netIncome());
+        declarationRepository.findAllByTaxType(dto.taxType()).forEach(declaration -> {
+            if (declaration.getStartDate().equals(dto.startDate()) && declaration.getEndDate().equals(dto.endDate())) {
+                declaration.setStatus(EStatus.INACTIVE);
+            }
+        });
+        BigDecimal netIncome = dto.totalIncome().subtract(dto.totalExpense());
+
+        BigDecimal totalTax = switch (dto.taxType()) {
+            case "income" -> taxService.calculateIncomeTax(netIncome);
+            case "kdv" -> taxService.calculateVat(netIncome);
+            case "corporate" -> taxService.calculateCorporateTax(netIncome);
             default -> throw new IllegalStateException("Invalid Tax Type: " + dto.taxType());
         };
+
+        Declaration declaration = Declaration.builder()
+                .startDate(dto.startDate())
+                .endDate(dto.endDate())
+                .totalIncome(dto.totalIncome())
+                .totalExpense(dto.totalExpense())
+                .totalTax(totalTax)
+                .taxType(dto.taxType())
+                .build();
+
+        declarationRepository.save(declaration);
+        return totalTax;
+
     }
+
+    public List<DeclarationResponseDTO> getAllDeclarations(PageRequestDTO dto) {
+        List<Declaration> declarations = declarationRepository.findByTaxTypeContainingIgnoreCase(dto.searchText(), PageRequest.of(dto.page(), dto.size())).getContent();
+        List<DeclarationResponseDTO> dtoList = new ArrayList<>();
+        for (Declaration declaration : declarations) {
+            DeclarationResponseDTO declarationResponseDTO = new DeclarationResponseDTO(
+                    declaration.getId(),
+                    declaration.getStartDate(),
+                    declaration.getEndDate(),
+                    declaration.getTotalIncome(),
+                    declaration.getTotalExpense(),
+                    declaration.getTotalIncome().subtract(declaration.getTotalExpense()),
+                    declaration.getTotalTax(),
+                    declaration.getTaxType(),
+                    declaration.getStatus()
+            );
+            dtoList.add(declarationResponseDTO);
+        }
+        return dtoList;
+    }
+
+
 }

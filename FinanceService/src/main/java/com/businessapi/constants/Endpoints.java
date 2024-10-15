@@ -48,4 +48,5 @@ public class Endpoints {
     public static final String GET_DEPARTMENTS = "/get-departments";
     public static final String FIND_ALL_BY_DEPARTMENT_ID = "/find-all-by-department-id";
     public static final String FIND_ALL_BY_DEPARTMENT_NAME = "/find-all-by-department-name";
+    public static final String GET_DATES_FOR_DECLARATION = "/get-dates-for-declaration";
 }
