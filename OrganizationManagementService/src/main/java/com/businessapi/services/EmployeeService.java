@@ -54,7 +54,7 @@ public class EmployeeService
 
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).title(dto.title()).surname(dto.surname()).department(department).build());
 
         //Setting subordanites
         List<Employee> subordinates = manager.getSubordinates();
@@ -80,7 +80,7 @@ public class EmployeeService
 
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        Employee employee = employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).title(dto.title()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
 
         //Setting subordanites
         List<Employee> subordinates = manager.getSubordinates();
@@ -106,7 +106,7 @@ public class EmployeeService
         }
 
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
-        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(null).name(dto.name()).surname(dto.surname()).department(department).isEmployeeTopLevelManager(true).build());
+        employeeRepository.save(Employee.builder().memberId(SessionManager.getMemberIdFromAuthenticatedMember()).title(dto.title()).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(null).name(dto.name()).surname(dto.surname()).department(department).isEmployeeTopLevelManager(true).build());
 
         return true;
     }
@@ -140,7 +140,7 @@ public class EmployeeService
         Department department = departmentService.findById(dto.departmentId());
 
 
-        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
+        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).title(dto.title()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).manager(manager).name(dto.name()).surname(dto.surname()).department(department).build());
     }
 
     public Employee saveForDemoDataOwner(EmployeeSaveRequestDto dto)
@@ -153,7 +153,7 @@ public class EmployeeService
 
         Department department = departmentService.findById(dto.departmentId());
 
-        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).name(dto.name()).surname(dto.surname()).department(department).build());
+        return employeeRepository.save(Employee.builder().memberId(2L).email(dto.email()).title(dto.title()).phoneNo(dto.phoneNo()).identityNo(dto.identityNo()).name(dto.name()).surname(dto.surname()).department(department).build());
     }
 
     public Boolean delete(Long id)
@@ -178,6 +178,7 @@ public class EmployeeService
             employee.setSurname(dto.surname());
             employee.setPhoneNo(dto.phoneNo());
             employee.setDepartment(department);
+            employee.setTitle(dto.title());
 
             employeeRepository.save(employee);
             return true;
@@ -219,6 +220,7 @@ public class EmployeeService
             employee.setPhoneNo(dto.phoneNo());
             employee.setManager(manager);
             employee.setDepartment(department);
+            employee.setTitle(dto.title());
 
             employeeRepository.save(employee);
             return true;
@@ -236,7 +238,7 @@ public class EmployeeService
                 //If employee has no manager then its set to No Manager
                 String managerName = employee.getManager() != null ? employee.getManager().getName() + " " + employee.getManager().getSurname() : "No Manager";
 
-                employeeResponseDTOS.add(new EmployeeResponseDTO(employee.getId(), managerName ,employee.getDepartment().getName(),employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname() , employee.getEmail(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee()));
+                employeeResponseDTOS.add(new EmployeeResponseDTO(employee.getId(), managerName ,employee.getDepartment().getName(),employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname() , employee.getTitle(), employee.getEmail(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee()));
 
 
         }
@@ -250,7 +252,7 @@ public class EmployeeService
         //If employee has no manager then its set to No Manager
         Long managerId = employee.getManager() != null ? employee.getManager().getId() : -1L;
 
-        return new EmployeeFindByIdResponseDTO(employee.getId(), managerId, employee.getDepartment().getId(), employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname(), employee.getEmail(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee());
+        return new EmployeeFindByIdResponseDTO(employee.getId(), managerId, employee.getDepartment().getId(), employee.getIdentityNo(), employee.getPhoneNo(), employee.getName(), employee.getSurname(), employee.getEmail(), employee.getTitle(), employee.getIsEmployeeTopLevelManager(), employee.getIsAccountGivenToEmployee());
 
     }
 
@@ -285,7 +287,8 @@ public class EmployeeService
         dataDTO.setImage("https://randomuser.me/api/portraits/lego/1.jpg");
         dataDTO.setName(employee.getName() + " " + employee.getSurname());
         dataDTO.setEmail(employee.getEmail());
-        dataDTO.setTitle(employee.getDepartment() != null ? employee.getDepartment().getName() : "No Department");
+        dataDTO.setDepartment(employee.getDepartment().getName());
+        dataDTO.setTitle(employee.getTitle());
         nodeDTO.setData(dataDTO);
 
         // Alt çalışanları (subordinates) children olarak ekliyoruz ve sadece silinmemiş (DELETED olmayan) çalışanları ekliyoruz

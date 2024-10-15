@@ -6,6 +6,7 @@ public record EmployeeSaveRequestDto(
     String identityNo,
     String phoneNo,
     String name,
+    String title,
     String surname,
     String email
 )

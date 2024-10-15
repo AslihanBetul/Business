@@ -14,6 +14,7 @@ public class OrganizationDataDTO {
     String image;
     String name;
     String title;
+    String department;
     String email;
 
 

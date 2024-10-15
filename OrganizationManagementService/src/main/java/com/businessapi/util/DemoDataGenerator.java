@@ -26,7 +26,7 @@ public class DemoDataGenerator
     public void generateDemoData()
     {
         departmentDemoData();
-        managerDemoData();
+        //managerDemoData();
         employeeDemoData();
 
 
@@ -50,17 +50,17 @@ public class DemoDataGenerator
 
     private void employeeDemoData()
     {
-        Employee employee1 = employeeService.saveForDemoDataOwner(new EmployeeSaveRequestDto(1L, 1L, "12345677442", "05312345678", "Deniz", "Gumus", "deniz@gmail.com"));
+        Employee employee1 = employeeService.saveForDemoDataOwner(new EmployeeSaveRequestDto(1L, 1L, "12345677442", "05312345678", "Deniz", "CEO" ,"Gumus", "deniz@gmail.com"));
 
-        Employee employee2 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 1L, "12345677443", "05322345678", "Ahmet", "Yilmaz", "ahmet@gmail.com"));
-        Employee employee3 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 2L, "12345677444", "05332345678", "Ayse", "Kaya", "ayse@gmail.com"));
-        Employee employee4 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 2L, "12345677445", "05342345678", "Mehmet", "Demir", "mehmet@gmail.com"));
-        Employee employee5 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 5L, "12345677446", "05352345678", "Emine", "Sari", "emine@gmail.com"));
-        Employee employee6 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 5L, "12345677447", "05362345678", "Fatma", "Celik", "fatma@gmail.com"));
-        Employee employee7 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 4L, "12345677448", "05372345678", "Mustafa", "Kara", "mustafa@gmail.com"));
-        Employee employee8 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 4L, "12345677449", "05382345678", "Seda", "Gok", "seda@gmail.com"));
-        Employee employee9 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 5L, "12345677450", "05392345678", "Huseyin", "Yildiz", "huseyin@gmail.com"));
-        Employee employee10 =  employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 8L, "12345677451", "05302345678", "Merve", "Aydin", "merve@gmail.com"));
+        Employee employee2 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 1L, "12345677443", "05322345678", "Ahmet","Manager" ,"Yilmaz", "ahmet@gmail.com"));
+        Employee employee3 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 2L, "12345677444", "05332345678", "Ayse","Employee" ,"Kaya", "ayse@gmail.com"));
+        Employee employee4 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 2L, "12345677445", "05342345678", "Mehmet","Manager" , "Demir", "mehmet@gmail.com"));
+        Employee employee5 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 5L, "12345677446", "05352345678", "Emine", "Employee" ,"Sari", "emine@gmail.com"));
+        Employee employee6 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(2L, 5L, "12345677447", "05362345678", "Fatma", "Employee" ,"Celik", "fatma@gmail.com"));
+        Employee employee7 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 4L, "12345677448", "05372345678", "Mustafa", "Employee" ,"Kara", "mustafa@gmail.com"));
+        Employee employee8 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 4L, "12345677449", "05382345678", "Seda", "Employee" ,"Gok", "seda@gmail.com"));
+        Employee employee9 = employeeService.saveForDemoData(new EmployeeSaveRequestDto(4L, 5L, "12345677450", "05392345678", "Huseyin", "Employee" ,"Yildiz", "huseyin@gmail.com"));
+        Employee employee10 =  employeeService.saveForDemoData(new EmployeeSaveRequestDto(1L, 8L, "12345677451", "05302345678", "Merve", "Employee" ,"Aydin", "merve@gmail.com"));
 
         employee1.setSubordinates(List.of(employee2, employee3, employee10 ));
         employee2.setSubordinates(List.of(employee4, employee5 ,employee6));
@@ -72,7 +72,7 @@ public class DemoDataGenerator
         employeeService.save(employee4);
     }
 
-    private void managerDemoData()
+    /*private void managerDemoData()
     {
 
         managerService.saveForDemoData(new ManagerSaveRequestDto(1L, "12345678910", "05312345678", "John", "Doe", "jdoe@gmail.com"));
@@ -87,7 +87,7 @@ public class DemoDataGenerator
         managerService.saveForDemoData(new ManagerSaveRequestDto(10L, "02345678910", "05302345678", "Henry", "Moore", "hmoore@gmail.com"));
 
 
-    }
+    }*/
 
 
 }
