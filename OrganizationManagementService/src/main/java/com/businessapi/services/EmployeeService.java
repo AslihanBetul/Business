@@ -3,6 +3,7 @@ package com.businessapi.services;
 import com.businessapi.RabbitMQ.Model.EmailSendModal;
 import com.businessapi.RabbitMQ.Model.ExistByEmailModel;
 import com.businessapi.RabbitMQ.Model.SaveUserFromOtherServicesModel;
+import com.businessapi.RabbitMQ.Model.UpdateEmailOfAuth;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.EmployeeFindByIdResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
@@ -167,12 +168,32 @@ public class EmployeeService
     public Boolean update(EmployeeUpdateRequestDto dto) {
         Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
 
+        Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
+                .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
+
+        Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+
+        //Checking whether new email exist or not
+        if (!dto.email().equals(employee.getEmail()))
+        {
+            Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
+            if (Boolean.TRUE.equals(isEmailExist))
+            {
+                throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
+            }
+            //If employee has account, auth will be updated as well.
+            if (employee.getAuthId() != null)
+            {
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keyUpdateEmailOfAuth", UpdateEmailOfAuth.builder().authId(employee.getAuthId()).email(dto.email()).build());
+            }
+            employee.setEmail(dto.email());
+        }
+
         //Updating top level manager
         if (dto.managerId() == -1L)
         {
-            Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
-                    .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
-            Department department = departmentService.findByIdAndMemberId(dto.departmentId());
+
+
             employee.setIdentityNo(dto.identityNo());
             employee.setName(dto.name());
             employee.setSurname(dto.surname());
@@ -187,13 +208,8 @@ public class EmployeeService
         //  Updating Normal User
         else
         {
-            Employee employee = employeeRepository.findByIdAndMemberId(dto.id(), memberId)
-                    .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
-
             Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), memberId)
                     .orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
-
-            Department department = departmentService.findByIdAndMemberId(dto.departmentId());
 
             if (employee.getId().equals(manager.getId()))
             {

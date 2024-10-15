@@ -7,6 +7,7 @@ public record EmployeeUpdateRequestDto(
         String title,
         String identityNo,
         String phoneNo,
+        String email,
         String name,
         String surname
 

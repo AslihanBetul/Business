@@ -331,4 +331,13 @@ public class AuthService {
             }
         }
     }
+
+    @RabbitListener(queues = "queueUpdateEmailOfAuth")
+    public void updateEmailOfAuth(UpdateEmailOfAuth dto){
+        Optional<Auth> auth = authRepository.findById(dto.getAuthId());
+        if (auth.isPresent()) {
+            auth.get().setEmail(dto.getEmail());
+            authRepository.save(auth.get());
+        }
+    }
 }
