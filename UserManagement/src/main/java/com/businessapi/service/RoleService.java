@@ -1,8 +1,10 @@
 package com.businessapi.service;
 
+import com.businessapi.dto.requestDTOs.PageRequestDTO;
 import com.businessapi.dto.requestDTOs.RoleCreateDTO;
 import com.businessapi.dto.requestDTOs.RoleUpdateRequestDTO;
 import com.businessapi.dto.requestDTOs.UpdateUserRoleStatusDTO;
+import com.businessapi.dto.responseDTOs.PageableRoleListResponseDTO;
 import com.businessapi.dto.responseDTOs.RoleResponseDTO;
 import com.businessapi.entity.Role;
 import com.businessapi.entity.User;
@@ -13,6 +15,9 @@ import com.businessapi.mapper.RoleMapper;
 import com.businessapi.repository.RoleRepository;
 import com.businessapi.views.GetAllRoleView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -50,20 +55,15 @@ public class RoleService {
         roleRepository.save(role);
     }
 
-    public List<RoleResponseDTO> getAllUserRoles() {
-        List<GetAllRoleView> allroles = roleRepository.getAllRoles();
-        allroles.removeIf(getAllRoleView ->getAllRoleView.getRoleName().equals("SUPER_ADMIN")
-        );
-
-
+    public PageableRoleListResponseDTO getAllUserRoles(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.page(), pageRequestDTO.size());
+        Page<GetAllRoleView> allRoles = roleRepository.getAllRolesWithSearch(pageRequestDTO.searchText(), pageable);
 
         List<RoleResponseDTO> roleResponseDTOs = new ArrayList<>();
-
-        allroles.forEach(role -> {
+        allRoles.getContent().forEach(role -> {
             roleResponseDTOs.add(RoleMapper.INSTANCE.getAllRoleViewToRoleResponseDTO(role));
         });
-
-        return roleResponseDTOs;
+        return PageableRoleListResponseDTO.builder().roleList(roleResponseDTOs).currentPage(allRoles.getNumber()).totalPages(allRoles.getTotalPages()).totalElements(allRoles.getTotalElements()).build();
 
     }
 

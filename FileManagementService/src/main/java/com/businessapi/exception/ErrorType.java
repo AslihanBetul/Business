@@ -14,7 +14,8 @@ public enum ErrorType {
     BAD_REQUEST_ERROR(1005, "Invalid request. Please try again.", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1006, "The provided token is invalid. Please try again.", HttpStatus.UNAUTHORIZED),
     FILE_NOT_FOUND( 1007, "File not found. Please try again.", HttpStatus.NOT_FOUND ),
-    FILE_ALREADY_DELETED( 1008, "File already deleted. Please try again.", HttpStatus.BAD_REQUEST );
+    FILE_ALREADY_DELETED( 1008, "File already deleted. Please try again.", HttpStatus.BAD_REQUEST ),
+    USER_HAS_NO_ACTIVE_FILES( 1009, "User has no active files. Please try again.", HttpStatus.BAD_REQUEST );
 
 
 

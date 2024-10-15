@@ -4,25 +4,27 @@ import com.businessapi.RabbitMQ.Model.*;
 import com.businessapi.dto.requestDTOs.*;
 import com.businessapi.dto.responseDTOs.GetAllUsersResponseDTO;
 import com.businessapi.dto.responseDTOs.GetUserInformationDTO;
+import com.businessapi.dto.responseDTOs.PageableUserListResponseDTO;
 import com.businessapi.entity.Role;
 import com.businessapi.entity.User;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.UserException;
-import com.businessapi.mapper.RoleMapper;
 import com.businessapi.mapper.UserMapper;
 import com.businessapi.repository.UserRepository;
 import com.businessapi.util.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -158,10 +160,26 @@ public class UserService {
     }
 
 
-    public List<User> pagableGettAll(PageRequestDTO pageRequestDTO){
+    public PageableUserListResponseDTO pageableGettAll(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.page(), pageRequestDTO.size());
+        Page<User> userPage = userRepository.findAllByLastNameContainingIgnoreCaseExcludingSuperAdmin(pageRequestDTO.searchText(),pageable);
 
-        return userRepository.findAllByLastNameContainingIgnoreCase(pageRequestDTO.searchText(), PageRequest.of(pageRequestDTO.page(), pageRequestDTO.size()));
-
+        List<GetAllUsersResponseDTO> allUsersResponseDTOList = userPage.getContent().stream()
+                //.filter(user -> user.getRole().stream().noneMatch(role -> role.getRoleName().equals("SUPER_ADMIN")))
+                .map(user -> {
+                    List<String> userRolesString = user.getRole().stream().map(Role::getRoleName).toList();
+                    String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyGetMailByAuthId", user.getAuthId());
+                    return GetAllUsersResponseDTO.builder()
+                            .id(user.getId())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .email(usersMail)
+                            .status(user.getStatus())
+                            .userRoles(userRolesString)
+                            .build();
+                })
+                .toList();
+        return PageableUserListResponseDTO.builder().userList(allUsersResponseDTOList).totalElements(userPage.getTotalElements()).currentPage(userPage.getNumber()).totalPages(userPage.getTotalPages()).build();
     }
 
 
@@ -293,8 +311,20 @@ public class UserService {
 
     public Boolean changeUserPassword(ChangeUserPassword changeUserPassword) {
         User user = userRepository.findById(changeUserPassword.userId()).orElseThrow(() -> new UserException(ErrorType.USER_NOT_FOUND));
-        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(changeUserPassword.password()).build());
+        String userNewPassword = passwordGenerator();
+        rabbitTemplate.convertAndSend("businessDirectExchange","keyChangePasswordFromUser",ChangePasswordFromUserModel.builder().authId(user.getAuthId()).newPassword(userNewPassword).build());
+        String usersMail = (String) rabbitTemplate.convertSendAndReceive("businessDirectExchange","keyGetMailByAuthId", user.getAuthId());
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySendMailNewPassword",SendMailNewPasswordModel.builder().newPassword(userNewPassword).email(usersMail).build());
         return true;
+    }
+    public String passwordGenerator(){
+        String codeSource= UUID.randomUUID().toString();
+        String[] splitCodeSource = codeSource.split("-");
+        StringBuilder code= new StringBuilder();
+        for (String s : splitCodeSource) {
+            code.append(s.charAt(0));
+        }
+        return code.toString();
     }
 
     @Transactional

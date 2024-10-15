@@ -127,6 +127,7 @@ public class MailSenderService {
         javaMailSender.send(mimeMessage);
     }
 
+<<<<<<< HEAD
     @RabbitListener(queues = "queueSendEmailExternalSourceCustomers")
     public boolean sendEmailExternalSourceCustomers(CustomerSaveMailModel model) throws MessagingException {
         String rateLink = "http://localhost:3000/customer-save-from-link?memberId=" + model.getMemberId();
@@ -174,6 +175,7 @@ public class MailSenderService {
     }
 
 
+=======
     @RabbitListener(queues = "queueSendMailNewPassword")
     public void sendNewPasswordChangedByAdmin(SendMailNewPasswordModel sendMailNewPasswordModel) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -210,5 +212,6 @@ public class MailSenderService {
         message.setTo(sendMailNewPasswordModel.getEmail());
         javaMailSender.send(mimeMessage);
     }
+>>>>>>> main
 
 }

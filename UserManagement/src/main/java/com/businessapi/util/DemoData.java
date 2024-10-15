@@ -10,25 +10,30 @@ import com.businessapi.repository.UserRepository;
 import com.businessapi.service.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
-public class DemoData {
+public class DemoData  implements ApplicationRunner {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserService userService;
+    private final Random random = new Random();
 
-
-    @PostConstruct
-    public void saveDate(){
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
         saveBaseRoles();
         saveSuperAdmin();
         saveUsers();
     }
+
 
     private void saveSuperAdmin(){
         List<Role> roles = new ArrayList<>();
@@ -95,6 +100,25 @@ public class DemoData {
 
 
 
+        List<String> firstNames = Arrays.asList("Ahmet", "Ayşe", "Mehmet", "Fatma", "Ali", "Zeynep", "Mustafa", "Elif", "Burak", "Cem");
+        List<String> lastNames = Arrays.asList("Yılmaz", "Kaya", "Demir", "Çelik", "Şahin", "Aydın", "Koç", "Eren", "Çetin", "Öztürk");
+
+        for (int i = 0; i < 300; i++) {
+            // Rastgele isim ve soyisim seç
+            String firstName = firstNames.get(random.nextInt(firstNames.size()));
+            String lastName = lastNames.get(random.nextInt(lastNames.size()));
+
+            // Email oluştur
+            String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + i + "@example.com";
+
+            // UserSaveRequestDTO nesnesini oluştur
+            UserSaveRequestDTO user4 = new UserSaveRequestDTO(firstName, lastName, email, "123", roles2);
+            userService.saveUser(user4);
+        }
+
+
+
     }
+
 
 }
