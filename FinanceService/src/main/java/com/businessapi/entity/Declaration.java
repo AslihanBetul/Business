@@ -26,4 +26,5 @@ public class Declaration extends BaseEntity {
     BigDecimal totalIncome;
     BigDecimal totalExpense;
     BigDecimal totalTax;
+    String taxType;
 }

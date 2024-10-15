@@ -2,6 +2,8 @@ package com.businessapi.controllers;
 
 import com.businessapi.dto.request.DeclarationSaveRequestDTO;
 import com.businessapi.dto.request.GenerateDeclarationRequestDTO;
+import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.DeclarationResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Declaration;
 import com.businessapi.services.DeclarationService;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.businessapi.constants.Endpoints.*;
 
@@ -60,6 +63,17 @@ public class DeclarationController {
         return ResponseEntity.ok(ResponseDTO
                 .<BigDecimal>builder()
                 .data(declarationService.createDeclaration(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(FIND_ALL)
+    @Operation(summary = "Lists all declarations with respect to the given page and size")
+    public ResponseEntity<ResponseDTO<List<DeclarationResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
+        return ResponseEntity.ok(ResponseDTO
+                .<List<DeclarationResponseDTO>>builder()
+                .data(declarationService.getAllDeclarations(dto))
                 .message("Success")
                 .code(200)
                 .build());

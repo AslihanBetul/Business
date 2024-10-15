@@ -3,6 +3,7 @@ package com.businessapi.entity;
 
 import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.entity.enums.EStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,10 +22,16 @@ public class Expense extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Enumerated(EnumType.STRING)
     EExpenseCategory expenseCategory;
+
     LocalDate expenseDate;
     BigDecimal amount;
     String description;
-    String department;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    @JsonBackReference
+    Department department;
 }

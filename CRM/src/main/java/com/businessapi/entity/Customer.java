@@ -1,9 +1,14 @@
 package com.businessapi.entity;
 
 import com.businessapi.utility.enums.EStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +29,9 @@ public class Customer extends BaseEntity{
     private String address;
     @Enumerated(EnumType.STRING)
     private EStatus status;
+    @ManyToMany(mappedBy = "customers")
+    @JsonBackReference
+    private List<Opportunity> opportunities = new ArrayList<>();
 
 
 

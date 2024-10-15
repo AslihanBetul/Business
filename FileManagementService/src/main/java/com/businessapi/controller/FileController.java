@@ -58,7 +58,7 @@ public class FileController {
 
 
     @DeleteMapping(DELETE)
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
     @Operation(summary = "Delete a file")
     public ResponseEntity<ResponseDTO<String>> deleteFile(@RequestBody DeleteFileRequestDTO fileDeleteDTO) {
         fileService.deleteFile(fileDeleteDTO);

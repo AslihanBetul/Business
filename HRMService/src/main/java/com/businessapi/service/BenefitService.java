@@ -4,18 +4,24 @@ package com.businessapi.service;
 import com.businessapi.dto.request.BenefitSaveRequestDTO;
 import com.businessapi.dto.request.BenefitUpdateRequestDTO;
 import com.businessapi.dto.response.BenefitResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
+import com.businessapi.dto.response.PayrollResponseDTO;
 import com.businessapi.entity.Benefit;
 import com.businessapi.entity.Employee;
+import com.businessapi.entity.Payroll;
 import com.businessapi.exception.HRMException;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.BenefitRepository;
 import com.businessapi.repository.EmployeeRepository;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +44,6 @@ public class BenefitService {
 
     public Boolean update(BenefitUpdateRequestDTO dto) {
         Benefit benefit = benefitRepository.findById(dto.id()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_BENEFIT));
-        benefit.setEmployeeId(dto.employeeId()!=null ? dto.employeeId():benefit.getEmployeeId());
         benefit.setType(dto.type()!=null ? dto.type():benefit.getType());
         benefit.setAmount(dto.amount()!=null ? dto.amount():benefit.getAmount());
         benefit.setEndDate(dto.endDate()!=null ? dto.endDate():benefit.getEndDate());
@@ -58,24 +63,59 @@ public class BenefitService {
                 .build();
     }
 
-    public List<BenefitResponseDTO> findAll() {
-        List<Benefit> benefits = benefitRepository.findAll();
-        List<BenefitResponseDTO> benefitResponseDTOList=new ArrayList<>();
-        benefits.forEach(benefit ->{
-                Employee employee = employeeRepository.findById(benefit.getEmployeeId()).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
-                benefitResponseDTOList.add(BenefitResponseDTO.builder()
-                        .firstName(employee.getFirstName())
-                        .lastName(employee.getLastName())
-                       .amount(benefit.getAmount())
-                       .endDate(benefit.getEndDate())
-                       .employeeId(benefit.getEmployeeId())
-                       .startDate(benefit.getStartDate())
-                       .type(benefit.getType())
-                       .build());}
-        );
-        return benefitResponseDTOList;
 
+
+    public List<BenefitResponseDTO> findAll(PageRequestDTO dto) {
+
+        int page = dto.page();
+        int size = dto.size();
+        String searchText = dto.searchText();
+
+
+        Pageable pageable = PageRequest.of(page, size);
+
+
+        List<Benefit> benefits = benefitRepository.findAllByStatus(EStatus.ACTIVE);
+
+
+        List<BenefitResponseDTO> benefitResponseDTOList = new ArrayList<>();
+
+
+        List<BenefitResponseDTO> finalBenefitResponseDTOList = benefitResponseDTOList;
+        benefits.forEach(benefit -> {
+            Employee employee = employeeRepository.findById(benefit.getEmployeeId())
+                    .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+
+            BenefitResponseDTO benefitResponseDTO = BenefitResponseDTO.builder()
+                    .id(benefit.getEmployeeId())
+                    .employeeId(benefit.getEmployeeId())
+                    .firstName(employee.getFirstName())
+                    .lastName(employee.getLastName())
+                    .amount(benefit.getAmount())
+                    .endDate(benefit.getEndDate())
+                    .startDate(benefit.getStartDate())
+                    .type(benefit.getType())
+
+                    .build();
+
+
+            finalBenefitResponseDTOList.add(benefitResponseDTO);
+        });
+
+
+        if (searchText != null && !searchText.isEmpty()) {
+            benefitResponseDTOList = benefitResponseDTOList.stream()
+                    .filter(payrollDto -> payrollDto.firstName().toLowerCase().contains(searchText.toLowerCase()) ||
+                            payrollDto.lastName().toLowerCase().contains(searchText.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+
+        int start = Math.min((int) pageable.getOffset(), benefitResponseDTOList.size());
+        int end = Math.min(start + pageable.getPageSize(), benefitResponseDTOList.size());
+        return benefitResponseDTOList.subList(start, end);
     }
+
 
     public Boolean delete(Long id) {
         Benefit benefit = benefitRepository.findById(id).orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_BENEFIT));

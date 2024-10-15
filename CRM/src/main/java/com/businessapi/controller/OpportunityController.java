@@ -1,8 +1,10 @@
 package com.businessapi.controller;
 
+import com.businessapi.dto.request.OpportunityForCustomerSaveDTO;
 import com.businessapi.dto.request.OpportunitySaveDTO;
 import com.businessapi.dto.request.OpportunityUpdateDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.OpportunityDetailsDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.entity.Opportunity;
@@ -33,6 +35,15 @@ public class OpportunityController {
                 .build());
     }
 
+    @PutMapping(SAVECUSTOMER)
+    public ResponseEntity<ResponseDTO<Boolean>> saveCustomer(@RequestBody OpportunityForCustomerSaveDTO dto) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().
+                data(opportunityService.saveCustomerOpportunity(dto))
+                .code(200)
+                .message("Opportunity saved successfully")
+                .build());
+    }
+
     @PostMapping(FINDALL)
     @Operation(summary = "Find all customers", description = "Find all customers")
     public ResponseEntity<ResponseDTO<List<Opportunity>>> findAll(@RequestBody PageRequestDTO dto) {
@@ -42,8 +53,9 @@ public class OpportunityController {
                 .message("Customers found successfully")
                 .build());
     }
+
     @PutMapping(UPDATE)
-    @Operation(summary = "Update opportunity by id",description = "Update opportunity by id")
+    @Operation(summary = "Update opportunity by id", description = "Update opportunity by id")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody OpportunityUpdateDTO dto) {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                 .data(opportunityService.update(dto))
@@ -51,8 +63,9 @@ public class OpportunityController {
                 .message("Opportunity updated successfully")
                 .build());
     }
+
     @DeleteMapping(DELETE)
-    @Operation(summary = "Delete opportunity",description = "Delete opportunity")
+    @Operation(summary = "Delete opportunity", description = "Delete opportunity")
     public ResponseEntity<ResponseDTO<Boolean>> delete(@RequestParam Long id) {
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                 .data(opportunityService.delete(id))
@@ -60,14 +73,24 @@ public class OpportunityController {
                 .message("Opportunity deleted successfully")
                 .build());
     }
+
     @PostMapping(FINDBYID)
-    @Operation(summary = "Find opportunity by id",description = "Find opportunity by id")
+    @Operation(summary = "Find opportunity by id", description = "Find opportunity by id")
     public ResponseEntity<ResponseDTO<Opportunity>> findById(@RequestParam Long id) {
         return ResponseEntity.ok(ResponseDTO.<Opportunity>builder()
                 .data(opportunityService.findById(id))
                 .code(200)
                 .message("Opportunity found successfully")
                 .build());
+    }
+
+    @PostMapping(GETDETAILS)
+    @Operation(summary = "Get details by id", description = "Get details by id")
+    public ResponseEntity<ResponseDTO<OpportunityDetailsDTO>> getDetails(@RequestParam Long id) {
+        return ResponseEntity.ok(ResponseDTO.<OpportunityDetailsDTO>builder()
+                .data(opportunityService.getDetails(id))
+                .code(200)
+                .message("Opportunity found successfully").build());
     }
 
 

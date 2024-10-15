@@ -3,6 +3,7 @@ package com.businessapi.services;
 import com.businessapi.dto.request.FinancialReportSaveRequestDTO;
 import com.businessapi.dto.request.FinancialReportUpdateRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.ExpenseResponseDTO;
 import com.businessapi.entity.Expense;
 import com.businessapi.entity.FinancialReport;
 import com.businessapi.entity.enums.EExpenseCategory;
@@ -28,11 +29,11 @@ public class FinancialReportService {
     public Boolean save(FinancialReportSaveRequestDTO dto) {
         BigDecimal totalIncome = incomeService.calculateTotalIncomeBetweenDates(dto.startDate(), dto.endDate());
         BigDecimal totalOutcome = expenseService.calculateTotalExpenseBetweenDates(dto.startDate(), dto.endDate());
-        List<Expense> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
+        List<ExpenseResponseDTO> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
         BigDecimal taxPaid = BigDecimal.ZERO;
-        for (Expense expense : expenseList) {
-            if (expense.getExpenseCategory().equals(EExpenseCategory.TAX)) {
-                taxPaid = taxPaid.add(expense.getAmount());
+        for (ExpenseResponseDTO expense : expenseList) {
+            if (expense.expenseCategory().equals(EExpenseCategory.TAX)) {
+                taxPaid = taxPaid.add(expense.amount());
             }
         }
         String message = createMessage(totalIncome, totalOutcome, taxPaid);

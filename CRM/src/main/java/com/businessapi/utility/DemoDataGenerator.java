@@ -3,6 +3,7 @@ package com.businessapi.utility;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.service.*;
+import com.businessapi.utility.enums.EStatus;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -32,17 +33,17 @@ public class DemoDataGenerator {
     }
 
     private void customerDemoData() {
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("John", "Doe", "johndoe@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Jane", "Doe", "janedoe@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Bob", "Smith", "bobsmith@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Alice", "Johnson", "alicejohnson@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Tom", "Lee", "tomlee@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Sarah", "Brown", "sarahbrown@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Michael", "Davis", "michaeldavis@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Emily", "Wilson", "emilywilson@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Olivia", "Martinez", "oliviamartinez@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("William", "Anderson", "williamanderson@gmail.com", "123456789", "123 Main St"));
-        customerService.saveForDemoData(new CustomerSaveDemoDTO("Ava", "Thomas", "avathomas@gmail.com", "123456789", "123 Main St"));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("John", "Doe", "johndoe@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Jane", "Doe", "janedoe@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Bob", "Smith", "bobsmith@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Alice", "Johnson", "alicejohnson@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Tom", "Lee", "tomlee@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Sarah", "Brown", "sarahbrown@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Michael", "Davis", "michaeldavis@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Emily", "Wilson", "emilywilson@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Olivia", "Martinez", "oliviamartinez@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("William", "Anderson", "williamanderson@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
+        customerService.saveForDemoData(new CustomerSaveDemoDTO("Ava", "Thomas", "avathomas@gmail.com", "123456789", "123 Main St", EStatus.ACTIVE));
     }
 
 
@@ -127,7 +128,7 @@ public class DemoDataGenerator {
                 "Develop a new website for the client",
                 50000.0,
                 "Proposal Sent",
-                0.75
+                75.0
                 ));
 
         opportunityService.saveForDemoData(new OpportunitySaveDemoDTO(2L,
@@ -135,15 +136,22 @@ public class DemoDataGenerator {
                 "Develop a new mobile app for the client",
                 80000.0,
                 "Proposal Sent",
-                0.75
+                75.0
                 ));
+        opportunityService.saveForDemoData(new OpportunitySaveDemoDTO(3L,
+                "Mobile App Development",
+                "Develop a new mobile app for the client",
+                80000.0,
+                "Proposal Sent",
+                75.0
+        ));
 
         opportunityService.saveForDemoData(new OpportunitySaveDemoDTO(3L,
                 "Software Development",
                 "Develop a new software for the client",
                 100000.0,
                 "Proposal Sent",
-                0.75
+                75.0
             ));
 
         opportunityService.saveForDemoData(new OpportunitySaveDemoDTO(4L,
@@ -151,7 +159,7 @@ public class DemoDataGenerator {
                 "Repair hardware for the client",
                 30000.0,
                 "Proposal Sent",
-                0.75
+                75.0
                 ));
 
         opportunityService.saveForDemoData(new OpportunitySaveDemoDTO(5L,
@@ -159,7 +167,7 @@ public class DemoDataGenerator {
                 "Upgrade software for the client",
                 60000.0,
                 "Proposal Sent",
-                0.75
+                75.0
                 ));
     }
 

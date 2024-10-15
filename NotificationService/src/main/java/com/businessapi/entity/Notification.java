@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class Notification {
     private String title;
     private String message;
     private LocalDateTime createdAt = LocalDateTime.now();
+    @JsonProperty("isRead")
     private boolean isRead = false;
     private boolean isDeleted = false;
 }

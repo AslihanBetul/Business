@@ -50,6 +50,14 @@ public class Config {
     private static final String queueExistByEmail = "queueExistByEmail";
     private static final String keyExistByEmail = "keyExistByEmail";
 
+    //To activate or deactivate auth
+    private static final String queueActiveOrDeactivateAuthOfEmployee = "queueActiveOrDeactivateAuthOfEmployee";
+    private static final String keyActiveOrDeactivateAuthOfEmployee = "keyActiveOrDeactivateAuthOfEmployee";
+
+    //Update email of auth
+    private static final String queueUpdateEmailOfAuth = "queueUpdateEmailOfAuth";
+    private static final String keyUpdateEmailOfAuth = "keyUpdateEmailOfAuth";
+
     @Bean
    public DirectExchange directExchange(){
         return new DirectExchange(businessDirectExchange);
@@ -108,6 +116,26 @@ public class Config {
     @Bean
     public Queue queueExistByEmail() {
         return new Queue(queueExistByEmail);
+    }
+
+    @Bean
+    public Queue queueActiveOrDeactivateAuthOfEmployee() {
+        return new Queue(queueActiveOrDeactivateAuthOfEmployee);
+    }
+
+    @Bean
+    public Queue queueUpdateEmailOfAuth() {
+        return new Queue(queueUpdateEmailOfAuth);
+    }
+
+    @Bean
+    public Binding bindingUpdateEmailOfAuth(){
+        return BindingBuilder.bind(queueUpdateEmailOfAuth()).to(directExchange()).with(keyUpdateEmailOfAuth);
+    }
+
+    @Bean
+    public Binding bindingActiveOrDeactivateAuthOfEmployee(){
+        return BindingBuilder.bind(queueActiveOrDeactivateAuthOfEmployee()).to(directExchange()).with(keyActiveOrDeactivateAuthOfEmployee);
     }
     @Bean
     public Binding bindingExistByEmail(){

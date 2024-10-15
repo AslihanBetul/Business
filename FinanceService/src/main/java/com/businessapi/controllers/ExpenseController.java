@@ -2,10 +2,8 @@ package com.businessapi.controllers;
 
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.ExpenseCategoryResponseDTO;
+import com.businessapi.dto.response.ExpenseResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
-import com.businessapi.entity.Expense;
-import com.businessapi.entity.Income;
-import com.businessapi.entity.enums.EExpenseCategory;
 import com.businessapi.services.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +57,9 @@ public class ExpenseController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all expenses with respect to the given page and size")
-    public ResponseEntity<ResponseDTO<List<Expense>>> findAll(@RequestBody PageRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<List<ExpenseResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
-                .<List<Expense>>builder()
+                .<List<ExpenseResponseDTO>>builder()
                 .data(expenseService.findAll(dto))
                 .message("Success")
                 .code(200)
@@ -70,25 +68,15 @@ public class ExpenseController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds an expense by its id")
-    public ResponseEntity<ResponseDTO<Expense>> findById(Long id) {
+    public ResponseEntity<ResponseDTO<ExpenseResponseDTO>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
-                .<Expense>builder()
+                .<ExpenseResponseDTO>builder()
                 .data(expenseService.findById(id))
                 .message("Success")
                 .code(200)
                 .build());
     }
 
-    @PostMapping(FIND_BY_CATEGORY)
-    @Operation(summary = "Finds expenses related to a specific category")
-    public ResponseEntity<ResponseDTO<List<Expense>>> findByCategory(EExpenseCategory expenseCategory) {
-        return ResponseEntity.ok(ResponseDTO
-                .<List<Expense>>builder()
-                .data(expenseService.findByCategory(expenseCategory))
-                .message("Success")
-                .code(200)
-                .build());
-    }
 
     @PostMapping(APPROVE)
     @Operation(summary = "Approves an expense")
@@ -114,9 +102,9 @@ public class ExpenseController {
 
     @PostMapping(FIND_BY_DATE)
     @Operation(summary = "Lists all expenses with between the given dates")
-    public ResponseEntity<ResponseDTO<List<Expense>>> findByDate(@RequestBody ExpenseFindByDateRequestDTO dto) {
+    public ResponseEntity<ResponseDTO<List<ExpenseResponseDTO>>> findByDate(@RequestBody ExpenseFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
-                .<List<Expense>>builder()
+                .<List<ExpenseResponseDTO>>builder()
                 .data(expenseService.findByDate(dto.startDate(), dto.endDate()))
                 .message("Success")
                 .code(200)

@@ -23,6 +23,8 @@ public class Config {
     //Admin Tarafından Kullanıcıya yeni şifre göndermek için mailService iletişim kuyruğı
     private static final String queueSendMailNewPassword = "queueSendMailNewPassword";
     private static final String keySendMailNewPassword = "keySendMailNewPassword";
+    private final String queueSendStyledEmail = "queueSendStyledEmail";
+    private final String keySendStyledEmail = "keySendStyledEmail";
 
     @Bean
     public DirectExchange directExchange(){
@@ -45,6 +47,14 @@ public class Config {
     @Bean
     public Binding bindingKeySendMail(){
         return BindingBuilder.bind(queueSendMail()).to(directExchange()).with(keySendMail);
+    }
+    @Bean
+    public Queue queueSendStyledEmail(){
+        return new Queue(queueSendStyledEmail);
+    }
+    @Bean
+    public Binding bindingKeySendStyledEmail(){
+        return BindingBuilder.bind(queueSendStyledEmail()).to(directExchange()).with(keySendStyledEmail);
     }
 
     @Bean

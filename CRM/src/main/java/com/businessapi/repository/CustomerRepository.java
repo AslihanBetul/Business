@@ -25,6 +25,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<CustomerResponseForOpportunityDTO> findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(String s,Long memberId, PageRequest of);
 
 
-
+    List<Customer> findByStatus(EStatus eStatus);
 
 }

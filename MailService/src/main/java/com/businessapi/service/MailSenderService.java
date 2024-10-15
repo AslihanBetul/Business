@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.config.rabbit.model.EmailModal;
 import com.businessapi.config.rabbit.model.EmailSendModal;
 import com.businessapi.config.rabbit.model.EmailVerificationModel;
 import com.businessapi.config.rabbit.model.SendMailNewPasswordModel;
@@ -110,6 +111,16 @@ public class MailSenderService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
         helper.setText(email.getMessage());
+        helper.setTo(email.getEmail());
+        helper.setSubject(email.getSubject());
+        javaMailSender.send(mimeMessage);
+    }
+
+    @RabbitListener(queues = "queueSendStyledEmail")
+    public void sendStyledEmail(EmailModal email) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        helper.setText(email.getMessage(),email.getIsHtml());
         helper.setTo(email.getEmail());
         helper.setSubject(email.getSubject());
         javaMailSender.send(mimeMessage);

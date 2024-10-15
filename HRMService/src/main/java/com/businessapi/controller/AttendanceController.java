@@ -6,6 +6,7 @@ import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
 import com.businessapi.dto.response.AttendanceResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
+import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Attendance;
 import com.businessapi.service.AttendanceService;
@@ -36,7 +37,7 @@ public class AttendanceController {
                 .code(200)
                 .build());
     }
-    @PostMapping(UPDATE)
+    @PutMapping(UPDATE)
     @Operation(summary = "Update Attendance")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody AttendanceUpdateRequestDTO dto){
 
@@ -47,7 +48,7 @@ public class AttendanceController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_BY_ID)
+    @PostMapping (FIND_BY_ID)
     @Operation(summary = "Find Attendance by id")
     public ResponseEntity<ResponseDTO<AttendanceResponseDTO>> findById(@RequestParam Long id){
 
@@ -58,13 +59,13 @@ public class AttendanceController {
                 .code(200)
                 .build());
     }
-    @GetMapping (FIND_ALL)
+    @PostMapping (FIND_ALL)
     @Operation(summary = "Find all Attendance ")
-    public ResponseEntity<ResponseDTO<List<AttendanceResponseDTO>>> findAll(){
+    public ResponseEntity<ResponseDTO<List<AttendanceResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
                 .<List<AttendanceResponseDTO>>builder()
-                .data(attendanceService.findAll())
+                .data(attendanceService.findAll(dto))
                 .message("Success")
                 .code(200)
                 .build());
