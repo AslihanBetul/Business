@@ -22,6 +22,7 @@ import static com.businessapi.constants.EndPoints.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping(FILE)
@@ -114,7 +115,63 @@ public class FileController {
             return ResponseEntity.status(404).body(null);
         }
     }
+
+    @PostMapping(UPLOADPROFILEIMAGE)
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
+    @Operation(summary = "Upload a profile image")
+    public ResponseEntity<ResponseDTO<String>> uploadProfileImage(
+            @ModelAttribute SaveFileRequestDTO dto)
+           {
+
+        try (InputStream inputStream = dto.file().getInputStream()) {
+
+            String uuid = fileService.saveProfileImage(dto);
+
+            return ResponseEntity.ok(
+                    ResponseDTO.<String>builder()
+                            .code(200)
+                            .message("Profile image uploaded successfully")
+                            .data(uuid)
+                            .build()
+            );
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(
+                    ResponseDTO.<String>builder()
+                            .code(500)
+                            .message("Profile image upload failed: " + e.getMessage())
+                            .data(null)
+                            .build()
+            );
+        }
+    }
+
+    @GetMapping(value = GETPROFILEIMAGE+"/{authId}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
+    public ResponseEntity<Resource> getProfileImage(@PathVariable Long authId) {
+        try {
+
+            InputStream inputStream = fileService.getProfileImage(authId);
+            if (inputStream == null) {
+                return ResponseEntity.status(404).body(null);
+            }
+            List<File> activeFiles = fileService.getActiveFilesByAuthId(authId);
+            File existingFile = activeFiles.get(0);
+            Resource resource = new InputStreamResource(inputStream);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + existingFile.getUuid() + "\"")
+                    .contentType(MediaType.parseMediaType(existingFile.getContentType().getContentType()))
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(null);
+        }
+
+
+    }
+
+
+
 }
+
 
 
 
