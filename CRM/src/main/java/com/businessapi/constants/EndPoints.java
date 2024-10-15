@@ -27,6 +27,8 @@ public class EndPoints {
     public static final String FOR_OPPORTUNITY = "/for-opportunity";
     public static final String SAVECUSTOMER = "/save-customer";
     public static final String GETDETAILS = "/get-details";
+    public static final String UPLOAD_EXCEL_CUSTOMER = "/upload-excel-customer";
+
 
 
 }

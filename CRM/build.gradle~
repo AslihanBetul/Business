@@ -48,17 +48,6 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     implementation 'com.auth0:java-jwt:4.4.0'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    // Apache POI Core
-    implementation 'org.apache.poi:poi:5.2.3'
-
-    // Apache POI for Excel (XSSF)
-    implementation 'org.apache.poi:poi-ooxml:5.2.3'
-
-    // Apache POI - XML Beans
-    implementation 'org.apache.xmlbeans:xmlbeans:5.1.0'
-
-    // Date işlemleri için ek bağımlılık (Curves API)
-    implementation 'com.github.virtuald:curvesapi:1.06'
 
 
 

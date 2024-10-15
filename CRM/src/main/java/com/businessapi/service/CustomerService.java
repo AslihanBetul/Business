@@ -10,7 +10,6 @@ import com.businessapi.repository.CustomerRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public class CustomerService {
         if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
             throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
-        customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(dto.status()).build());
+        customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(EStatus.ACTIVE).build());
     }
 
     // This method will return members customers with paginable
@@ -99,5 +98,21 @@ public class CustomerService {
     }
     public List<Customer> findAllByIds(List<Long> ids) {
         return customerRepository.findAllById(ids);
+    }
+
+    public Boolean uploadExcelCustomers(AllCustomerSaveDTO dtoList) {
+        List<Customer> customers = dtoList.customers().stream().map(dto -> {
+            Customer customer = new Customer();
+            customer.setFirstName(dto.firstName());
+            customer.setLastName(dto.lastName());
+            customer.setEmail(dto.email());
+            customer.setPhone(dto.phone());
+            customer.setAddress(dto.address());
+            customer.setMemberId(SessionManager.getMemberIdFromAuthenticatedMember());
+            customer.setStatus(EStatus.ACTIVE);
+            return customer;
+        }).collect(Collectors.toList());
+        customerRepository.saveAll(customers);
+        return true;
     }
 }
