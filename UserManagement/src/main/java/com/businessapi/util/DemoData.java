@@ -103,15 +103,15 @@ public class DemoData  implements ApplicationRunner {
         List<String> firstNames = Arrays.asList("Ahmet", "Ayşe", "Mehmet", "Fatma", "Ali", "Zeynep", "Mustafa", "Elif", "Burak", "Cem");
         List<String> lastNames = Arrays.asList("Yılmaz", "Kaya", "Demir", "Çelik", "Şahin", "Aydın", "Koç", "Eren", "Çetin", "Öztürk");
 
-        for (int i = 0; i < 300; i++) {
-            // Rastgele isim ve soyisim seç
+        for (int i = 0; i < 50; i++) {
+
             String firstName = firstNames.get(random.nextInt(firstNames.size()));
             String lastName = lastNames.get(random.nextInt(lastNames.size()));
 
-            // Email oluştur
+
             String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + i + "@example.com";
 
-            // UserSaveRequestDTO nesnesini oluştur
+
             UserSaveRequestDTO user4 = new UserSaveRequestDTO(firstName, lastName, email, "123", roles2);
             userService.saveUser(user4);
         }
