@@ -47,11 +47,7 @@ public class EmployeeService
             throw new OrganizationManagementServiceException(ErrorType.INVALID_EMAIL);
         }
 
-        Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
-        if (Boolean.TRUE.equals(isEmailExist))
-        {
-            throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
-        }
+        checkEmail(dto.email());
 
         Employee manager = employeeRepository.findByIdAndMemberId(dto.managerId(), SessionManager.getMemberIdFromAuthenticatedMember()).orElseThrow(() -> new OrganizationManagementServiceException(ErrorType.EMPLOYEE_NOT_FOUND));
         Department department = departmentService.findByIdAndMemberId(dto.departmentId());
@@ -74,7 +70,8 @@ public class EmployeeService
         }
 
         Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
-        if (Boolean.TRUE.equals(isEmailExist))
+        Boolean isEmailExist2 = employeeRepository.existsByEmailIgnoreCase(dto.email());
+        if (Boolean.TRUE.equals(isEmailExist) ||  isEmailExist2)
         {
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
@@ -101,7 +98,8 @@ public class EmployeeService
         }
 
         Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
-        if (Boolean.TRUE.equals(isEmailExist))
+        Boolean isEmailExist2 = employeeRepository.existsByEmailIgnoreCase(dto.email());
+        if (Boolean.TRUE.equals(isEmailExist) || isEmailExist2)
         {
             throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
@@ -176,11 +174,7 @@ public class EmployeeService
         //Checking whether new email exist or not
         if (!dto.email().equals(employee.getEmail()))
         {
-            Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(dto.email()).build()));
-            if (Boolean.TRUE.equals(isEmailExist))
-            {
-                throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
-            }
+            checkEmail(dto.email());
             //If employee has account, auth will be updated as well.
             if (employee.getAuthId() != null)
             {
@@ -240,6 +234,16 @@ public class EmployeeService
 
             employeeRepository.save(employee);
             return true;
+        }
+    }
+
+    private void checkEmail(String email)
+    {
+        Boolean isEmailExist = (Boolean) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyExistByEmail", ExistByEmailModel.builder().email(email).build()));
+        Boolean isEmailExist2 = employeeRepository.existsByEmailIgnoreCase(email);
+        if (Boolean.TRUE.equals(isEmailExist) || Boolean.TRUE.equals(isEmailExist2))
+        {
+            throw new OrganizationManagementServiceException(ErrorType.EMAIL_ALREADY_EXIST);
         }
     }
 
