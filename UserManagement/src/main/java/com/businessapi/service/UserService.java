@@ -179,9 +179,6 @@ public class UserService {
                             .build();
                 })
                 .toList();
-
-
-
         return PageableUserListResponseDTO.builder().userList(allUsersResponseDTOList).totalElements(userPage.getTotalElements()).currentPage(userPage.getNumber()).totalPages(userPage.getTotalPages()).build();
     }
 
