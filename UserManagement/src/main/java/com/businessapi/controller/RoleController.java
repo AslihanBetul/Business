@@ -2,9 +2,11 @@ package com.businessapi.controller;
 
 import com.businessapi.constants.EndPoints;
 import com.businessapi.constants.messages.SuccesMessages;
+import com.businessapi.dto.requestDTOs.PageRequestDTO;
 import com.businessapi.dto.requestDTOs.RoleCreateDTO;
 import com.businessapi.dto.requestDTOs.RoleUpdateRequestDTO;
 import com.businessapi.dto.requestDTOs.UpdateUserRoleStatusDTO;
+import com.businessapi.dto.responseDTOs.PageableRoleListResponseDTO;
 import com.businessapi.dto.responseDTOs.ResponseDTO;
 import com.businessapi.dto.responseDTOs.RoleResponseDTO;
 import com.businessapi.entity.User;
@@ -54,12 +56,11 @@ public class RoleController {
     }
 
 
-    @GetMapping(EndPoints.GET_ALL_USER_ROLES)
+    @PostMapping(EndPoints.GET_ALL_USER_ROLES)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN')")
     @Operation(summary = "Rollerin hepsini getiren get isteği",security = @SecurityRequirement(name = "bearerUser"))
-    public ResponseEntity<ResponseDTO<List<RoleResponseDTO>>> getAllUserRoles(){
-
-        return ResponseEntity.ok(ResponseDTO.<List<RoleResponseDTO>>builder().code(200).data(roleService.getAllUserRoles()).message(SuccesMessages.All_ROLES_SENT).build());
+    public ResponseEntity<ResponseDTO<PageableRoleListResponseDTO>> getAllUserRoles(@RequestBody PageRequestDTO pageRequestDTO){
+        return ResponseEntity.ok(ResponseDTO.<PageableRoleListResponseDTO>builder().code(200).data(roleService.getAllUserRoles(pageRequestDTO)).message(SuccesMessages.All_ROLES_SENT).build());
     }
 
     @GetMapping("/assignable-roles/{userId}")
