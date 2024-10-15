@@ -23,8 +23,8 @@ public class RabbitMQListener {
     }
 
     public void saveNotifications(RabbitMQNotification rabbitMQNotification) {
-        rabbitMQNotification.getUserIds().forEach(userId -> {
-            notificationService.createNotification(userId, rabbitMQNotification.getTitle(), rabbitMQNotification.getMessage());
+        rabbitMQNotification.getAuthIds().forEach(authId -> {
+            notificationService.createNotification(authId, rabbitMQNotification.getTitle(), rabbitMQNotification.getMessage());
         });
     }
 }

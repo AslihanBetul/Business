@@ -23,7 +23,7 @@ public class NotificationProducer {
         List<Long> userIdsList = new ArrayList<>();
         userIdsList.add(userId);
         RabbitMQNotification notification = RabbitMQNotification.builder()
-                .userIds(userIdsList)
+                .authIds(userIdsList)
                 .title(title)
                 .message(message)
                 .build();

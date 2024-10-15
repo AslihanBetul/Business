@@ -25,42 +25,41 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-
     @PostMapping(CREATE_NOTIFICATION)
     @MessageMapping("/notifications/create")
     @SendTo("/topic/create-notifications")
     public ResponseEntity<Void> createNotification(@RequestBody NotificationRequestDto dto) {
-        notificationService.createNotification(dto.getUserId(), dto.getTitle(), dto.getMessage());
+        notificationService.createNotification(dto.getAuthId(), dto.getTitle(), dto.getMessage());
         return ResponseEntity.ok().build();
     }
 
-
-    @GetMapping(GET_NOTIFICATION_FOR_USERID)
-    public ResponseEntity<List<Notification>> getNotifications(@RequestParam Long userId) {
-        List<Notification> notifications = notificationService.getNotifications(userId);
+    @GetMapping(GET_ALL_NOTIFICATIONS_FOR_AUTHID)
+    public ResponseEntity<List<Notification>> getNotifications(@RequestParam String token) {
+        List<Notification> notifications = notificationService.getNotificationsByToken(token);
         return ResponseEntity.ok(notifications);
     }
 
 
-    @GetMapping(GET_ALL_NOTIFICATIONS)
-    public ResponseEntity<List<Notification>> getAllNotifications() {
-        List<Notification> notifications = notificationService.getAllNotifications();
+    @GetMapping(GET_ALL_UNREAD_NOTIFICATIONS_FOR_AUTHID)
+    public ResponseEntity<List<Notification>> getAllUnReadNotifications(@RequestParam String token) {
+        List<Notification> notifications = notificationService.getAllUnReadNotifications(token);
         return ResponseEntity.ok(notifications);
     }
-
-
-    @GetMapping(GET_ALL_UNREAD_NOTIFICATIONS)
-    public ResponseEntity<List<Notification>> getAllUnReadNotifications() {
-        List<Notification> notifications = notificationService.getAllUnReadNotifications();
-        return ResponseEntity.ok(notifications);
+    @GetMapping(GET_UNREAD_COUNT)
+    @MessageMapping("/notifications/unreadcount")
+    @SendTo("/topic/unreadcountNotifications")
+    public ResponseEntity<Long> getUnreadNotificationCount(@RequestParam String token) {
+        long unreadCount = notificationService.getUnreadNotificationCount(token);
+        return ResponseEntity.ok(unreadCount);
     }
+
 
 
     @PatchMapping(READ)
     @MessageMapping("/notifications/markasread")
     @SendTo("/topic/markasread-notifications")
-    public ResponseEntity<Void> markAsRead(@RequestParam Long notificationId) {
-        notificationService.markAsRead(notificationId);
+    public ResponseEntity<Void> markAsRead(@RequestParam String token, @RequestParam Long notificationId) {
+        notificationService.markAsRead(token, notificationId);
         return ResponseEntity.noContent().build();
     }
 
@@ -68,18 +67,9 @@ public class NotificationController {
     @DeleteMapping(DELETE)
     @MessageMapping("/notifications/delete")
     @SendTo("/topic/delete-notifications")
-    public ResponseEntity<Void> deleteNotifications(@RequestBody List<Long> notificationIds) {
-        notificationService.deleteNotifications(notificationIds);
+    public ResponseEntity<Void> deleteNotifications(@RequestParam String token, @RequestBody List<Long> notificationIds) {
+        notificationService.deleteNotifications(token, notificationIds);
         return ResponseEntity.noContent().build();
-    }
-
-
-    @GetMapping(GET_UNREAD_COUNT)
-    @MessageMapping("/notifications/unreadcount")
-    @SendTo("/topic/unreadcountNotifications")
-    public ResponseEntity<Long> getUnreadNotificationCount() {
-        long unreadCount = notificationService.getUnreadNotificationCount();
-        return ResponseEntity.ok(unreadCount);
     }
 
 

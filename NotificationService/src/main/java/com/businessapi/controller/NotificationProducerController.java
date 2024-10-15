@@ -22,7 +22,7 @@ public class NotificationProducerController {
 
     @PostMapping
     public ResponseEntity<Void> sendNotification(@RequestBody NotificationRequestDto dto) {
-        notificationProducer.sendNotification(dto.getUserId(), dto.getTitle(),dto.getMessage());
+        notificationProducer.sendNotification(dto.getAuthId(), dto.getTitle(),dto.getMessage());
         return ResponseEntity.ok().build();
     }
 }

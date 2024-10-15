@@ -8,11 +8,11 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findByUserIdAndIsDeletedFalse(Long userId);
+    List<Notification> findByAuthIdAndIsDeletedFalse(Long authId);
 
-    List<Notification> findAllByIsDeletedFalse();
+    List<Notification> findByAuthIdAndIdInAndIsDeletedFalse(Long authId, List<Long> ids);
 
-    List<Notification> findByIsReadFalseAndIsDeletedFalse();
+    List<Notification> findByAuthIdAndIsReadFalseAndIsDeletedFalse(Long authId);
 
-    long countByIsReadFalseAndIsDeletedFalse();
+    long countByAuthIdAndIsReadFalseAndIsDeletedFalse(Long authId);
 }
