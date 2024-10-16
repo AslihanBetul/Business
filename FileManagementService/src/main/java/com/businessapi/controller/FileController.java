@@ -6,7 +6,10 @@ import com.businessapi.dto.request.SaveFileRequestDTO;
 import com.businessapi.dto.request.UpdateFileRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.File;
+import com.businessapi.exception.ErrorType;
+import com.businessapi.exception.FileManagementServiceException;
 import com.businessapi.service.FileService;
+import com.businessapi.utilty.JwtTokenManager;
 import com.businessapi.utilty.enums.EContentType;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,7 @@ import java.util.List;
 
 public class FileController {
     private final FileService fileService;
+    private final JwtTokenManager jwtTokenManager;
 
     @PostMapping(SAVE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
@@ -145,9 +149,11 @@ public class FileController {
         }
     }
 
-    @GetMapping(value = GETPROFILEIMAGE+"/{authId}")
+    @GetMapping(value = GETPROFILEIMAGE)
     @PreAuthorize("hasAnyAuthority('SUPER_ADMIN','ADMIN','MEMBER')")
-    public ResponseEntity<Resource> getProfileImage(@PathVariable Long authId) {
+    public ResponseEntity<Resource> getProfileImage(@RequestHeader("Authorization")String token) {
+        String jwtToken = token.replace("Bearer ", "");
+        Long authId = jwtTokenManager.getIdFromToken(jwtToken).orElseThrow(()-> new FileManagementServiceException(ErrorType.INVALID_TOKEN));
         try {
 
             InputStream inputStream = fileService.getProfileImage(authId);
