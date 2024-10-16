@@ -27,6 +27,12 @@ import java.util.stream.Collectors;
 public class OpportunityService {
     private final OpportunityRepository opportunityRepository;
     private CustomerService customerService;
+    private ActivityService activityService;
+
+    @Autowired
+    public void setService(@Lazy ActivityService activityService) {
+        this.activityService = activityService;
+    }
 
     @Autowired
     private void setService(@Lazy CustomerService customerService) {
@@ -44,28 +50,22 @@ public class OpportunityService {
                 .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build();
-
-
-//        Customer customer = customerService.findById(1L);
-//        opportunity.setCustomers(List.of(customer));
-
         opportunityRepository.save(opportunity);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity created").build());
 
         return true;
     }
 
     public Boolean saveCustomerOpportunity(OpportunityForCustomerSaveDTO dto) {
-
-
         Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         SessionManager.authorizationCheck(opportunity.getMemberId());
 
         List<Customer> newCustomers = customerService.findAllByIds(dto.customers());
 
         if (dto.customers() == null || dto.customers().isEmpty()) {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Customers not found").build());
             throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
         }
-
 
         List<Customer> existingCustomers = opportunity.getCustomers();
 
@@ -78,6 +78,7 @@ public class OpportunityService {
 
         opportunity.setCustomers(existingCustomers);
         opportunityRepository.save(opportunity);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity updated and added customer").build());
         return true;
     }
 
@@ -103,6 +104,7 @@ public class OpportunityService {
             opportunity.setStage(dto.stage() != null ? dto.stage() : opportunity.getStage());
             opportunity.setProbability(dto.probability() != null ? dto.probability() : opportunity.getProbability());
             opportunityRepository.save(opportunity);
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity updated").build());
             return true;
         } else {
             return false;
@@ -115,6 +117,7 @@ public class OpportunityService {
         if (opportunity != null && opportunity.getStatus().equals(EStatus.ACTIVE)) {
             opportunity.setStatus(EStatus.DELETED);
             opportunityRepository.save(opportunity);
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity deleted").build());
             return true;
         } else {
             return false;
@@ -133,7 +136,8 @@ public class OpportunityService {
 
     public OpportunityDetailsDTO getDetails(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID geçersiz.");
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("ID null").build());
+            throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
         }
 
         Opportunity opportunity = opportunityRepository.findById(id)
@@ -156,7 +160,7 @@ public class OpportunityService {
                             .build())
                     .collect(Collectors.toList());
 
-
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity viewed").build());
             return OpportunityDetailsDTO.builder()
                     .name(opportunity.getName())
                     .description(opportunity.getDescription())
@@ -166,8 +170,11 @@ public class OpportunityService {
                     .customers(customerDetails)
                     .build();
         } else {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Opportunity not found").build());
             return null;
+
         }
+
     }
 
 }

@@ -17,7 +17,7 @@ public class EndPoints {
     public static final String CUSTOMER=ROOT+"/customer";
     public static final String TICKET=ROOT+"/ticket";
     public static final String OPPORTUNITY=ROOT+"/opportunity";
-    public static final String SALESACTIVITY=ROOT+"/sales-activity";
+    public static final String ACTIVITIES=ROOT+"/activities";
     public static final String MARKETINGCAMPAIGN=ROOT+"/marketing-campaign";
     public static final String SAVE = "/save";
     public static final String FINDALL = "/find-all";

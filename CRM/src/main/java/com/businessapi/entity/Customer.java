@@ -33,7 +33,4 @@ public class Customer extends BaseEntity{
     @JsonBackReference
     private List<Opportunity> opportunities = new ArrayList<>();
 
-
-
-
 }

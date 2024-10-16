@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 import static com.businessapi.constants.EndPoints.*;
@@ -23,10 +24,10 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+
     @PostMapping(SAVE)
     @Operation(summary = "Save customer", description = "Save customer")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody CustomerSaveDTO customerSaveDTO) {
-
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                 .data(customerService.save(customerSaveDTO))
                 .code(200)
@@ -99,8 +100,8 @@ public class CustomerController {
     }
 
     @PostMapping(SEND_EMAIL_EXTERNAL_SOURCE_CUSTOMER)
-    public ResponseEntity<ResponseDTO<Boolean>> sendEmailExternalSourceCustomer(@RequestParam String email) {
-        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+    public ResponseEntity<ResponseDTO<Void>> sendEmailExternalSourceCustomer(@RequestBody String email) {
+        return ResponseEntity.ok(ResponseDTO.<Void>builder()
                 .data(customerService.sendEmailExternalSourceCustomers(email))
                 .code(200)
                 .message("Email send successfully").build());

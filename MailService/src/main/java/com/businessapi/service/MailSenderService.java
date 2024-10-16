@@ -127,14 +127,18 @@ public class MailSenderService {
         javaMailSender.send(mimeMessage);
     }
 
-    @RabbitListener(queues = "queueSendEmailExternalSourceCustomers")
-    public boolean sendEmailExternalSourceCustomers(CustomerSaveMailModel model) throws MessagingException {
-        String rateLink = "http://localhost:3000/customer-save-from-link?memberId=" + model.getMemberId();
-        try {
+    @RabbitListener(queues = "queueSaveCustomerSendMail")
+    public void sendEmailExternalSourceCustomers(CustomerSaveMailModel model) throws MessagingException {
+        String emailJson = model.getEmail(); // JSON formatında gelen e-posta
+        String email = emailJson.replace("{\"email\":\"", "").replace("\"}", "");
 
+        // memberId'yi gizlemek için token oluşturma
+        String token = jwtTokenManager.createToken(model.getMemberId()).get();
+
+        String rateLink = "http://localhost:3000/customer-save-from-link?token=" + token + "&email=" + email;;
+        try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-
 
             String htmlContent = "<html><body>" +
                     "<table cellpadding=\"0\" cellspacing=\"0\" align=\"center\" width=\"100%\" style=\"font-family:Arial,sans-serif;color:#333;background-color:#f9f9f9;padding:20px;\">" +
@@ -159,19 +163,16 @@ public class MailSenderService {
                     "</table>" +
                     "</body></html>";
 
-
             helper.setText(htmlContent, true);
-            helper.setTo(model.getEmail());
+            helper.setTo(email);
             helper.setSubject("Alışveriş Değerlendirme Daveti");
 
-
             javaMailSender.send(mimeMessage);
-            return true;
         } catch (MessagingException e) {
             e.printStackTrace();
-            return false;
         }
     }
+
 
 
     @RabbitListener(queues = "queueSendMailNewPassword")

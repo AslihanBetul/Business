@@ -6,21 +6,18 @@ import com.businessapi.service.*;
 import com.businessapi.utility.enums.EStatus;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
 public class DemoDataGenerator {
     private final CustomerService customerService;
-//    private final UserService userService;
     private final MarketingCampaignService marketingCampaignService;
     private final TicketService ticketService;
     private final OpportunityService opportunityService;
-    private final SalesActivityService salesActivityService;
+
 
     @PostConstruct
     public void generateDemoData() {
@@ -28,7 +25,6 @@ public class DemoDataGenerator {
         marketingCampaignDemoData();
         ticketDemoData();
         opportunityDemoData();
-        salesActivityDemoData();
 
     }
 
@@ -171,34 +167,7 @@ public class DemoDataGenerator {
                 ));
     }
 
-    private void  salesActivityDemoData(){
-        salesActivityService.saveForDemoData(new SalesActivitySaveDemoDTO( 1L,
-                "Initial Meeting",
-                LocalDate.of(2024, 9, 1),
-                "Discussed client's requirements and project scope"));
 
-        salesActivityService.saveForDemoData(new SalesActivitySaveDemoDTO( 2L,
-                "Proposal Sent",
-                LocalDate.of(2024, 9, 2),
-                "Sent proposal to client"));
-
-        salesActivityService.saveForDemoData(new SalesActivitySaveDemoDTO( 3L,
-                "Proposal Accepted",
-                LocalDate.of(2024, 9, 3),
-                "Accepted proposal"));
-
-        salesActivityService.saveForDemoData(new SalesActivitySaveDemoDTO( 4L,
-                "Proposal Rejected",
-                LocalDate.of(2024, 9, 4),
-                "Rejected proposal"));
-
-        salesActivityService.saveForDemoData(new SalesActivitySaveDemoDTO( 5L,
-                "Contract Signed",
-                LocalDate.of(2024, 9, 5),
-                "Signed contract"));
-
-
-    }
 
 
 
