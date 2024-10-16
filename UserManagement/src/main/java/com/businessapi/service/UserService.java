@@ -239,7 +239,7 @@ public class UserService {
         userRepository.save(user);
         List<Long> adminIds = new ArrayList<>();
         adminIds.add(1L);
-        rabbitTemplate.convertAndSend("notificationExchange","notificationKey",RabbitMQNotification.builder().title("Kullanıcı Aktifleştirmeleri").userIds(adminIds).message(user.getFirstName()+" isimli "+ user.getId() + " user id'li kullanıcı Hesabını aktive etti").build());
+        rabbitTemplate.convertAndSend("notificationExchange","notificationKey",RabbitMQNotification.builder().title("Kullanıcı Aktifleştirmeleri").authIds(adminIds).message(user.getFirstName()+" isimli "+ user.getId() + " user id'li kullanıcı Hesabını aktive etti").build());
     }
 
     @RabbitListener(queues = "queueActivateUserFromAuth")

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RabbitMQNotification implements Serializable {
-    private List<Long> userIds;
+    private List<Long> authIds;
     private String message;
     private String title;
 }
