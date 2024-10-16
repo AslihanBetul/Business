@@ -3,6 +3,7 @@ package com.businessapi.service;
 
 import com.businessapi.dto.request.PerformanceSaveRequestDTO;
 import com.businessapi.dto.request.PerformanceUpdateRequestDTO;
+import com.businessapi.dto.response.DepartmentScoreResponseDTO;
 import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.PayrollResponseDTO;
 import com.businessapi.dto.response.PerformanceResponseDTO;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,7 +86,7 @@ public class PerformanceService {
                     .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
 
             PerformanceResponseDTO performanceResponseDTO = PerformanceResponseDTO.builder()
-                    .id(performance.getEmployeeId())
+                    .id(performance.getId())
                     .employeeId(performance.getEmployeeId())
                     .firstName(employee.getFirstName())
                     .lastName(employee.getLastName())
@@ -118,4 +120,34 @@ public class PerformanceService {
         performanceRepository.save(performance);
         return true;
     }
+
+    public List<DepartmentScoreResponseDTO> getDepartmentAverageScores() {
+        // Tüm aktif performans kayıtlarını al
+        List<Performance> performances = performanceRepository.findAllByStatus(EStatus.ACTIVE);
+
+        // Departmanlara göre gruplama yapalım
+        Map<String, List<Performance>> departmentMap = performances.stream()
+                .collect(Collectors.groupingBy(performance -> {
+                    Employee employee = employeeRepository.findById(performance.getEmployeeId())
+                            .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
+                    return employee.getDepartment(); // Departman adını al
+                }));
+
+        // Her departman için ortalama puanı hesaplayalım
+        List<DepartmentScoreResponseDTO> departmentScores = new ArrayList<>();
+        departmentMap.forEach((department, performanceList) -> {
+            double averageScore = performanceList.stream()
+                    .mapToInt(Performance::getScore)
+                    .average()
+                    .orElse(0.0);
+
+            departmentScores.add(DepartmentScoreResponseDTO.builder()
+                    .department(department)
+                    .averageScore(averageScore)
+                    .build());
+        });
+
+        return departmentScores;
+    }
+
 }

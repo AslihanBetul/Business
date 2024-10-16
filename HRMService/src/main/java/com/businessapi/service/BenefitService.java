@@ -87,7 +87,7 @@ public class BenefitService {
                     .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
 
             BenefitResponseDTO benefitResponseDTO = BenefitResponseDTO.builder()
-                    .id(benefit.getEmployeeId())
+                    .id(benefit.getId())
                     .employeeId(benefit.getEmployeeId())
                     .firstName(employee.getFirstName())
                     .lastName(employee.getLastName())

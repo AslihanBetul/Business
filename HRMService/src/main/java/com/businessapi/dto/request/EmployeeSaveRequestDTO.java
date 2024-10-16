@@ -9,6 +9,8 @@ public record EmployeeSaveRequestDTO(
         String department,
         String email,
         String phone,
+        LocalDate birthDate,
+        String gender,
         LocalDate hireDate,
         Double salary) {
 }
