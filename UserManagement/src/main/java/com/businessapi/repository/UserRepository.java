@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
 
-    @Query("SELECT u FROM User u WHERE NOT EXISTS (SELECT r FROM u.role r WHERE r.roleName = 'SUPER_ADMIN') AND LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%')) ORDER BY u.lastName ASC, u.firstName")
+    @Query("SELECT u FROM User u WHERE NOT EXISTS (SELECT r FROM u.role r WHERE r.roleName = 'SUPER_ADMIN') AND LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%')) ORDER BY u.lastName ASC, u.firstName ASC, u.id ASC")
     Page<User> findAllByLastNameContainingIgnoreCaseExcludingSuperAdmin(@Param("lastName") String lastName, Pageable pageable);
 
 
