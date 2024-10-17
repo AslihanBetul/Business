@@ -9,6 +9,8 @@ import com.businessapi.repository.MarketingCampeignRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,12 @@ import java.util.List;
 @Service
 public class MarketingCampaignService {
     private final MarketingCampeignRepository marketingCampeignRepository;
+    private ActivityService activityService;
+
+    @Autowired
+    public void setService(@Lazy ActivityService activityService) {
+        this.activityService = activityService;
+    }
 
     public Boolean save(MarketingCampaignSaveDTO dto) {
         marketingCampeignRepository.save(MarketingCampaign.builder()
@@ -29,6 +37,8 @@ public class MarketingCampaignService {
                 .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build());
+
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Marketing campaign created").build());
         return true;
     }
 
@@ -37,7 +47,9 @@ public class MarketingCampaignService {
     }
 
     public List<MarketingCampaign> findAll(PageRequestDTO dto) {
-        return marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        List<MarketingCampaign> marketingCampaignList = marketingCampeignRepository.findAllByNameContainingIgnoreCaseAndStatusAndMemberIdOrderByNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Marketing campaigns viewed").build());
+        return marketingCampaignList;
 
     }
 
@@ -51,6 +63,7 @@ public class MarketingCampaignService {
         marketingCampaign.setEndDate(dto.endDate() != null ? dto.endDate() : marketingCampaign.getEndDate());
         marketingCampaign.setBudget(dto.budget() != null ? dto.budget() : marketingCampaign.getBudget());
         marketingCampeignRepository.save(marketingCampaign);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Marketing campaign updated").build());
         return true;
     }
 
@@ -58,14 +71,18 @@ public class MarketingCampaignService {
         MarketingCampaign marketingCampaign = marketingCampeignRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         SessionManager.authorizationCheck(marketingCampaign.getMemberId());
         if (marketingCampaign.getStatus() == EStatus.DELETED) {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Marketing campaign already deleted").build());
             throw new CustomerServiceException(ErrorType.MARKETING_CAMPAIGN_ALREADY_DELETED);
         }
         marketingCampaign.setStatus(EStatus.DELETED);
         marketingCampeignRepository.save(marketingCampaign);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Marketing campaign deleted").build());
         return true;
     }
 
     public MarketingCampaign findById(Long id) {
-        return marketingCampeignRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        MarketingCampaign marketingCampaign = marketingCampeignRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Marketing campaign viewed").build());
+        return marketingCampaign;
     }
 }

@@ -21,6 +21,12 @@ import java.util.List;
 public class TicketService {
     private final TicketRepository ticketRepository;
     private CustomerService customerService;
+    private ActivityService activityService;
+
+    @Autowired
+    public void setService(@Lazy ActivityService activityService) {
+        this.activityService = activityService;
+    }
 
     @Autowired
     private void setService(@Lazy CustomerService customerService) {
@@ -39,13 +45,11 @@ public class TicketService {
                 .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .status(EStatus.ACTIVE)
                 .build());
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket created").build());
         return true;
     }
 
     public void saveForDemoData(TicketSaveDemoDTO dto) {
-//        if (customerService.findById(dto.customerId()).isPresent()) {
-//            throw new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER);
-//        }
         ticketRepository.save(Ticket.builder().memberId(2L).customerId(dto.customerId()).subject(dto.subject()).description(dto.description()).ticketStatus(dto.ticketStatus()).priority(dto.priority()).createdDate(dto.createdDate()).closedDate(dto.closedDate()).status(EStatus.ACTIVE).build());
     }
 
@@ -60,6 +64,7 @@ public class TicketService {
             ticket.setCreatedDate(dto.createdDate() != null ? dto.createdDate() : ticket.getCreatedDate());
             ticket.setClosedDate(dto.closedDate() != null ? dto.closedDate() : ticket.getClosedDate());
             ticketRepository.save(ticket);
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket updated").build());
             return true;
         }
         return false;
@@ -70,8 +75,10 @@ public class TicketService {
         if (ticket != null && !ticket.getStatus().equals(EStatus.DELETED)) {
             ticket.setStatus(EStatus.DELETED);
             ticketRepository.save(ticket);
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket deleted").build());
             return true;
         }
+        activityService.log(ActivitySaveDTO.builder().type("warning").message("Ticket already deleted or null").build());
         return false;
     }
 

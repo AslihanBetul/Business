@@ -25,6 +25,8 @@ public class Config {
     private static final String keySendMailNewPassword = "keySendMailNewPassword";
     private final String queueSendStyledEmail = "queueSendStyledEmail";
     private final String keySendStyledEmail = "keySendStyledEmail";
+    String queueSaveCustomerSendMail = "queueSaveCustomerSendMail";
+    String keySaveCustomerSendMail = "keySaveCustomerSendMail";
 
     @Bean
     public DirectExchange directExchange(){
@@ -80,10 +82,20 @@ public class Config {
         return BindingBuilder.bind(queueForgetPassword).to(businessDirectExchange).with(keyForgetPassword);
     }
 
+    @Bean
+    public Queue queueSaveCustomerSendMail(){
+        return new Queue(queueSaveCustomerSendMail);
+    }
+    @Bean
+    public Binding bindingSaveCustomerSendEmail(Queue queueSaveCustomerSendMail, DirectExchange directExchange){
+        return BindingBuilder.bind(queueSaveCustomerSendMail).to(directExchange).with(keySaveCustomerSendMail);
+    }
+
 
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
+
 }

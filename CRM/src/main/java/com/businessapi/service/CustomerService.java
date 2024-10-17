@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.RabbitMQ.Model.CustomerSaveMailModel;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
 import com.businessapi.dto.response.OpportunityResponseDTO;
@@ -9,25 +10,35 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.CustomerRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
+    private final RabbitTemplate rabbitTemplate;
+    private ActivityService activityService;
+
+    @Autowired
+    public void setService(@Lazy ActivityService activityService) {
+        this.activityService = activityService;
+    }
+
 
 
     public Boolean save(CustomerSaveDTO dto) {
-        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent()) {
-            throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
-        }
+        isSavedCustomer(dto);
         Customer customer = Customer.builder()
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
@@ -38,7 +49,64 @@ public class CustomerService {
                 .build();
         customer.setStatus(EStatus.ACTIVE);
         customerRepository.save(customer);
+
+        activityService.log(ActivitySaveDTO.builder()
+                .message("Musteri "+dto.firstName() + " " + dto.lastName() + " created")
+                .type("info")
+                .build());
+
         return true;
+    }
+    public Void sendEmailExternalSourceCustomers(String email){
+        CustomerSaveMailModel model = CustomerSaveMailModel.builder()
+                .email(email)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .build();
+        rabbitTemplate.convertAndSend("businessDirectExchange","keySaveCustomerSendMail", model );
+        activityService.log(ActivitySaveDTO.builder()
+                        .message("Email send to " + email)
+                        .type("info")
+                .build());
+
+        return null;
+    }
+    public Boolean saveExternalSourceCustomers(CustomerSaveLinkDTO dto){
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent() && customerRepository.existsCustomerByPhone(dto.phone())) {
+            activityService.log(ActivitySaveDTO.builder()
+                            .message("Email already exists or phone number already exists")
+                            .type("warning")
+                    .build());
+            throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_EXIST);
+        }
+
+        Customer customer = Customer.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .phone(dto.phone())
+                .address(dto.address())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .build();
+        customer.setStatus(EStatus.ACTIVE);
+        customerRepository.save(customer);
+
+        activityService.log(ActivitySaveDTO.builder()
+                        .message("Musteri "+dto.firstName() + " " + dto.lastName() + " created")
+                        .type("info")
+                .build());
+
+        return true;
+
+    }
+
+    private void isSavedCustomer(CustomerSaveDTO dto) {
+        if (customerRepository.findCustomerByEmailIgnoreCase(dto.email()).isPresent() && customerRepository.existsCustomerByPhone(dto.phone())) {
+            activityService.log(ActivitySaveDTO.builder()
+                    .type("warning")
+                    .message("Email already exists or phone number already exists")
+                    .build());
+            throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_EXIST);
+        }
     }
 
     public void saveForDemoData(CustomerSaveDemoDTO dto) {
@@ -46,11 +114,14 @@ public class CustomerService {
             throw new CustomerServiceException(ErrorType.EMAIL_ALREADY_EXISTS);
         }
         customerRepository.save(Customer.builder().memberId(2L).firstName(dto.firstName()).lastName(dto.lastName()).email(dto.email()).phone(dto.phone()).address(dto.address()).status(EStatus.ACTIVE).build());
+
     }
 
     // This method will return members customers with paginable
     public List<Customer> findAll(PageRequestDTO dto) {
-        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        List<Customer> customerList = customerRepository.findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(dto.searchText(), EStatus.ACTIVE, SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Customers viewed").build());
+        return customerList;
 
     }
 
@@ -65,8 +136,10 @@ public class CustomerService {
             customer.setAddress(customerUpdateDTO.address() != null ? customerUpdateDTO.address() : customer.getAddress());
             customer.setEmail(customerUpdateDTO.email() != null ? customerUpdateDTO.email() : customer.getEmail());
             customerRepository.save(customer);
+            activityService.log(ActivitySaveDTO.builder().type("info").message("Customer updated").build());
             return true;
         } else {
+
             throw new CustomerServiceException(ErrorType.CUSTOMER_NOT_ACTIVE);
         }
     }
@@ -76,25 +149,32 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
         SessionManager.authorizationCheck(customer.getMemberId());
         if (customer.getStatus() == EStatus.DELETED) {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Customer already deleted").build());
             throw new CustomerServiceException(ErrorType.CUSTOMER_ALREADY_DELETED);
         }
         customer.setStatus(EStatus.DELETED);
         customerRepository.save(customer);
+
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Customer deleted").build());
+
         return true;
     }
 
 
     public Customer findById(Long id) {
-        return customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.NOT_FOUNDED_CUSTOMER));
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Customer viewed"+ customer.getFirstName()+ " " + customer.getLastName()).build());
+        return customer;
     }
 
     public List<CustomerResponseForOpportunityDTO> getAllCustomersForOpportunity(PageRequestDTO dto) {
-        return customerRepository.findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
+       return customerRepository.findAllByFirstNameContainingIgnoreCaseAndMemberIdOrderByFirstNameAsc(dto.searchText(), SessionManager.getMemberIdFromAuthenticatedMember(), PageRequest.of(dto.page(), dto.size()));
     }
     public List<OpportunityResponseDTO> getAllCustomersForOpportunity() {
         List<Customer> customers = customerRepository.findByStatus(EStatus.ACTIVE);
-        List<OpportunityResponseDTO> opportunityResponseDTOS = customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
-        return opportunityResponseDTOS;
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Customers viewed for opportunity").build());
+        return customers.stream().map(customer -> new OpportunityResponseDTO(customer.getId(), customer.getFirstName(), customer.getLastName())).collect(Collectors.toList());
+
     }
     public List<Customer> findAllByIds(List<Long> ids) {
         return customerRepository.findAllById(ids);
@@ -113,6 +193,8 @@ public class CustomerService {
             return customer;
         }).collect(Collectors.toList());
         customerRepository.saveAll(customers);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Customers uploaded from excel").build());
         return true;
     }
+
 }
