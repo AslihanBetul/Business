@@ -27,6 +27,8 @@ public class Employee {
     private String department;
     private String email;
     private String phone;
+    private LocalDate birthDate;
+    private String gender;
     private LocalDate hireDate;
     private Double salary;
     @Enumerated(EnumType.STRING)

@@ -84,7 +84,7 @@ public class AttendanceService {
                     .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
 
             AttendanceResponseDTO attendanceResponseDTO = AttendanceResponseDTO.builder()
-                    .id(attendance.getEmployeeId())
+                    .id(attendance.getId())
                     .employeeId(attendance.getEmployeeId())
                     .firstName(employee.getFirstName())
                     .lastName(employee.getLastName())

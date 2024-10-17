@@ -90,7 +90,7 @@ public class PayrollService {
                     .orElseThrow(() -> new HRMException(ErrorType.NOT_FOUNDED_EMPLOYEE));
 
             PayrollResponseDTO payrollResponseDTO = PayrollResponseDTO.builder()
-                    .id(payroll.getEmployeeId())
+                    .id(payroll.getId())
                     .employeeId(payroll.getEmployeeId())
                     .firstName(employee.getFirstName())
                     .lastName(employee.getLastName())

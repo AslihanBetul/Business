@@ -3,6 +3,7 @@ package com.businessapi.controller;
 
 import com.businessapi.dto.request.EmployeeSaveRequestDTO;
 import com.businessapi.dto.request.EmployeeUpdateRequestDTO;
+import com.businessapi.dto.response.BirthDateResponseDTO;
 import com.businessapi.dto.response.EmployeeResponseDTO;
 import com.businessapi.dto.response.PageRequestDTO;
 import com.businessapi.dto.response.ResponseDTO;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.businessapi.constants.EndPoints.*;
 
@@ -82,5 +84,37 @@ public class EmployeeController {
                 .code(200)
                 .build());
     }
+    @PostMapping (NUMBER_MEN)
+    @Operation(summary = "Number of employee men")
+    public ResponseEntity<Long> numberOfEmployeeMen(){
+
+        return ResponseEntity.ok(employeeService.numberOfEmployeeMen());
+
+    }
+
+    @PostMapping (NUMBER_WOMEN)
+    @Operation(summary = "Number of employee women")
+    public ResponseEntity<Long> numberOfEmployeeWomen(){
+
+        return ResponseEntity.ok(employeeService.numberOfEmployeeWomen());
+
+    }
+
+    @PostMapping (NUMBER_DEPARTMENTS)
+    @Operation(summary = "number of employees in departments")
+    public ResponseEntity<Map<String, Long>> numberOfEmployeesInDepartments(){
+
+        return ResponseEntity.ok(employeeService.numberOfEmployeesInDepartments());
+
+    }
+
+    @PostMapping (BIRTHDATE_LIST)
+    @Operation(summary = "Find Upcoming Birthdays")
+    public ResponseEntity<List<BirthDateResponseDTO> > findUpcomingBirthdays(){
+
+        return ResponseEntity.ok(employeeService.findUpcomingBirthdays());
+
+    }
+
 
 }

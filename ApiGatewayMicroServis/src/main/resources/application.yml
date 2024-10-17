@@ -131,6 +131,14 @@ spring:
           uri: http://localhost:9091
           predicates:
             - Path=/dev/v1/subscription/**
+        - id: organization
+          uri: http://localhost:9100
+          predicates:
+            - Path=/dev/v1/organization-management/department**
+        - id: organization
+          uri: http://localhost:9100
+          predicates:
+            - Path=/dev/v1/organization-management/employee/**
 
 
 

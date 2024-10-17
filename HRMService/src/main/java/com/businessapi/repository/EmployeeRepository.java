@@ -14,5 +14,13 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long > {
     List<Employee> findAllByFirstNameContainingIgnoreCaseAndStatusAndMemberIdOrderByFirstNameAsc(String s, EStatus status,Long memberId, PageRequest of);
 
 
+    Long countByGenderAndStatusAndMemberId(String gender, EStatus status, Long memberId);
+
+
+
+    List<Employee> findAllByMemberId(Long memberId);
+
+
+    List<Employee> findAllByStatusAndMemberId(EStatus eStatus, Long memberIdFromAuthenticatedMember);
 
 }

@@ -4,9 +4,7 @@ package com.businessapi.controller;
 import com.businessapi.dto.request.PerformanceSaveRequestDTO;
 import com.businessapi.dto.request.PerformanceUpdateRequestDTO;
 
-import com.businessapi.dto.response.PageRequestDTO;
-import com.businessapi.dto.response.PerformanceResponseDTO;
-import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.dto.response.*;
 
 import com.businessapi.service.PerformanceService;
 
@@ -79,5 +77,12 @@ public class PerformanceController {
                 .message("Success")
                 .code(200)
                 .build());
+    }
+    @PostMapping (DEPARTMENT_SCORE)
+    @Operation(summary = "Get Department Average Scores")
+    public ResponseEntity<List<DepartmentScoreResponseDTO> > getDepartmentAverageScores(){
+
+        return ResponseEntity.ok(performanceService.getDepartmentAverageScores());
+
     }
 }
