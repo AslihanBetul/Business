@@ -2,10 +2,7 @@ package com.businessapi.service;
 
 import com.businessapi.dto.request.ActivitySaveDTO;
 import com.businessapi.dto.request.PageRequestDTO;
-import com.businessapi.dto.request.PageRequestLogDTO;
 import com.businessapi.entity.Activities;
-import com.businessapi.exception.CustomerServiceException;
-import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.ActivityRepository;
 import com.businessapi.utility.SessionManager;
 import lombok.RequiredArgsConstructor;

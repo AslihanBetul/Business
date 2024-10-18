@@ -16,8 +16,6 @@ public class EndPoints {
 
     public static final String FIND_ALL_BY_USER_ID = "/find-all-by-user-id";
 
-    public static final String FIND_BY_ID = "/find-by-id";
-
 
 
 

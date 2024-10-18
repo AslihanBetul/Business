@@ -1,6 +1,7 @@
 package com.businessapi.service;
 
 import com.businessapi.dto.request.*;
+import com.businessapi.dto.response.TicketDetailsDTO;
 import com.businessapi.entity.Customer;
 import com.businessapi.entity.Ticket;
 import com.businessapi.exception.CustomerServiceException;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +37,6 @@ public class TicketService {
 
     public Boolean save(TicketSaveDTO dto) {
         ticketRepository.save(Ticket.builder()
-                .customerId(dto.customerId())
                 .subject(dto.subject())
                 .description(dto.description())
                 .ticketStatus(dto.ticketStatus())
@@ -48,15 +49,35 @@ public class TicketService {
         activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket created").build());
         return true;
     }
+    public Boolean saveCustomerTicket(TicketForCustomerSaveDTO dto){
+        Ticket ticket = ticketRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        SessionManager.authorizationCheck(ticket.getMemberId());
+
+        List<Customer> newCustomers = customerService.findAllByIds(dto.customers());
+        if (dto.customers() == null || dto.customers().isEmpty()) {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Customers not found").build());
+            throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
+        }
+        List<Customer> existingCustomers = ticket.getCustomers();
+        if (existingCustomers != null) {
+            existingCustomers.addAll(newCustomers);
+        } else {
+            existingCustomers = newCustomers;
+        }
+        ticket.setCustomers(existingCustomers);
+        ticketRepository.save(ticket);
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket updated and added customer").build());
+        return true;
+    }
 
     public void saveForDemoData(TicketSaveDemoDTO dto) {
-        ticketRepository.save(Ticket.builder().memberId(2L).customerId(dto.customerId()).subject(dto.subject()).description(dto.description()).ticketStatus(dto.ticketStatus()).priority(dto.priority()).createdDate(dto.createdDate()).closedDate(dto.closedDate()).status(EStatus.ACTIVE).build());
+        Customer customer = customerService.findById(dto.customerId());
+        ticketRepository.save(Ticket.builder().memberId(2L).customers(List.of(customer)).subject(dto.subject()).description(dto.description()).ticketStatus(dto.ticketStatus()).priority(dto.priority()).createdDate(dto.createdDate()).closedDate(dto.closedDate()).status(EStatus.ACTIVE).build());
     }
 
     public Boolean update(TicketUpdateDTO dto) {
         Ticket ticket = ticketRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
         if (ticket != null) {
-            ticket.setCustomerId(dto.customerId() != null ? dto.customerId() : ticket.getCustomerId());
             ticket.setSubject(dto.subject() != null ? dto.subject() : ticket.getSubject());
             ticket.setDescription(dto.description() != null ? dto.description() : ticket.getDescription());
             ticket.setTicketStatus(dto.ticketStatus() != null ? dto.ticketStatus() : ticket.getTicketStatus());
@@ -89,4 +110,46 @@ public class TicketService {
     public Ticket findById(Long id) {
         return ticketRepository.findById(id).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
     }
+
+    public TicketDetailsDTO getDetails(Long id) {
+        if (id == null) {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("ID null").build());
+            throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
+        }
+
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        activityService.log(ActivitySaveDTO.builder().type("info").message("Ticket viewed").build());
+
+        SessionManager.authorizationCheck(ticket.getMemberId());
+
+        List<Long> customerIds = ticketRepository.findAllCustomersIdById(id);
+        List<Customer> customers = customerService.findAllByIds(customerIds);
+
+
+        if (ticket != null && ticket.getStatus().equals(EStatus.ACTIVE)) {
+
+            List<CustomerDetailsDTO> customerDetails = customers.stream()
+                    .map(customer -> CustomerDetailsDTO.builder()
+                            .firstName(customer.getFirstName())
+                            .lastName(customer.getLastName())
+                            .build())
+                    .collect(Collectors.toList());
+
+            return TicketDetailsDTO.builder()
+                    .subject(ticket.getSubject())
+                    .description(ticket.getDescription())
+                    .ticketStatus(ticket.getTicketStatus())
+                    .priority(ticket.getPriority())
+                    .createdDate(ticket.getCreatedDate().toString())
+                    .closedDate(ticket.getClosedDate().toString())
+                    .customers(customerDetails)
+                    .build();
+        }else {
+            activityService.log(ActivitySaveDTO.builder().type("warning").message("Ticket not found").build());
+            return null;
+        }
+
+    }
+
 }

@@ -4,7 +4,6 @@ import com.businessapi.constants.EndPoints;
 import com.businessapi.dto.request.EventDeleteRequestDTO;
 import com.businessapi.dto.request.EventSaveRequestDTO;
 import com.businessapi.dto.request.EventUpdateRequestDTO;
-import com.businessapi.dto.response.FindAllResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Event;
 import com.businessapi.service.EventService;
@@ -20,7 +19,6 @@ import static com.businessapi.constants.EndPoints.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(EndPoints.EVENT)
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT,RequestMethod.DELETE})
 public class EventController {
     private final EventService eventService;
 
@@ -56,21 +54,11 @@ public class EventController {
 
     @GetMapping(FIND_ALL_BY_USER_ID)
     @Operation(summary = "Find all events by user id", description = "Find all events by user id")
-    public ResponseEntity<ResponseDTO<List<FindAllResponseDTO>>> findAll(@RequestParam String token) {
-        return ResponseEntity.ok(ResponseDTO.<List<FindAllResponseDTO>>builder()
+    public ResponseEntity<ResponseDTO<List<Event>>> findAll(@RequestParam String token) {
+        return ResponseEntity.ok(ResponseDTO.<List<Event>>builder()
                 .data(eventService.findAllByUserId(token))
                 .code(200)
                 .message("Events found successfully")
-                .build());
-    }
-
-    @GetMapping(FIND_BY_ID)
-    @Operation(summary = "Find event by id", description = "Find event by id")
-    public ResponseEntity<ResponseDTO<FindAllResponseDTO>> findbyId(@RequestParam String id) {
-        return ResponseEntity.ok(ResponseDTO.<FindAllResponseDTO>builder()
-                .data(eventService.findById(id))
-                .code(200)
-                .message("Event found successfully")
                 .build());
     }
 }

@@ -5,9 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record EventSaveRequestDTO(
+        String token,
         String title,
-        @NotNull LocalDateTime startTime,
-        @NotNull LocalDateTime endTime,
-        Boolean allDay,
-        String token) {
+        String description,
+        String location,
+        @NotNull LocalDateTime startDateTime,
+        @NotNull LocalDateTime endDateTime) {
 }
