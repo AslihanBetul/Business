@@ -1,6 +1,7 @@
 package com.businessapi.entity;
 
 import com.businessapi.utility.enums.EStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +24,14 @@ public class Ticket extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     private Long memberId;
-    private Long customerId;
+    @ManyToMany
+    @JoinTable(
+            name = "ticket_customer",
+            joinColumns = @JoinColumn(name = "ticket_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
+    )
+    @JsonManagedReference
+    private List<Customer> customers = new ArrayList<>();
     private String subject;
     private String description;
     private String ticketStatus;

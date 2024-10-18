@@ -1,7 +1,6 @@
 package com.businessapi.controller;
 
 import com.businessapi.dto.request.PageRequestDTO;
-import com.businessapi.dto.request.PageRequestLogDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entity.Activities;
 import com.businessapi.service.ActivityService;

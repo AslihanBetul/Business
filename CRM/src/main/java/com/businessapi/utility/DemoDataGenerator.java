@@ -100,7 +100,7 @@ public class DemoDataGenerator {
                 LocalDate.of(2024, 9, 1),
                 LocalDate.of(2024, 9, 15)));
 
-        ticketService.saveForDemoData(new TicketSaveDemoDTO(104L,
+        ticketService.saveForDemoData(new TicketSaveDemoDTO(4L,
                 "Shipping Issue",
                 "Customer unable to ship order",
                 "OPEN",

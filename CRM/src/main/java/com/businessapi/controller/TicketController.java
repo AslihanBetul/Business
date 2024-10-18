@@ -1,9 +1,11 @@
 package com.businessapi.controller;
 
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.request.TicketForCustomerSaveDTO;
 import com.businessapi.dto.request.TicketSaveDTO;
 import com.businessapi.dto.request.TicketUpdateDTO;
 import com.businessapi.dto.response.ResponseDTO;
+import com.businessapi.dto.response.TicketDetailsDTO;
 import com.businessapi.entity.Ticket;
 import com.businessapi.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,15 @@ public class TicketController {
 
         return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
                 .data(ticketService.save(dto))
+                .code(200)
+                .message("Ticket saved successfully")
+                .build());
+    }
+    @PutMapping(SAVECUSTOMER)
+    @Operation(summary = "Save a customer", description = "Save a customer")
+    public ResponseEntity<ResponseDTO<Boolean>> saveCustomerTicket(@RequestBody TicketForCustomerSaveDTO dto) {
+        return ResponseEntity.ok(ResponseDTO.<Boolean>builder()
+                .data(ticketService.saveCustomerTicket(dto))
                 .code(200)
                 .message("Ticket saved successfully")
                 .build());
@@ -65,6 +76,15 @@ public class TicketController {
     public ResponseEntity<ResponseDTO<Ticket>> findById(@RequestParam Long id) {
         return ResponseEntity.ok(ResponseDTO.<Ticket>builder()
                 .data(ticketService.findById(id))
+                .code(200)
+                .message("Ticket found successfully")
+                .build());
+    }
+    @PostMapping(GETDETAILS)
+    @Operation(summary = "Get details by id", description = "Get details by id")
+    public ResponseEntity<ResponseDTO<TicketDetailsDTO>> getDetails(@RequestParam Long id) {
+        return ResponseEntity.ok(ResponseDTO.<TicketDetailsDTO>builder()
+                .data(ticketService.getDetails(id))
                 .code(200)
                 .message("Ticket found successfully")
                 .build());
