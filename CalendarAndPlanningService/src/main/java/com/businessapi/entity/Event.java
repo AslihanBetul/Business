@@ -1,5 +1,6 @@
 package com.businessapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +22,9 @@ public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    Long userId;
     String title;
-    String description;
-    String location;
-    LocalDateTime startDateTime;
-    LocalDateTime endDateTime;
+    LocalDateTime startTime;
+    LocalDateTime endTime;
+    Boolean allDay;
+    Long userId;
 }
