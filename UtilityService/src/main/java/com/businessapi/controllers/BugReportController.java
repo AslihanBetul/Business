@@ -26,7 +26,7 @@ public class BugReportController
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new bug report")
-    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @PreAuthorize("hasAnyAuthority('MEMBER','ADMIN')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody BugReportSaveRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
