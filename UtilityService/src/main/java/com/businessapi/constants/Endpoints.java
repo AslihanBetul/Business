@@ -15,13 +15,7 @@ public class Endpoints
 
     //controllers
 
-    public static final String ORDER = "/order";
-    public static final String PRODUCT = "/product";
-    public static final String PRODUCTCATEGORY = "/product-category";
-    public static final String STOCKMOVEMENT = "/stock-movement";
-    public static final String SUPPLIER = "/supplier";
-    public static final String WAREHOUSE = "/ware-house";
-    public static final String CUSTOMER = "/customer";
+    public static final String BUG_REPORT = "/bug-report";
 
     //methods
 
@@ -43,4 +37,5 @@ public class Endpoints
     public static final String UPDATE_BUY_ORDER = "/update-buy-order";
     public static final String UPDATE_SELL_ORDER = "/update-sell-order";
     public static final String SAVE_FROM_ORDER_ID = "/save-from-order-id";
+    public static final String FEEDBACK = "/feedback";
 }
