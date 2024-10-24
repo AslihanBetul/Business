@@ -4,6 +4,7 @@ package com.businessapi.service;
 import com.businessapi.config.ConfigProperties;
 import com.businessapi.dto.request.DeleteFileRequestDTO;
 import com.businessapi.dto.request.SaveFileRequestDTO;
+import com.businessapi.dto.request.SaveFileRequestDemoDTO;
 import com.businessapi.dto.request.UpdateFileRequestDTO;
 import com.businessapi.entity.File;
 import static com.businessapi.exception.ErrorType.*;
@@ -63,6 +64,47 @@ public class FileService {
             File fileEntity = File.builder()
                     .uuid(uuid)
                     .authId(authId)
+                    .status(EStatus.ACTIVE)
+                    .contentType(contentType)
+                    .build();
+            fileRepository.save(fileEntity);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return uuid;
+    }
+    public String saveDemoData(SaveFileRequestDemoDTO dto) {
+        String bucketName = configProperties.getBucket();
+        String uuid = "demo-data";
+
+
+        try {
+            MultipartFile file = dto.file();
+            EContentType contentType = EContentType.valueOf(dto.contentType());
+
+            boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+
+            if (!isExist) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            }
+
+
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+                    .object(uuid)
+                    .stream(file.getInputStream(), file.getSize(), -1)
+                    .contentType(contentType.getContentType())
+                    .bucket(bucketName)
+                    .build();
+            minioClient.putObject(putObjectArgs);
+
+
+            File fileEntity = File.builder()
+                    .uuid(uuid)
+                    .authId(2L)
                     .status(EStatus.ACTIVE)
                     .contentType(contentType)
                     .build();
