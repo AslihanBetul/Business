@@ -74,7 +74,7 @@ public class BugReportService
     {
         BugReport bugReport = bugReportRepository.findById(dto.id()).orElseThrow(() -> new UtilityServiceException(ErrorType.BUG_REPORT_NOT_FOUND));
 
-        if (dto.EBugStatus().equals(EBugStatus.IN_PROGRESS))
+        if (dto.bugStatus().equals(EBugStatus.IN_PROGRESS))
         {
             if (bugReport.getBugStatus().equals(EBugStatus.CLOSED) || bugReport.getBugStatus().equals(EBugStatus.IN_PROGRESS))
             {
@@ -83,7 +83,7 @@ public class BugReportService
             bugReport.setBugStatus(EBugStatus.IN_PROGRESS);
         }
 
-        if (dto.EBugStatus().equals(EBugStatus.RESOLVED))
+        if (dto.bugStatus().equals(EBugStatus.RESOLVED))
         {
             if (bugReport.getBugStatus().equals(EBugStatus.RESOLVED) || bugReport.getBugStatus().equals(EBugStatus.CLOSED))
             {
@@ -102,7 +102,7 @@ public class BugReportService
             }
         }
 
-        if (dto.EBugStatus().equals(EBugStatus.CLOSED))
+        if (dto.bugStatus().equals(EBugStatus.CLOSED))
         {
             if (bugReport.getBugStatus().equals(EBugStatus.RESOLVED))
             {

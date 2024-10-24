@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping(ROOT + BUG_REPORT)
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class BugReportController
 {
     private final BugReportService bugReportService;
