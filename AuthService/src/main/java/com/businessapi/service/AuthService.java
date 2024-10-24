@@ -340,4 +340,10 @@ public class AuthService {
             authRepository.save(auth.get());
         }
     }
+
+    @RabbitListener(queues = "queueFindMailOfAuth")
+    public String findEmailByAuthId(Long authId){
+        Optional<Auth> auth = authRepository.findById(authId);
+        return auth.map(Auth::getEmail).orElse(null);
+    }
 }

@@ -58,6 +58,10 @@ public class Config {
     private static final String queueUpdateEmailOfAuth = "queueUpdateEmailOfAuth";
     private static final String keyUpdateEmailOfAuth = "keyUpdateEmailOfAuth";
 
+    //Get mail from auth
+    private static final String queueFindMailOfAuth = "queueFindMailOfAuth";
+    private static final String keyFindMailOfAuth = "keyFindMailOfAuth";
+
     @Bean
    public DirectExchange directExchange(){
         return new DirectExchange(businessDirectExchange);
@@ -126,6 +130,16 @@ public class Config {
     @Bean
     public Queue queueUpdateEmailOfAuth() {
         return new Queue(queueUpdateEmailOfAuth);
+    }
+
+    @Bean
+    public Queue queueFindMailOfAuth() {
+        return new Queue(queueFindMailOfAuth);
+    }
+
+    @Bean
+    public Binding bindingFindMailOfAuth(){
+        return BindingBuilder.bind(queueFindMailOfAuth()).to(directExchange()).with(keyFindMailOfAuth);
     }
 
     @Bean

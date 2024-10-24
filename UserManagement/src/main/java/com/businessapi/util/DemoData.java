@@ -103,7 +103,7 @@ public class DemoData  implements ApplicationRunner {
         List<String> firstNames = Arrays.asList("Ahmet", "Ayşe", "Mehmet", "Fatma", "Ali", "Zeynep", "Mustafa", "Elif", "Burak", "Cem");
         List<String> lastNames = Arrays.asList("Yılmaz", "Kaya", "Demir", "Çelik", "Şahin", "Aydın", "Koç", "Eren", "Çetin", "Öztürk");
 
-        for (int i = 0; i < 50; i++) {
+        /*for (int i = 0; i < 50; i++) {
 
             String firstName = firstNames.get(random.nextInt(firstNames.size()));
             String lastName = lastNames.get(random.nextInt(lastNames.size()));
@@ -114,7 +114,7 @@ public class DemoData  implements ApplicationRunner {
 
             UserSaveRequestDTO user4 = new UserSaveRequestDTO(firstName, lastName, email, "123", roles2);
             userService.saveUser(user4);
-        }
+        }*/
 
 
 
