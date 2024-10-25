@@ -103,4 +103,17 @@ public class BugReportController
                 .code(200)
                 .build());
     }
+
+    @PostMapping(REOPEN_CASE)
+    @Operation(summary = "Reopens and resets the case and increasing its version by 1")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> reopenCase(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(bugReportService.reopenCase(id))
+                .message("Success")
+                .code(200)
+                .build());
+    }
 }
