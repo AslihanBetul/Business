@@ -8,6 +8,7 @@ import com.businessapi.services.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ public class ExpenseController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new expense")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody ExpenseSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -35,6 +37,7 @@ public class ExpenseController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing expense")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody ExpenseUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -46,6 +49,7 @@ public class ExpenseController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing expense")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -57,6 +61,7 @@ public class ExpenseController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all expenses with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<ExpenseResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<ExpenseResponseDTO>>builder()
@@ -68,6 +73,7 @@ public class ExpenseController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds an expense by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<ExpenseResponseDTO>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<ExpenseResponseDTO>builder()
@@ -80,6 +86,7 @@ public class ExpenseController {
 
     @PostMapping(APPROVE)
     @Operation(summary = "Approves an expense")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> approve(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -91,6 +98,7 @@ public class ExpenseController {
 
     @PostMapping(REJECT)
     @Operation(summary = "Rejects an expense")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> reject(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -102,6 +110,7 @@ public class ExpenseController {
 
     @PostMapping(FIND_BY_DATE)
     @Operation(summary = "Lists all expenses with between the given dates")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<ExpenseResponseDTO>>> findByDate(@RequestBody ExpenseFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<ExpenseResponseDTO>>builder()
@@ -113,6 +122,7 @@ public class ExpenseController {
 
     @PostMapping(CALCULATE)
     @Operation(summary = "Calculates total expenses between the given dates")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<BigDecimal>> calculateTotalExpenses(@RequestBody ExpenseFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<BigDecimal>builder()
@@ -124,6 +134,7 @@ public class ExpenseController {
 
     @PostMapping(GET_ALL_CATEGORIES)
     @Operation(summary = "Lists all expense categories")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<ExpenseCategoryResponseDTO>>> getAllCategories() {
         return ResponseEntity.ok(ResponseDTO
                 .<List<ExpenseCategoryResponseDTO>>builder()
@@ -135,6 +146,7 @@ public class ExpenseController {
 
     @PostMapping(GET_FOR_MONTHS)
     @Operation(summary = "Lists all expenses for the given months")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<BigDecimal>>> getForMonths(@RequestBody ExpenseFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<BigDecimal>>builder()
@@ -146,6 +158,7 @@ public class ExpenseController {
 
     @PostMapping(GET_MOST)
     @Operation(summary = "Lists the category of the most expensive expenses")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<ExpenseCategoryResponseDTO>>> getMostExpensive(@RequestBody ExpenseFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<ExpenseCategoryResponseDTO>>builder()

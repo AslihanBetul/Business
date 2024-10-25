@@ -12,6 +12,7 @@ import com.businessapi.services.TaxService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ public class TaxController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new tax")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody TaxSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -37,6 +39,7 @@ public class TaxController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing tax")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody TaxUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -48,6 +51,7 @@ public class TaxController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing tax")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -59,6 +63,7 @@ public class TaxController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all the taxes with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<Tax>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<Tax>>builder()
@@ -70,6 +75,7 @@ public class TaxController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds a tax by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Tax>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Tax>builder()
@@ -81,6 +87,7 @@ public class TaxController {
 
     @PostMapping(CALCULATE)
     @Operation(summary = "Calculates the tax amount with respect to the given tax id and amount")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> calculateTax(@RequestBody CalculateTaxRequestDto dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()

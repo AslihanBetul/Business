@@ -12,6 +12,7 @@ import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.FinancialRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class FinancialReportService {
                 .totalTax(taxPaid)
                 .totalProfit(totalIncome.subtract(totalOutcome))
                 .message(message)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         financialRepository.save(financialReport);
@@ -85,7 +87,10 @@ public class FinancialReportService {
     }
 
     public List<FinancialReport> findAll(PageRequestDTO dto) {
-        return financialRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<FinancialReport> financialReports = financialRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        financialReports.removeIf(financialReport -> !financialReport.getMemberId().equals(memberId));
+        return financialReports;
     }
 
     public FinancialReport findById(Long id) {

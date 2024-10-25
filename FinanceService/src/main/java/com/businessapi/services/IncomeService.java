@@ -8,6 +8,7 @@ import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.IncomeRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,19 @@ public class IncomeService {
                         .source(dto.source())
                         .amount(dto.amount())
                         .incomeDate(dto.incomeDate())
+                        .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                        .build()
+        );
+        return true;
+    }
+
+    public Boolean saveIncomeForDemoData(IncomeSaveRequestDTO dto) {
+        incomeRepository.save(
+                Income.builder()
+                        .source(dto.source())
+                        .amount(dto.amount())
+                        .incomeDate(dto.incomeDate())
+                        .memberId(2L)
                         .build()
         );
         return true;
@@ -47,19 +61,25 @@ public class IncomeService {
         income.setSource(dto.source());
         income.setAmount(dto.amount());
         income.setIncomeDate(dto.incomeDate());
+        incomeRepository.save(income);
         return true;
     }
 
     public List<Income> findByDate(IncomeFindByDateRequestDTO dto) {
-        return incomeRepository.findAllByIncomeDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Income> incomeList = incomeRepository.findAllByIncomeDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        incomeList.removeIf(income -> !income.getMemberId().equals(memberId));
+        return incomeList;
     }
 
     public List<Income> findByDateForDeclaration(LocalDate startDate, LocalDate endDate) {
-        return incomeRepository.findAllByIncomeDateBetween(startDate, endDate);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        return incomeRepository.findAllByIncomeDateBetweenAndMemberId(startDate, endDate, memberId);
     }
 
     public BigDecimal calculateTotalIncomeBetweenDates(LocalDate startDate, LocalDate endDate) {
-        List<Income> incomeList = incomeRepository.findAllByIncomeDateBetween(startDate, endDate);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Income> incomeList = incomeRepository.findAllByIncomeDateBetweenAndMemberId(startDate, endDate, memberId);
         BigDecimal totalIncome = BigDecimal.ZERO;
         for (Income income : incomeList) {
             totalIncome = totalIncome.add(income.getAmount());
@@ -72,16 +92,19 @@ public class IncomeService {
     }
 
     public List<Income> findAll(PageRequestDTO dto) {
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         String source = dto.searchText();
         if (source != null && !source.isEmpty()) {
-            return incomeRepository.findBySourceContainingIgnoreCaseAndStatusNot(source, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+            return incomeRepository.findAllByMemberIdAndSourceContainingIgnoreCaseAndStatusNot(memberId, source, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
         }
-        return incomeRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        return incomeRepository.findAllByMemberIdAndStatusNot(memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
 
     public List<BigDecimal> getForMonths(IncomeFindByDateRequestDTO dto) {
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         List<Income> incomeList = incomeRepository.findAllByIncomeDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        incomeList.removeIf(income -> !income.getMemberId().equals(memberId));
 
         incomeList.sort((o1, o2) -> o1.getIncomeDate().getMonthValue() - o2.getIncomeDate().getMonthValue());
 
@@ -101,7 +124,10 @@ public class IncomeService {
     }
 
     public List<String> getMostSource(IncomeFindByDateRequestDTO dto) {
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         List<Income> incomeList = incomeRepository.findAllByIncomeDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        incomeList.removeIf(income -> !income.getMemberId().equals(memberId));
+
         incomeList.sort((o1, o2) -> o2.getAmount().compareTo(o1.getAmount()));
         List<String> mostToLeastSourceList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

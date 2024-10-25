@@ -21,6 +21,8 @@ public class Declaration extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    Long memberId;
     LocalDate startDate;
     LocalDate endDate;
     BigDecimal totalIncome;

@@ -9,6 +9,7 @@ import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.TaxRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class TaxService {
                 .taxType(dto.taxType())
                 .taxRate(dto.taxRate())
                 .description(dto.description())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         taxRepository.save(tax);
@@ -50,7 +52,10 @@ public class TaxService {
     }
 
     public List<Tax> findAll(PageRequestDTO dto) {
-        return taxRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Tax> taxList = taxRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        taxList.removeIf(tax -> !tax.getMemberId().equals(memberId));
+        return taxList;
     }
 
     public Tax findById(Long id) {

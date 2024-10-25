@@ -18,6 +18,8 @@ public class Department extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    Long memberId;
     String name;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)

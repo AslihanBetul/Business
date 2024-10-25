@@ -11,6 +11,7 @@ import com.businessapi.services.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class InvoiceController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new invoice")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody InvoiceSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -35,6 +37,7 @@ public class InvoiceController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing invoice")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody InvoiceUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -46,6 +49,7 @@ public class InvoiceController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing invoice")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -57,6 +61,7 @@ public class InvoiceController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all the invoices with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<Invoice>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<Invoice>>builder()
@@ -68,6 +73,7 @@ public class InvoiceController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds an invoice by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Invoice>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Invoice>builder()
