@@ -16,6 +16,7 @@ public class Endpoints
     //controllers
 
     public static final String BUG_REPORT = "/bug-report";
+    public static final String FEED_BACK = "/feed-back";
 
     //methods
 
@@ -23,6 +24,8 @@ public class Endpoints
     public static final String DELETE = "/delete";
     public static final String UPDATE = "/update";
     public static final String FIND_ALL = "/find-all";
+    public static final String GET_USER_FEEDBACK = "/get-user-feedback";
+    public static final String REPORT = "/report";
 
     public static final String FIND_BY_ID = "/find-by-id";
     public static final String FIND_ALL_BY_MINIMUM_STOCK_LEVEL = "/find-all-by-minimum-stock-level";
