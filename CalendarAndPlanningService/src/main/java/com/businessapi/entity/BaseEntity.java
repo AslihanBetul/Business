@@ -1,11 +1,7 @@
 package com.businessapi.entity;
 
-import com.businessapi.entity.enums.EStatus;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -25,7 +21,6 @@ public abstract class BaseEntity {
     LocalDateTime createdAt;
     @UpdateTimestamp
     LocalDateTime updatedAt;
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    EStatus status = EStatus.ACTIVE;
+
+
 }
