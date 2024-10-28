@@ -1,5 +1,6 @@
 package com.businessapi.service;
 
+import com.businessapi.RabbitMQ.Model.CustomerSendEmailAboutOpportunity;
 import com.businessapi.dto.request.*;
 import com.businessapi.dto.response.CustomerResponseForOpportunityDTO;
 import com.businessapi.dto.response.OpportunityDetailsDTO;
@@ -12,14 +13,15 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.repository.OpportunityRepository;
 import com.businessapi.utility.SessionManager;
 import com.businessapi.utility.enums.EStatus;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class OpportunityService {
     private final OpportunityRepository opportunityRepository;
     private CustomerService customerService;
     private ActivityService activityService;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     public void setService(@Lazy ActivityService activityService) {
@@ -56,30 +59,48 @@ public class OpportunityService {
         return true;
     }
 
-    public Boolean saveCustomerOpportunity(OpportunityForCustomerSaveDTO dto) {
-        Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
-        SessionManager.authorizationCheck(opportunity.getMemberId());
+    @Transactional
+    public Void saveCustomerOpportunity(OpportunityForCustomerSaveDTO dto) {
+        Opportunity opportunity = opportunityRepository.findById(dto.id())
+                .orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
 
-        List<Customer> newCustomers = customerService.findAllByIds(dto.customers());
+        SessionManager.authorizationCheck(opportunity.getMemberId());
 
         if (dto.customers() == null || dto.customers().isEmpty()) {
             activityService.log(ActivitySaveDTO.builder().type("warning").message("Customers not found").build());
             throw new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR);
         }
 
-        List<Customer> existingCustomers = opportunity.getCustomers();
+        List<Customer> newCustomers = customerService.findAllByIds(dto.customers());
 
+        List<Customer> existingCustomers = opportunity.getCustomers() != null ? opportunity.getCustomers() : new ArrayList<>();
 
-        if (existingCustomers != null) {
-            existingCustomers.addAll(newCustomers);
-        } else {
-            existingCustomers = newCustomers;
+        for (Customer newCustomer : newCustomers) {
+
+            if (existingCustomers.stream().noneMatch(existingCustomer -> existingCustomer.getId().equals(newCustomer.getId()))) {
+                existingCustomers.add(newCustomer);
+            }
         }
-
         opportunity.setCustomers(existingCustomers);
         opportunityRepository.save(opportunity);
         activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity updated and added customer").build());
-        return true;
+
+        if (!newCustomers.isEmpty()) {
+            newCustomers.forEach(customer -> {
+                CustomerSendEmailAboutOpportunity model = CustomerSendEmailAboutOpportunity.builder()
+                        .title(opportunity.getName())
+                        .description(opportunity.getDescription())
+                        .value(opportunity.getValue())
+                        .email(customer.getEmail())
+                        .firstName(customer.getFirstName())
+                        .lastName(customer.getLastName())
+                        .build();
+
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keyCustomerSendEmailAboutOpportunity", model);
+            });
+        }
+
+        return null;
     }
 
 
@@ -95,16 +116,33 @@ public class OpportunityService {
     }
 
     public Boolean update(OpportunityUpdateDTO dto) {
-        Opportunity opportunity = opportunityRepository.findById(dto.id()).orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+        Opportunity opportunity = opportunityRepository.findById(dto.id())
+                .orElseThrow(() -> new CustomerServiceException(ErrorType.BAD_REQUEST_ERROR));
+
         SessionManager.authorizationCheck(opportunity.getMemberId());
+
         if (opportunity != null) {
             opportunity.setName(dto.name() != null ? dto.name() : opportunity.getName());
             opportunity.setDescription(dto.description() != null ? dto.description() : opportunity.getDescription());
             opportunity.setValue(dto.value() != null ? dto.value() : opportunity.getValue());
             opportunity.setStage(dto.stage() != null ? dto.stage() : opportunity.getStage());
             opportunity.setProbability(dto.probability() != null ? dto.probability() : opportunity.getProbability());
+
+
+            if (dto.customersToRemove() != null) {
+                List<Customer> customersToRemove = customerService.findAllByIds(dto.customersToRemove());
+                opportunity.getCustomers().removeAll(customersToRemove);
+            }
+
+
+            if (dto.customers() != null) {
+                List<Customer> updatedCustomers = customerService.findAllByIds(dto.customers());
+                opportunity.setCustomers(updatedCustomers);
+            }
+
             opportunityRepository.save(opportunity);
             activityService.log(ActivitySaveDTO.builder().type("info").message("Opportunity updated").build());
+
             return true;
         } else {
             return false;

@@ -26,7 +26,8 @@ public class Opportunity extends BaseEntity {
     @JoinTable(
             name = "opportunity_customer",
             joinColumns = @JoinColumn(name = "opportunity_id"),
-            inverseJoinColumns = @JoinColumn(name = "customer_id")
+            inverseJoinColumns = @JoinColumn(name = "customer_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"opportunity_id", "customer_id"})
     )
     @JsonManagedReference
     private List<Customer> customers = new ArrayList<>();

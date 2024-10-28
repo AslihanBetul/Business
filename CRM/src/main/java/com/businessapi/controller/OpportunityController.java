@@ -36,8 +36,8 @@ public class OpportunityController {
     }
 
     @PutMapping(SAVECUSTOMER)
-    public ResponseEntity<ResponseDTO<Boolean>> saveCustomer(@RequestBody OpportunityForCustomerSaveDTO dto) {
-        return ResponseEntity.ok(ResponseDTO.<Boolean>builder().
+    public ResponseEntity<ResponseDTO<Void>> saveCustomer(@RequestBody OpportunityForCustomerSaveDTO dto) {
+        return ResponseEntity.ok(ResponseDTO.<Void>builder().
                 data(opportunityService.saveCustomerOpportunity(dto))
                 .code(200)
                 .message("Opportunity saved successfully")

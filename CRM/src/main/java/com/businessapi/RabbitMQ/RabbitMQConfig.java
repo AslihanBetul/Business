@@ -22,6 +22,9 @@ public class RabbitMQConfig {
     String queueSaveCustomerSendMail = "queueSaveCustomerSendMail";
     String keySaveCustomerSendMail = "keySaveCustomerSendMail";
 
+    String queueCustomerSendEmailAboutOpportunity = "queueCustomerSendEmailAboutOpportunity";
+    String keyCustomerSendEmailAboutOpportunity = "keyCustomerSendEmailAboutOpportunity";
+
 
     @Bean
     public DirectExchange businessDirectExchange() {
@@ -40,15 +43,16 @@ public class RabbitMQConfig {
     public Queue queueSaveCustomerSendMail(){
         return new Queue(queueSaveCustomerSendMail);
     }
+    @Bean
+    public Queue queueCustomerSendEmailAboutOpportunity(){
+        return new Queue(queueCustomerSendEmailAboutOpportunity);
+    }
 
     @Bean
     public Binding bindingSaveDirectExchange(Queue queueFindAuthByToken, DirectExchange directExchange){
         return BindingBuilder.bind(queueFindAuthByToken).to(directExchange).with(keyFindAuthByToken);
     }
-//    @Bean
-//    public Binding bindingSaveCustomerSendEmail(Queue queueSaveCustomerSendMail, DirectExchange directExchange){
-//        return BindingBuilder.bind(queueSaveCustomerSendMail).to(directExchange).with(keySaveCustomerSendMail);
-//    }
+
 
     @Bean
     MessageConverter messageConverter() {
