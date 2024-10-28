@@ -59,6 +59,7 @@ public class FeedbackService {
 
         feedback.setDescription(dto.description() != null ? dto.description() : feedback.getDescription());
         feedback.setRating(dto.rating() != null ? dto.rating() : feedback.getRating());
+
         feedbackRepository.save(feedback);
         return true;
     }
@@ -72,7 +73,7 @@ public class FeedbackService {
 
     public Feedback getFeedbackByUser() {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
-        return feedbackRepository.findByAuthIdAndStatus(authId, EStatus.ACTIVE).orElse(null);
+      return  feedbackRepository.findFirstByAuthIdAndStatusOrderByUpdatedAtDesc(authId, EStatus.ACTIVE).orElse(null);
 
     }
 
