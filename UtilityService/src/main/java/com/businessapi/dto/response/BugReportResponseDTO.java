@@ -10,6 +10,9 @@ public record BugReportResponseDTO(Long id,
                                    String description,
                                    String adminFeedback,
                                    LocalDateTime resolvedAt,
-                                   EBugStatus bugStatus)
+                                   EBugStatus bugStatus,
+                                   String version
+
+)
 {
 }
