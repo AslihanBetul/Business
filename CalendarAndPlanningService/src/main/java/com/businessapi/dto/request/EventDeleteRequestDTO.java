@@ -1,4 +1,4 @@
 package com.businessapi.dto.request;
 
-public record EventDeleteRequestDTO (String token, String id) {
+public record EventDeleteRequestDTO (String token, Long id) {
 }
