@@ -72,7 +72,7 @@ public class FeedbackService {
 
     public Feedback getFeedbackByUser() {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
-        return feedbackRepository.findByAuthId(authId);
+        return feedbackRepository.findByAuthIdAndStatus(authId, EStatus.ACTIVE).orElse(null);
 
     }
 
