@@ -10,6 +10,7 @@ import com.businessapi.services.DeclarationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -26,6 +27,7 @@ public class DeclarationController {
 
     @PostMapping(CREATE_FOR_INCOME_TAX)
     @Operation(summary = "Generates a declaration for income tax")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Declaration>> createForIncomeTax(@RequestBody DeclarationSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Declaration>builder()
@@ -37,6 +39,7 @@ public class DeclarationController {
 
     @PostMapping(CREATE_FOR_VAT)
     @Operation(summary = "Generates a declaration for VAT")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Declaration>> createForVat(@RequestBody DeclarationSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Declaration>builder()
@@ -48,6 +51,7 @@ public class DeclarationController {
 
     @PostMapping(CREATE_FOR_CORPORATE_TAX)
     @Operation(summary = "Generates a declaration for corporate tax")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Declaration>> createForCorporateTax(@RequestBody DeclarationSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Declaration>builder()
@@ -59,6 +63,7 @@ public class DeclarationController {
 
     @PostMapping(CREATE)
     @Operation(summary = "Generates a declaration")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<BigDecimal>> create(@RequestBody GenerateDeclarationRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<BigDecimal>builder()
@@ -70,6 +75,7 @@ public class DeclarationController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all declarations with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<DeclarationResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<DeclarationResponseDTO>>builder()

@@ -29,7 +29,9 @@ public enum ErrorType {
     TAX_NOT_FOUND(9014, "Tax Not Found", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(9015, "Invalid Token", HttpStatus.BAD_REQUEST),
     INCOME_NOT_FOUND(9016, "Income Not Found", HttpStatus.BAD_REQUEST),
-    DEPARTMENT_NOT_FOUND(9017, "Department Not Found", HttpStatus.BAD_REQUEST),;
+    DEPARTMENT_NOT_FOUND(9017, "Department Not Found", HttpStatus.BAD_REQUEST),
+    BUDGET_NOT_ENOUGH(9018, "Budget Not Enough", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED(9019, "Unauthorized", HttpStatus.UNAUTHORIZED),;
 
     private Integer code;
     private String message;

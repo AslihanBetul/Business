@@ -9,6 +9,7 @@ import com.businessapi.entity.Declaration;
 import com.businessapi.entity.Income;
 import com.businessapi.entity.enums.EStatus;
 import com.businessapi.repositories.DeclarationRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class DeclarationService {
                 .totalIncome(calculateTaxableIncome(dto).get(0))
                 .totalExpense(calculateTaxableIncome(dto).get(1))
                 .totalTax(totalTax)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         declarationRepository.save(declaration);
@@ -51,6 +53,7 @@ public class DeclarationService {
                 .totalIncome(calculateTaxableIncome(dto).get(0))
                 .totalExpense(calculateTaxableIncome(dto).get(1))
                 .totalTax(totalTax)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         declarationRepository.save(declaration);
@@ -67,6 +70,7 @@ public class DeclarationService {
                 .totalIncome(calculateTaxableIncome(dto).get(0))
                 .totalExpense(calculateTaxableIncome(dto).get(1))
                 .totalTax(totalTax)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         declarationRepository.save(declaration);
@@ -74,6 +78,7 @@ public class DeclarationService {
     }
 
     private List<BigDecimal> calculateTaxableIncome(DeclarationSaveRequestDTO dto){
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         List<Income> incomeList = incomeService.findByDateForDeclaration(dto.startDate(), dto.endDate());
         List<ExpenseResponseDTO> expenseList = expenseService.findByDate(dto.startDate(), dto.endDate());
 
@@ -94,6 +99,19 @@ public class DeclarationService {
         });
         BigDecimal netIncome = dto.totalIncome().subtract(dto.totalExpense());
 
+        if (netIncome.compareTo(BigDecimal.ZERO) < 0) {
+            Declaration declaration = Declaration.builder()
+                    .startDate(dto.startDate())
+                    .endDate(dto.endDate())
+                    .totalIncome(dto.totalIncome())
+                    .totalExpense(dto.totalExpense())
+                    .totalTax(BigDecimal.ZERO)
+                    .taxType(dto.taxType())
+                    .status(EStatus.INACTIVE)
+                    .build();
+            declarationRepository.save(declaration);
+            return BigDecimal.ZERO;
+        }
         BigDecimal totalTax = switch (dto.taxType()) {
             case "income" -> taxService.calculateIncomeTax(netIncome);
             case "kdv" -> taxService.calculateVat(netIncome);

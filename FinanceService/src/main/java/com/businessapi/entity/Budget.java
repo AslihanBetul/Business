@@ -19,13 +19,20 @@ public class Budget extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    Long memberId;
+
     @Builder.Default
     BigDecimal totalAmount = new BigDecimal(0);
+
     BigDecimal subAmount;
+
     @Builder.Default
     BigDecimal spentAmount = new BigDecimal(0);
+
     @Enumerated(EnumType.STRING)
     EBudgetCategory budgetCategory;
+
     String description;
 
     @ManyToOne

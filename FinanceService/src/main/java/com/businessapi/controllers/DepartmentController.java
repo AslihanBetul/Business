@@ -8,6 +8,7 @@ import com.businessapi.services.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class DepartmentController {
 
     @PostMapping(GET_DEPARTMENTS)
     @Operation(summary = "Lists all departments with name and id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<DepartmentResponseDTO>>> getDepartments() {
         return ResponseEntity.ok(ResponseDTO
                 .<List<DepartmentResponseDTO>>builder()

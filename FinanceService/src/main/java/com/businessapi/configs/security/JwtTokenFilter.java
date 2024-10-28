@@ -40,13 +40,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 
             UserRoleListModel modal = (UserRoleListModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyRolesByAuthId", authId);
-            EmailAndPasswordModel modal2 = (EmailAndPasswordModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailAndPasswordFromAuth", authId);
+            //EmailAndPasswordModel modal2 = (EmailAndPasswordModel) rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyEmailAndPasswordFromAuth", authId);
 
             List<GrantedAuthority> authorities = modal.getUserRoles().stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(modal2.getEmail(), null, authorities);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authId, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }

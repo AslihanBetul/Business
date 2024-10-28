@@ -16,6 +16,7 @@ import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.BudgetRepository;
 import com.businessapi.repositories.DepartmentRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,24 @@ public class BudgetService {
                 .subAmount(dto.subAmount())
                 .budgetCategory(dto.budgetCategory())
                 .description(dto.description())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
+                .build();
+
+        department.getBudgets().add(budget);
+        budgetRepository.save(budget);
+        return true;
+    }
+
+    @Transactional
+    public Boolean saveForDemoData(BudgetSaveRequestDTO dto) {
+        Department department = departmentService.getDepartmentById(dto.departmentId());
+        department.getBudgets().size();
+        Budget budget = Budget.builder()
+                .department(department)
+                .subAmount(dto.subAmount())
+                .budgetCategory(dto.budgetCategory())
+                .description(dto.description())
+                .memberId(2L)
                 .build();
 
         department.getBudgets().add(budget);
@@ -70,7 +89,8 @@ public class BudgetService {
     }
 
     public List<BudgetMergedByDepartmentResponseDTO> findAll(PageRequestDTO dto) {
-        List<Department> departmentList = departmentService.findAll();
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Department> departmentList = departmentService.findAllByMemberId(memberId);
         List<BudgetMergedByDepartmentResponseDTO> budgetMergedByDepartmentResponseDTOS = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal spentAmount = BigDecimal.ZERO;
@@ -83,7 +103,7 @@ public class BudgetService {
                 }
             }
             for (Expense expense : expenses) {
-                if (expense.getDepartment().equals(department)) {
+                if (expense.getDepartment().equals(department) && !expense.getStatus().equals(EStatus.DELETED)) {
                     spentAmount = spentAmount.add(expense.getAmount());
                 }
             }
@@ -99,29 +119,6 @@ public class BudgetService {
         return budgetRepository.findById(id).orElseThrow(() -> new FinanceServiceException(ErrorType.BUDGET_NOT_FOUND));
     }
 
-//    public Budget findByDepartment(String department) {
-//        return budgetRepository.findByDepartment(department).getFirst();
-//    }
-
-
-    public Void getDepartments() {
-//        List<Budget> budgets = budgetRepository.findAll();
-//        List<DepartmentResponseDTO> departments = new ArrayList<>();
-//        for (Budget budget : budgets) {
-//            if (departments.stream().noneMatch(department -> department.department().equals(budget.getDepartment()))) {
-//                departments.add(new DepartmentResponseDTO((long) (departments.size() + 1), budget.getDepartment()));
-//            }
-//        }
-//        return departments;
-        return null;
-    }
-
-//    public void setSpentAmount(String department, BigDecimal bigDecimal) {
-//        Budget budget = budgetRepository.findByDepartment(department).getFirst();
-//        budget.setSpentAmount(budget.getSpentAmount().add(bigDecimal));
-//        budgetRepository.save(budget);
-//    }
-
     public List<BudgetCategoryResponseDTO> getAllCategories() {
         List<EBudgetCategory> categories = new ArrayList<>(Arrays.asList(EBudgetCategory.values()));
         List<BudgetCategoryResponseDTO> categoryResponseDTOS = new ArrayList<>();
@@ -131,23 +128,13 @@ public class BudgetService {
         return categoryResponseDTOS;
     }
 
-//    public List<BudgetByDepartmentResponseDTO> findAllByDepartmentId(Long departmentId) {
-//        Department department = departmentService.getDepartmentById(departmentId);
-//        List<Budget> allBudgetsByDepartment = budgetRepository.findAllByDepartment(department);
-//        allBudgetsByDepartment.removeIf(budget -> budget.getStatus().equals(EStatus.DELETED));
-//        List<BudgetByDepartmentResponseDTO> budgetByDepartmentResponseDTOS = new ArrayList<>();
-//        for (Budget budget : allBudgetsByDepartment) {
-//            budgetByDepartmentResponseDTOS.add(new BudgetByDepartmentResponseDTO(budget.getId(), budget.getBudgetCategory(), budget.getSubAmount(), budget.getDescription()));
-//        }
-//        return budgetByDepartmentResponseDTOS;
-//    }
-
     public List<BudgetByDepartmentResponseDTO> findAllByDepartmentName (String departmentName) {
-        Department department = departmentService.getDepartmentByName(departmentName);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        Department department = departmentService.getDepartmentByNameAndMemberId(departmentName, memberId);
         if (department == null) {
             throw new FinanceServiceException(ErrorType.DEPARTMENT_NOT_FOUND);
         }
-        List<Budget> allBudgetsByDepartment = budgetRepository.findAllByDepartment(department);
+        List<Budget> allBudgetsByDepartment = budgetRepository.findAllByDepartmentAndMemberId(department, memberId);
         allBudgetsByDepartment.removeIf(budget -> budget.getStatus().equals(EStatus.DELETED));
         List<BudgetByDepartmentResponseDTO> budgetByDepartmentResponseDTOS = new ArrayList<>();
         for (Budget budget : allBudgetsByDepartment) {

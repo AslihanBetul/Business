@@ -23,6 +23,8 @@ public class Expense extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    Long memberId;
+
     @Enumerated(EnumType.STRING)
     EExpenseCategory expenseCategory;
 

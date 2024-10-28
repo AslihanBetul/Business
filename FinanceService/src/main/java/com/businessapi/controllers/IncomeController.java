@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ public class IncomeController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Creates new income")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody IncomeSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -39,6 +41,7 @@ public class IncomeController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing income")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody IncomeUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -50,6 +53,7 @@ public class IncomeController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing income")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -61,6 +65,7 @@ public class IncomeController {
 
     @PostMapping(FIND_BY_DATE)
     @Operation(summary = "Lists all incomes with between the given dates")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<Income>>> findByDate(@RequestBody IncomeFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<Income>>builder()
@@ -72,6 +77,7 @@ public class IncomeController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds an income by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Income>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Income>builder()
@@ -83,6 +89,7 @@ public class IncomeController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all incomes")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<Income>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<Income>>builder()
@@ -94,6 +101,7 @@ public class IncomeController {
 
     @PostMapping(CALCULATE)
     @Operation(summary = "Calculates the income between the given dates")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<BigDecimal>> calculateIncome(@RequestBody IncomeFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<BigDecimal>builder()
@@ -105,6 +113,7 @@ public class IncomeController {
 
     @PostMapping(GET_FOR_MONTHS)
     @Operation(summary = "Lists all incomes for the given months")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<BigDecimal>>> getForMonths(@RequestBody IncomeFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<BigDecimal>>builder()
@@ -116,6 +125,7 @@ public class IncomeController {
 
     @PostMapping(GET_MOST)
     @Operation(summary = "Lists the most 5 income source")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<String>>> getMostSource(@RequestBody IncomeFindByDateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<String>>builder()
