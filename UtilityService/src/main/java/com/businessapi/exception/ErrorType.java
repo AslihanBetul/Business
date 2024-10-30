@@ -26,7 +26,7 @@ public enum ErrorType
     BUG_STATUS_SHOULD_BE_OPEN(9106, "Bug status should be open", HttpStatus.BAD_REQUEST),
     BUG_REPORT_STATUS_SHOULD_BE_IN_PROGRESS(9107, "Bug report status should be in progress", HttpStatus.BAD_REQUEST),
     BUG_FEEDBACK_ALREADY_EXIST(9108, "Bug feedback already exist", HttpStatus.BAD_REQUEST),
-    FEEDBACK_ALREADY_EXISTS( 9107, "Feedback already exists", HttpStatus.BAD_REQUEST),
+    FEEDBACK_ALREADY_EXISTS( 9107, "Feedback already exists", HttpStatus.BAD_REQUEST)
     ;
 
     private Integer code;
