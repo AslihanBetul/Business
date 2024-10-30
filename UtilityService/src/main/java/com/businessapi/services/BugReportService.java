@@ -5,6 +5,7 @@ import com.businessapi.dto.request.BugReportSaveRequestDTO;
 import com.businessapi.dto.request.BugReportUpdateStatusRequestDTO;
 import com.businessapi.dto.request.FeedbackSaveRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.BugReportResponseDTO;
 import com.businessapi.entities.BugReport;
 import com.businessapi.entities.enums.EBugStatus;
 import com.businessapi.entities.enums.EStatus;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -59,10 +61,19 @@ public class BugReportService
         return true;
     }
 
-    public List<BugReport> findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(PageRequestDTO dto)
+    public List<BugReportResponseDTO> findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(PageRequestDTO dto)
     {
-        return bugReportRepository
+        List<BugReport> bugReportList = bugReportRepository
                 .findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(dto.searchText(), EStatus.DELETED, PageRequest.of(dto.page(), dto.size()));
+        List<BugReportResponseDTO> bugReportResponseDTOList = new ArrayList<>();
+
+        for (BugReport bugReport : bugReportList)
+        {
+            //TODO IT CAN BE OPTIMIZED LATER BY SENDING IDS AS BULK FOR EMAIL
+            String email = (String) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyFindMailOfAuth", bugReport.getAuthId()));
+            bugReportResponseDTOList.add(new BugReportResponseDTO(bugReport.getId(), email, bugReport.getSubject(), bugReport.getDescription(), bugReport.getAdminFeedback(), bugReport.getResolvedAt(),bugReport.getBugStatus(),bugReport.getVersion()));
+        }
+        return bugReportResponseDTOList;
     }
 
     public BugReport findById(Long id)
@@ -74,37 +85,59 @@ public class BugReportService
     {
         BugReport bugReport = bugReportRepository.findById(dto.id()).orElseThrow(() -> new UtilityServiceException(ErrorType.BUG_REPORT_NOT_FOUND));
 
+
+        if (dto.bugStatus().equals(EBugStatus.OPEN))
+        {
+                throw new UtilityServiceException(ErrorType.BUG_STATUS_UPDATE_NOT_ALLOWED);
+        }
         if (dto.bugStatus().equals(EBugStatus.IN_PROGRESS))
         {
-            if (bugReport.getBugStatus().equals(EBugStatus.CLOSED) || bugReport.getBugStatus().equals(EBugStatus.IN_PROGRESS))
+            if (!bugReport.getBugStatus().equals(EBugStatus.OPEN))
             {
-                throw new UtilityServiceException(ErrorType.BUG_REPORT_STATUS_SHOULD_BE_OPEN_OR_RESOLVED);
+                throw new UtilityServiceException(ErrorType.BUG_STATUS_SHOULD_BE_OPEN);
             }
             bugReport.setBugStatus(EBugStatus.IN_PROGRESS);
         }
 
         if (dto.bugStatus().equals(EBugStatus.RESOLVED))
         {
-            if (bugReport.getBugStatus().equals(EBugStatus.RESOLVED) || bugReport.getBugStatus().equals(EBugStatus.CLOSED))
+            if (!bugReport.getBugStatus().equals(EBugStatus.IN_PROGRESS))
             {
-                throw new UtilityServiceException(ErrorType.BUG_REPORT_STATUS_SHOULD_BE_OPEN_OR_IN_PROGRESS);
+                throw new UtilityServiceException(ErrorType.BUG_REPORT_STATUS_SHOULD_BE_IN_PROGRESS);
             }
             bugReport.setResolvedAt(LocalDateTime.now());
             bugReport.setBugStatus(EBugStatus.RESOLVED);
 
             String email = (String) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyFindMailOfAuth", bugReport.getAuthId()));
 
-            //If email is not null we will send email to member to inform
+
             if (email != null)
             {
                 EmailSendModal emailObject = new EmailSendModal(email, bugReport.getSubject(),"Hello, your bug report has been resolved");
                 rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
             }
         }
+        if (dto.bugStatus().equals(EBugStatus.REJECTED))
+        {
+            if (!bugReport.getBugStatus().equals(EBugStatus.OPEN))
+            {
+                throw new UtilityServiceException(ErrorType.BUG_STATUS_SHOULD_BE_OPEN);
+            }
+            String email = (String) (rabbitTemplate.convertSendAndReceive("businessDirectExchange", "keyFindMailOfAuth", bugReport.getAuthId()));
+
+
+            if (email != null)
+            {
+                EmailSendModal emailObject = new EmailSendModal(email, bugReport.getSubject(),"Hello, your bug report has been declined. Detailed information will be sent later.");
+                rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
+            }
+
+            bugReport.setBugStatus(EBugStatus.REJECTED);
+        }
 
         if (dto.bugStatus().equals(EBugStatus.CLOSED))
         {
-            if (bugReport.getBugStatus().equals(EBugStatus.RESOLVED))
+            if (!bugReport.getBugStatus().equals(EBugStatus.RESOLVED))
             {
                 throw new UtilityServiceException(ErrorType.BUG_REPORT_STATUS_SHOULD_BE_RESOLVED);
             }
@@ -132,8 +165,30 @@ public class BugReportService
                 rabbitTemplate.convertAndSend("businessDirectExchange", "keySendMail", emailObject);
             }
 
+        }else
+        {
+            throw new UtilityServiceException(ErrorType.BUG_FEEDBACK_ALREADY_EXIST);
         }
 
+        return true;
+    }
+
+    private void incrementVersion(BugReport bugReport) {
+
+        String currentVersion = bugReport.getVersion();
+        int currentVersionNumber = Integer.parseInt(currentVersion.substring(1));
+        int newVersionNumber = currentVersionNumber + 1;
+        bugReport.setVersion("v" + newVersionNumber);
+    }
+
+    public Boolean reopenCase(Long id)
+    {
+        BugReport bugReport = bugReportRepository.findById(id).orElseThrow(() -> new UtilityServiceException(ErrorType.BUG_REPORT_NOT_FOUND));
+        bugReport.setBugStatus(EBugStatus.OPEN);
+        bugReport.setAdminFeedback(null);
+        bugReport.setResolvedAt(null);
+        incrementVersion(bugReport);
+        bugReportRepository.save(bugReport);
         return true;
     }
 }

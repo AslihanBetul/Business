@@ -41,4 +41,5 @@ public class Endpoints
     public static final String UPDATE_SELL_ORDER = "/update-sell-order";
     public static final String SAVE_FROM_ORDER_ID = "/save-from-order-id";
     public static final String FEEDBACK = "/feedback";
+    public static final String REOPEN_CASE = "/reopen-case";
 }

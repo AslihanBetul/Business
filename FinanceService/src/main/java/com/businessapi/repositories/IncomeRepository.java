@@ -22,4 +22,9 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
 
     List<Income> findAllByIncomeDateBetweenAndStatusNot(LocalDate startDate, LocalDate endDate, EStatus status);
 
+    List<Income> findAllByIncomeDateBetweenAndMemberId(LocalDate startDate, LocalDate endDate, Long memberId);
+
+    Page<Income> findAllByMemberIdAndSourceContainingIgnoreCaseAndStatusNot (Long memberId, String source, EStatus status, Pageable pageable);
+
+    Page<Income> findAllByMemberIdAndStatusNot (Long memberId, EStatus status, Pageable pageable);
 }

@@ -70,6 +70,22 @@ public class JwtTokenManager
         }
     }
 
+    //  Şifre Sıfırlama İçin Email İle Token Oluşturma
+    public Optional<String> createPasswordResetToken(String email){
+        String token;
+        try {
+            token = JWT.create()
+                    .withClaim("email", email) // Email'i token içinde saklıyoruz
+                    .withIssuer(ISSUER)
+                    .withIssuedAt(new Date()) // Şu anki tarih
+                    .withExpiresAt(new Date(System.currentTimeMillis() + EXDATE)) // Token geçerlilik süresi
+                    .sign(Algorithm.HMAC512(SECRETKEY)); // HMAC512 algoritması ile imzalama
+            return Optional.of(token);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
 
 
 }

@@ -9,6 +9,7 @@ import com.businessapi.services.BudgetService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class BudgetController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new budget")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody BudgetSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -35,6 +37,7 @@ public class BudgetController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing budget")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody BudgetUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -46,6 +49,7 @@ public class BudgetController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing budget")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -57,6 +61,7 @@ public class BudgetController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all the budgets with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<BudgetMergedByDepartmentResponseDTO>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<BudgetMergedByDepartmentResponseDTO>>builder()
@@ -68,6 +73,7 @@ public class BudgetController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds a budget by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Budget>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Budget>builder()
@@ -77,19 +83,9 @@ public class BudgetController {
                 .build());
     }
 
-    @PostMapping(GET_DEPARTMENTS)
-    @Operation(summary = "Lists all departments of budgets")
-    public ResponseEntity<ResponseDTO<Void>> getDepartments() {
-        return ResponseEntity.ok(ResponseDTO
-                .<Void>builder()
-                .data(budgetService.getDepartments())
-                .message("Success")
-                .code(200)
-                .build());
-    }
-
     @PostMapping(GET_ALL_CATEGORIES)
     @Operation(summary = "Lists all categories of budgets")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<BudgetCategoryResponseDTO>>> getAllCategories() {
         return ResponseEntity.ok(ResponseDTO
                 .<List<BudgetCategoryResponseDTO>>builder()
@@ -101,6 +97,7 @@ public class BudgetController {
 
     @PostMapping(FIND_ALL_BY_DEPARTMENT_NAME)
     @Operation(summary = "Lists all budgets by department name")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<BudgetByDepartmentResponseDTO>>> findAllByDepartmentId(String departmentName) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<BudgetByDepartmentResponseDTO>>builder()

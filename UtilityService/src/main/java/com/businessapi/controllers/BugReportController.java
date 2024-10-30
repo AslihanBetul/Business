@@ -6,6 +6,7 @@ import com.businessapi.dto.request.BugReportSaveRequestDTO;
 import com.businessapi.dto.request.BugReportUpdateStatusRequestDTO;
 import com.businessapi.dto.request.FeedbackSaveRequestDTO;
 import com.businessapi.dto.request.PageRequestDTO;
+import com.businessapi.dto.response.BugReportResponseDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.BugReport;
 import com.businessapi.services.BugReportService;
@@ -67,10 +68,10 @@ public class BugReportController
     @PostMapping(FIND_ALL)
     @Operation(summary = "Finds all Bug Reports with respect to pagination")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<ResponseDTO<List<BugReport>>> findAll(@RequestBody PageRequestDTO dto){
+    public ResponseEntity<ResponseDTO<List<BugReportResponseDTO>>> findAll(@RequestBody PageRequestDTO dto){
 
         return ResponseEntity.ok(ResponseDTO
-                .<List<BugReport>>builder()
+                .<List<BugReportResponseDTO>>builder()
                 .data(bugReportService.findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(dto))
                 .message("Success")
                 .code(200)
@@ -98,6 +99,19 @@ public class BugReportController
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
                 .data(bugReportService.feedback(dto))
+                .message("Success")
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(REOPEN_CASE)
+    @Operation(summary = "Reopens and resets the case and increasing its version by 1")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ResponseDTO<Boolean>> reopenCase(Long id){
+
+        return ResponseEntity.ok(ResponseDTO
+                .<Boolean>builder()
+                .data(bugReportService.reopenCase(id))
                 .message("Success")
                 .code(200)
                 .build());

@@ -10,11 +10,13 @@ import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.InvoiceRepository;
+import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -32,11 +34,32 @@ public class InvoiceService {
                 .quantity(dto.quantity())
                 .invoiceDate(dto.invoiceDate())
                 .totalAmount(dto.totalAmount())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         invoiceRepository.save(invoice);
         return true;
     }
+
+    public Boolean saveForDemoData(InvoiceSaveRequestDTO dto) {
+        Invoice invoice = Invoice.builder()
+                .buyerTcNo(dto.buyerTcNo())
+                .buyerEmail(dto.buyerEmail())
+                .buyerPhone(dto.buyerPhone())
+                .productId(dto.productId())
+                .productName(dto.productName())
+                .quantity(dto.quantity())
+                .invoiceDate(dto.invoiceDate())
+                .totalAmount(dto.totalAmount())
+                .unitPrice(dto.totalAmount().divide(BigDecimal.valueOf(dto.quantity())))
+                .memberId(2L)
+                .build();
+
+        invoiceRepository.save(invoice);
+        return true;
+    }
+
+
 
     public Boolean update(InvoiceUpdateRequestDTO dto) {
         Invoice invoice = invoiceRepository.findById(dto.id()).orElseThrow(() -> new FinanceServiceException(ErrorType.INVOICE_NOT_FOUND));
@@ -61,16 +84,8 @@ public class InvoiceService {
     }
 
     public List<Invoice> findAll(PageRequestDTO dto) {
-//        String productName = dto.searchText();
-//        if (productName != null && !productName.isEmpty()) {
-//
-//            System.out.println(invoiceRepository.findByProductNameContainingIgnoreCaseAndStatusNot(productName, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent());
-//            return invoiceRepository.findByProductNameContainingIgnoreCaseAndStatusNot(productName, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
-//        }
-//        System.out.println(invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent());
-//        return invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
-//
-        return invoiceRepository.findAllByStatusNot(EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        return invoiceRepository.findAllByMemberIdAndStatusNot(memberId, EStatus.DELETED, PageRequest.of(dto.page(), dto.size())).getContent();
     }
 
     public Invoice findById(Long id) {
@@ -87,9 +102,10 @@ public class InvoiceService {
                 .productId(model.getProductId())
                 .productName(model.getProductName())
                 .quantity(model.getQuantity())
-                .price(model.getPrice())
+                .unitPrice(model.getPrice())
                 .invoiceDate(model.getInvoiceDate())
                 .totalAmount(model.getTotalAmount())
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
         invoiceRepository.save(invoice);
     }

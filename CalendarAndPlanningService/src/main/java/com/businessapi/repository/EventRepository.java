@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, String> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
-   Optional<List<Event>> findAllByUserId(Long userId);
+    Optional<List<Event>> findAllByAuthId(Long authId);
+    Optional<Event> findById(Long id);
+
 }

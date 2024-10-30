@@ -11,6 +11,7 @@ import com.businessapi.entity.enums.EStatus;
 import com.businessapi.exception.ErrorType;
 import com.businessapi.exception.FinanceServiceException;
 import com.businessapi.repositories.ExpenseRepository;
+import com.businessapi.util.SessionManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -38,14 +39,34 @@ public class ExpenseService {
                 .amount(dto.amount())
                 .description(dto.description())
                 .department(department)
+                .memberId(SessionManager.getMemberIdFromAuthenticatedMember())
                 .build();
 
         if (dto.expenseCategory().equals(EExpenseCategory.TAX)) {
             expense.setStatus(EStatus.APPROVED);
         }
 
-//        Budget budgetByDepartment = budgetService.findByDepartment(dto.department());
-//        budgetByDepartment.setSpentAmount(budgetByDepartment.getSpentAmount().add(dto.amount()));
+        department.getExpenses().add(expense);
+        expenseRepository.save(expense);
+        return true;
+    }
+
+    @Transactional
+    public Boolean saveForDemoData(ExpenseSaveRequestDTO dto) {
+        Department department = departmentService.getDepartmentById(dto.departmentId());
+        department.getExpenses().size();
+        Expense expense = Expense.builder()
+                .expenseCategory(dto.expenseCategory())
+                .expenseDate(dto.expenseDate())
+                .amount(dto.amount())
+                .description(dto.description())
+                .department(department)
+                .memberId(2L)
+                .build();
+
+        if (dto.expenseCategory().equals(EExpenseCategory.TAX)) {
+            expense.setStatus(EStatus.APPROVED);
+        }
 
         department.getExpenses().add(expense);
         expenseRepository.save(expense);
@@ -71,18 +92,13 @@ public class ExpenseService {
     }
 
     public List<ExpenseResponseDTO> findAll(PageRequestDTO dto) {
-        List<Expense> expenseList = expenseRepository.findAllByStatusNotAndExpenseCategoryNot(EStatus.DELETED, EExpenseCategory.TAX, PageRequest.of(dto.page(), dto.size())).getContent();
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Expense> expenseList = expenseRepository.findAllByMemberIdAndStatusNotAndExpenseCategoryNot(memberId, EStatus.DELETED, EExpenseCategory.TAX, PageRequest.of(dto.page(), dto.size())).getContent();
         List<ExpenseResponseDTO> expenseResponseDTOS = new ArrayList<>();
         for (Expense expense : expenseList) {
             expenseResponseDTOS.add(new ExpenseResponseDTO(expense.getId(), expense.getExpenseCategory(), expense.getExpenseDate(), expense.getAmount(), expense.getDescription(), expense.getDepartment().getName()));
         }
         return expenseResponseDTOS;
-    }
-
-    public List<Expense> findAllForBudgetService() {
-        List<Expense> expenseList = expenseRepository.findAll();
-        expenseList.removeIf(expense -> expense.getStatus().equals(EStatus.DELETED));
-        return expenseList;
     }
 
     public ExpenseResponseDTO findById(Long id) {
@@ -105,7 +121,8 @@ public class ExpenseService {
     }
 
     public List<ExpenseResponseDTO> findByDate(LocalDate startDate, LocalDate endDate) {
-        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(startDate, endDate, EStatus.DELETED);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Expense> expenseList = expenseRepository.findAllByMemberIdAndExpenseDateBetweenAndStatusNot(memberId, startDate, endDate, EStatus.DELETED);
         List<ExpenseResponseDTO> expenseResponseDTOS = new ArrayList<>();
         for (Expense expense : expenseList) {
             expenseResponseDTOS.add(new ExpenseResponseDTO(expense.getId(), expense.getExpenseCategory(), expense.getExpenseDate(), expense.getAmount(), expense.getDescription(), expense.getDepartment().getName()));
@@ -114,7 +131,9 @@ public class ExpenseService {
     }
 
     public BigDecimal calculateTotalExpenseBetweenDates(LocalDate startDate, LocalDate endDate) {
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
         List<Expense> allExpenseList = expenseRepository.findAllByExpenseDateBetween(startDate, endDate);
+        allExpenseList.removeIf(expense -> !expense.getMemberId().equals(memberId));
         BigDecimal totalExpense = BigDecimal.ZERO;
         for (Expense expense : allExpenseList) {
             totalExpense = totalExpense.add(expense.getAmount());
@@ -134,7 +153,8 @@ public class ExpenseService {
     }
 
     public List<BigDecimal> getForMonths(ExpenseFindByDateRequestDTO dto) {
-        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Expense> expenseList = expenseRepository.findAllByMemberIdAndExpenseDateBetweenAndStatusNot(memberId, dto.startDate(), dto.endDate(), EStatus.DELETED);
 
         expenseList.sort((o1, o2) -> o1.getExpenseDate().getMonthValue() - o2.getExpenseDate().getMonthValue());
 
@@ -154,7 +174,8 @@ public class ExpenseService {
     }
 
     public List<ExpenseCategoryResponseDTO> getMostExpensive(ExpenseFindByDateRequestDTO dto) {
-        List<Expense> expenseList = expenseRepository.findAllByExpenseDateBetweenAndStatusNot(dto.startDate(), dto.endDate(), EStatus.DELETED);
+        Long memberId = SessionManager.getMemberIdFromAuthenticatedMember();
+        List<Expense> expenseList = expenseRepository.findAllByMemberIdAndExpenseDateBetweenAndStatusNot(memberId, dto.startDate(), dto.endDate(), EStatus.DELETED);
         expenseList.sort((o1, o2) -> o2.getAmount().compareTo(o1.getAmount()));
         List<ExpenseCategoryResponseDTO> mostExpensiveCategories = new ArrayList<>();
         for (int i = 0; i < 5; i++) {

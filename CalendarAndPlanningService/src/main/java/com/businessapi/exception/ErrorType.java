@@ -19,7 +19,9 @@ public enum ErrorType {
     TOKEN_VERIFY_FAILED(1006,"token verify failed", HttpStatus.SERVICE_UNAVAILABLE),
     TOKEN_FORMAT_NOT_ACCEPTABLE(1007,"token format not acceptable", HttpStatus.BAD_REQUEST),
     EVENT_NOT_FOUND(1008, "Event not found. Please try again.", HttpStatus.NOT_FOUND),
-    EVENT_IS_NOT_ACTIVE(1009, "Event is not active. Please try again.", HttpStatus.NOT_FOUND)
+    EVENT_IS_NOT_ACTIVE(1009, "Event is not active. Please try again.", HttpStatus.NOT_FOUND),
+    INVALID_INVITATION_ERROR(1010, "User is not invited to the event", HttpStatus.BAD_REQUEST),
+    EVENT_UPDATE_PERMISSION_ERROR(1011,  "You do not have permission to update this event.", HttpStatus.BAD_REQUEST)
     ;
 
 

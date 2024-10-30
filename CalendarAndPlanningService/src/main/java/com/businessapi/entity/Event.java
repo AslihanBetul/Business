@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +20,21 @@ import java.time.LocalDateTime;
 public class Event extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-    Long userId;
-    String title;
-    String description;
-    String location;
-    LocalDateTime startDateTime;
-    LocalDateTime endDateTime;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String description;
+
+    private String location;
+
+    private LocalDateTime startDateTime;
+
+
+    private LocalDateTime endDateTime;
+
+    @Column(name = "auth_id")
+    private Long authId;  // Etkinliği oluşturan kullanıcının ID'si
+
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     Page<Budget> findAllByStatusNot(EStatus status, Pageable pageable);
-    List<Budget> findAllByDepartment(Department department);
+    List<Budget> findAllByDepartmentAndMemberId(Department department, Long memberId);
 
     //Page<Budget> findByDepartmentContainingIgnoreCaseAndStatusNot(@Param("department") String department, @Param("status") EStatus status, Pageable pageable);
 

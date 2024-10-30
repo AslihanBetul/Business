@@ -9,6 +9,7 @@ import com.businessapi.services.FinancialReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class FinancialReportController {
 
     @PostMapping(SAVE)
     @Operation(summary = "Saves new financial report")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody FinancialReportSaveRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -35,6 +37,7 @@ public class FinancialReportController {
 
     @PutMapping(UPDATE)
     @Operation(summary = "Updates an existing financial report")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> update(@RequestBody FinancialReportUpdateRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -46,6 +49,7 @@ public class FinancialReportController {
 
     @DeleteMapping(DELETE)
     @Operation(summary = "Deletes an existing financial report")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<Boolean>> delete(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<Boolean>builder()
@@ -57,6 +61,7 @@ public class FinancialReportController {
 
     @PostMapping(FIND_ALL)
     @Operation(summary = "Lists all the financial reports with respect to the given page and size")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<List<FinancialReport>>> findAll(@RequestBody PageRequestDTO dto) {
         return ResponseEntity.ok(ResponseDTO
                 .<List<FinancialReport>>builder()
@@ -68,6 +73,7 @@ public class FinancialReportController {
 
     @PostMapping(FIND_BY_ID)
     @Operation(summary = "Finds a financial report by its id")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<FinancialReport>> findById(Long id) {
         return ResponseEntity.ok(ResponseDTO
                 .<FinancialReport>builder()
@@ -79,6 +85,7 @@ public class FinancialReportController {
 
     @PostMapping(COMPARE)
     @Operation(summary = "Compares given number of financial reports")
+    @PreAuthorize("hasAnyAuthority('FAM')")
     public ResponseEntity<ResponseDTO<FinancialReport>> compare(@RequestParam List<Long> ids) {
         return ResponseEntity.ok(ResponseDTO
                 .<FinancialReport>builder()

@@ -29,4 +29,6 @@ public class BugReport extends BaseEntity
     @Enumerated(EnumType.STRING)
     @Builder.Default
     EBugStatus bugStatus = EBugStatus.OPEN;
+    @Builder.Default
+    String version = "v1";
 }

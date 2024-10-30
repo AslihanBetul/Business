@@ -15,8 +15,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByExpenseCategoryAndStatusNot(EExpenseCategory expenseCategory, EStatus status);
     List<Expense> findAllByExpenseDateBetween(LocalDate startDate, LocalDate endDate);
     Page<Expense> findAllByStatusNot(EStatus status, Pageable pageable);
-    List<Expense> findAllByExpenseDateBetweenAndStatusNot(LocalDate startDate, LocalDate endDate, EStatus status);
+    List<Expense> findAllByMemberIdAndExpenseDateBetweenAndStatusNot(Long memberId, LocalDate startDate, LocalDate endDate, EStatus status);
     Page<Expense> findAllByStatusNotAndExpenseCategoryNot(EStatus status, EExpenseCategory category, Pageable pageable);
+    Page<Expense> findAllByMemberIdAndStatusNotAndExpenseCategoryNot(Long memberId, EStatus status, EExpenseCategory category, Pageable pageable);
 
 
 }

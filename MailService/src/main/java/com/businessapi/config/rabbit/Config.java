@@ -27,6 +27,8 @@ public class Config {
     private final String keySendStyledEmail = "keySendStyledEmail";
     String queueSaveCustomerSendMail = "queueSaveCustomerSendMail";
     String keySaveCustomerSendMail = "keySaveCustomerSendMail";
+    String queueCustomerSendEmailAboutOpportunity = "queueCustomerSendEmailAboutOpportunity";
+    String keyCustomerSendEmailAboutOpportunity = "keyCustomerSendEmailAboutOpportunity";
 
     @Bean
     public DirectExchange directExchange(){
@@ -90,6 +92,15 @@ public class Config {
     public Binding bindingSaveCustomerSendEmail(Queue queueSaveCustomerSendMail, DirectExchange directExchange){
         return BindingBuilder.bind(queueSaveCustomerSendMail).to(directExchange).with(keySaveCustomerSendMail);
     }
+
+    @Bean
+    public Queue queueCustomerSendEmailAboutOpportunity(){
+        return new Queue(queueCustomerSendEmailAboutOpportunity);
+    }
+//    @Bean
+//    public Binding bindingCustomerSendEmailAboutOpportunity(Queue queueCustomerSendEmailAboutOpportunity, DirectExchange directExchange){
+//        return BindingBuilder.bind(queueCustomerSendEmailAboutOpportunity).to(directExchange).with(keyCustomerSendEmailAboutOpportunity);
+//    }
 
 
     RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
