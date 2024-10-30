@@ -31,7 +31,8 @@ public class FeedbackService {
 
     public Boolean deleteFeedback() {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
-        Feedback feedback = feedbackRepository.findByAuthId(authId);
+        Feedback feedback = feedbackRepository.findFirstByAuthIdAndStatusOrderByUpdatedAtDesc(authId, EStatus.ACTIVE)
+                .orElseThrow(() -> new UtilityServiceException(ErrorType.FEEDBACK_NOT_FOUND));
         if (feedback == null) {
             throw new UtilityServiceException(ErrorType.FEEDBACK_NOT_FOUND);
         }
@@ -44,7 +45,8 @@ public class FeedbackService {
     public Boolean updateFeedback(FeedbackSaveRequestDTO2 dto) {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
 
-        Feedback feedback = feedbackRepository.findByAuthId(authId);
+        Feedback feedback = feedbackRepository.findFirstByAuthIdAndStatusOrderByUpdatedAtDesc(authId, EStatus.ACTIVE)
+                .orElseThrow(() -> new UtilityServiceException(ErrorType.FEEDBACK_NOT_FOUND));
 
 
 
@@ -59,6 +61,7 @@ public class FeedbackService {
 
         feedback.setDescription(dto.description() != null ? dto.description() : feedback.getDescription());
         feedback.setRating(dto.rating() != null ? dto.rating() : feedback.getRating());
+
         feedbackRepository.save(feedback);
         return true;
     }
@@ -72,7 +75,7 @@ public class FeedbackService {
 
     public Feedback getFeedbackByUser() {
         Long authId = SessionManager.getMemberIdFromAuthenticatedMember();
-        return feedbackRepository.findByAuthId(authId);
+      return  feedbackRepository.findFirstByAuthIdAndStatusOrderByUpdatedAtDesc(authId, EStatus.ACTIVE).orElse(null);
 
     }
 
