@@ -88,6 +88,17 @@ public class FeedbackService {
 
         return feedbackRepository.findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(dto.searchText(), EStatus.DELETED,PageRequest.of(dto.page(), dto.size()));
     }
+
+
+    public Boolean saveForDemoData(FeedbackSaveRequestDTO2 dto, Long authId) {
+        feedbackRepository.save(Feedback.builder()
+                .description(dto.description())
+                .rating(dto.rating())
+                .authId(authId)
+                .build());
+
+        return true;
+    }
 }
 
 

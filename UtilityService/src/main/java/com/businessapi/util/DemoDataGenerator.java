@@ -1,8 +1,10 @@
 package com.businessapi.util;
 
 import com.businessapi.dto.request.BugReportSaveRequestDTO;
+import com.businessapi.dto.request.FeedbackSaveRequestDTO2;
 import com.businessapi.entities.BugReport;
 import com.businessapi.services.BugReportService;
+import com.businessapi.services.FeedbackService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,12 @@ public class DemoDataGenerator
 {
 
     private final BugReportService bugReportService;
+    private final FeedbackService feedbackService;
     @PostConstruct
     public void generateDemoData()
     {
         generateBugReportData();
+        generateFeedbackData();
     }
 
     public void generateBugReportData(){
@@ -35,4 +39,17 @@ public class DemoDataGenerator
         bugReportService.saveForDemoData(new BugReportSaveRequestDTO("Session timeout issue", "Users are logged out too frequently due to session timeout issues."));
 
     }
+    public void generateFeedbackData() {
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Great app!", 5), 4L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Needs improvement in UI.", 3), 5L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Very helpful customer service.", 4), 6L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("I found a bug in the upload feature.", 2), 7L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("The app is really slow sometimes.", 2), 8L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Excellent performance!", 5), 9L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("I love the new features!", 5), 10L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Could use better documentation.", 3), 11L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Great job overall!", 4), 12L);
+        feedbackService.saveForDemoData(new FeedbackSaveRequestDTO2("Disappointed with the latest update.", 2), 13L);
+    }
+
 }

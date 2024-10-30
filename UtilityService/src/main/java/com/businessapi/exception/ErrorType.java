@@ -22,6 +22,7 @@ public enum ErrorType
     BUG_REPORT_STATUS_SHOULD_BE_OPEN_OR_RESOLVED( 9104, "Bug report status should be open or resolved",  HttpStatus.BAD_REQUEST),
     FEEDBACK_NOT_FOUND( 9105, "Feedback not found", HttpStatus.NOT_FOUND ),
     FEEDBACK_ALREADY_DELETED( 9106, "Feedback already deleted", HttpStatus.BAD_REQUEST),
+    FEEDBACK_ALREADY_EXISTS( 9107, "Feedback already exists", HttpStatus.BAD_REQUEST),
     ;
 
     private Integer code;

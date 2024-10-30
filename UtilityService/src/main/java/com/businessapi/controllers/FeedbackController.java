@@ -27,7 +27,7 @@ public class FeedbackController {
     @CrossOrigin("*")
     @PostMapping(SAVE)
     @Operation(summary = "Creates new feedback")
-    @PreAuthorize("hasAnyAuthority('MEMBER')")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'ADMIN')")
     public ResponseEntity<ResponseDTO<Boolean>> save(@RequestBody FeedbackSaveRequestDTO2 dto){
 
         return ResponseEntity.ok(ResponseDTO
