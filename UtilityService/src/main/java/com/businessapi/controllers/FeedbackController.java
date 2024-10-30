@@ -2,6 +2,7 @@ package com.businessapi.controllers;
 
 
 import com.businessapi.dto.request.FeedbackSaveRequestDTO2;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.FeedbackReportDTO;
 import com.businessapi.dto.response.ResponseDTO;
 import com.businessapi.entities.Feedback;
@@ -23,7 +24,7 @@ import static com.businessapi.constants.Endpoints.*;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
-
+    @CrossOrigin("*")
     @PostMapping(SAVE)
     @Operation(summary = "Creates new feedback")
     @PreAuthorize("hasAnyAuthority('MEMBER')")
@@ -77,12 +78,17 @@ public class FeedbackController {
         return ResponseEntity.ok(feedbacks);
     }
 
-    @GetMapping(FIND_ALL)
+    @PostMapping(FIND_ALL)
     @Operation(summary = "Get all feedbacks")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<List<Feedback>> getAllFeedbacks() {
-        List<Feedback> feedbacks = feedbackService.getAllFeedbacks();
-        return ResponseEntity.ok(feedbacks);
+    public ResponseEntity<ResponseDTO<List<Feedback>>> getAllFeedbacks(@RequestBody PageRequestDTO dto) {
+        return ResponseEntity.ok(
+                ResponseDTO.<List<Feedback>>builder()
+                        .data(feedbackService.getAllFeedbacks(dto))
+                        .message("Success")
+                        .code(200)
+                        .build()
+        );
     }
 }
 

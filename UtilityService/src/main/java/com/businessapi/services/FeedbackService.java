@@ -1,6 +1,7 @@
 package com.businessapi.services;
 
 import com.businessapi.dto.request.FeedbackSaveRequestDTO2;
+import com.businessapi.dto.request.PageRequestDTO;
 import com.businessapi.dto.response.FeedbackReportDTO;
 import com.businessapi.entities.Feedback;
 import com.businessapi.entities.enums.EStatus;
@@ -9,6 +10,9 @@ import com.businessapi.exception.UtilityServiceException;
 import com.businessapi.repository.FeedbackRepository;
 import com.businessapi.util.SessionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,8 +83,10 @@ public class FeedbackService {
 
     }
 
-    public List<Feedback> getAllFeedbacks() {
-        return feedbackRepository.findAll();
+    public List<Feedback> getAllFeedbacks(PageRequestDTO dto) {
+
+
+        return feedbackRepository.findAllByDescriptionContainingIgnoreCaseAndStatusIsNotOrderByDescriptionAsc(dto.searchText(), EStatus.DELETED,PageRequest.of(dto.page(), dto.size()));
     }
 }
 
